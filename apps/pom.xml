@@ -11,9 +11,22 @@
 
     <artifactId>institution-apps</artifactId>
     <packaging>pom</packaging>
+    <modules>
+        <module>institution-send-mail-scheduler</module>
+    </modules>
 
     <profiles>
-
+        <profile>
+            <id>institution-send-mail-scheduler</id>
+            <activation>
+                <file>
+                    <exists>institution-send-mail-scheduler/pom.xml</exists>
+                </file>
+            </activation>
+            <modules>
+                <module>institution-send-mail-scheduler</module>
+            </modules>
+        </profile>
     </profiles>
 
 </project>
