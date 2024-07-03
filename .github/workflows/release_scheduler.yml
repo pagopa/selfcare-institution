@@ -1,0 +1,51 @@
+name: Deploy institution-send-mail-scheduler
+
+on:
+  push:
+    branches:
+      - main
+      - releases/*
+    paths:
+      - "apps/institution-send-mail-scheduler/**"
+      - "infra/container_apps/institution-send-mail-scheduler/**"
+      - "apps/pom.xml"
+      - "pom.xml"
+  
+  workflow_dispatch:
+    inputs:
+      env:
+        type: choice
+        description: Environment
+        options: 
+        - dev
+        - uat
+        - prod
+
+jobs:
+
+  release_dev:
+    uses: ./.github/workflows/call_release_scheduler.yml
+    name: '[Dev] institution-send-mail-scheduler ms Release'
+    if: ${{ (startsWith(github.ref_name, 'releases/') != true && inputs.env == null) || inputs.env == 'dev' }}
+    secrets: inherit
+    with:
+      environment: dev
+      tf_environment: dev
+
+  release_uat:
+    uses: ./.github/workflows/call_release_scheduler.yml
+    name: '[UAT] institution-send-mail-scheduler ms Release'
+    if: ${{ (startsWith(github.ref_name, 'releases/') == true && inputs.env == null) || inputs.env == 'uat' }}
+    secrets: inherit
+    with:
+      environment: uat
+      tf_environment: uat
+
+  release_prod:
+    uses: ./.github/workflows/call_release_scheduler.yml
+    name: '[Prod] institution-send-mail-scheduler ms Release'
+    if: ${{ inputs.env == 'prod' }}
+    secrets: inherit
+    with:
+      environment: prod
+      tf_environment: prod
