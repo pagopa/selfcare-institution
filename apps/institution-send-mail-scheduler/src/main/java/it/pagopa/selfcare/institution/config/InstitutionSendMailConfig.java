@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.institution.config;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -13,7 +14,7 @@ import it.pagopa.selfcare.azurestorage.AzureBlobClient;
 import it.pagopa.selfcare.azurestorage.AzureBlobClientDefault;
 import it.pagopa.selfcare.institution.repository.PecNotificationsRepository;
 import it.pagopa.selfcare.product.service.ProductService;
-import it.pagopa.selfcare.product.service.ProductServiceCacheable;
+import it.pagopa.selfcare.product.service.ProductServiceDefault;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.inject.Produces;
@@ -44,6 +45,12 @@ public class InstitutionSendMailConfig {
 
     @ApplicationScoped
     public ProductService productService(AzureStorageConfig azureStorageConfig){
-        return new ProductServiceCacheable(azureStorageConfig.connectionStringProduct(), azureStorageConfig.containerProduct(), azureStorageConfig.productFilepath());
+        AzureBlobClient azureBlobClient = new AzureBlobClientDefault(azureStorageConfig.connectionStringProduct(), azureStorageConfig.containerProduct());
+        String productJsonString = azureBlobClient.getFileAsText(azureStorageConfig.productFilepath());
+        try {
+            return new ProductServiceDefault(productJsonString, objectMapper());
+        } catch (JsonProcessingException e) {
+            throw new IllegalArgumentException("Found an issue when trying to serialize product json string!!");
+        }
     }
 }
