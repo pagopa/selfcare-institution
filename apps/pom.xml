@@ -29,7 +29,7 @@
             </modules>
         </profile>
         <profile>
-            <id>selc-ms-core</id>
+            <id>institution-ms</id>
             <activation>
                 <file>
                     <exists>institution-ms/pom.xml</exists>
