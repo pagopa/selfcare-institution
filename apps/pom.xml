@@ -27,6 +27,17 @@
                 <module>institution-send-mail-scheduler</module>
             </modules>
         </profile>
+        <profile>
+            <id>selc-ms-core</id>
+            <activation>
+                <file>
+                    <exists>selc-ms-core/pom.xml</exists>
+                </file>
+            </activation>
+            <modules>
+                <module>selc-ms-core</module>
+            </modules>
+        </profile>
     </profiles>
 
 </project>
