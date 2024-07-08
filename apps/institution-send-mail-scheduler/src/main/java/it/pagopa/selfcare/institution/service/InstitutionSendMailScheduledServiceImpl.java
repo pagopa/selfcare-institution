@@ -30,25 +30,29 @@ public class InstitutionSendMailScheduledServiceImpl implements InstitutionSendM
     private final ProductService productService;
     private final String startDate;
     private final Integer sendingFrequency;
+    private final Integer querySize;
 
     public InstitutionSendMailScheduledServiceImpl(PecNotificationsRepository pecNotificationsRepository,
                                                    MailServiceImpl mailService,
                                                    @ConfigProperty(name = "institution-send-mail.notification-path") String templateMail,
                                                    @ConfigProperty(name = "institution-send-mail.notification-sending-frequency") Integer sendingFrequency,
                                                    @ConfigProperty(name = "institution-send-mail.notification-start-date") String startDate,
-                                                   ProductService productService) {
+                                                   ProductService productService,
+                                                   @ConfigProperty(name = "institution-send-mail.notification-query-size") Integer querySize) {
         this.pecNotificationsRepository = pecNotificationsRepository;
         this.mailService = mailService;
         this.templateMail = templateMail;
         this.productService = productService;
         this.startDate = startDate;
         this.sendingFrequency = sendingFrequency;
+        this.querySize = querySize;
     }
 
     @Override
     public Uni<Integer> retrieveInstitutionFromPecNotificationAndSendMail() {
         Long moduleDayOfTheEpoch = calculateModuleDayOfTheEpoch();
-        return retrieveFilteredAndPaginatedPecNotification(moduleDayOfTheEpoch, 0, 500);
+        int startPage = 0;
+        return retrieveFilteredAndPaginatedPecNotification(moduleDayOfTheEpoch, startPage, querySize);
     }
 
     public Uni<Integer> retrieveFilteredAndPaginatedPecNotification(Long moduleDayOfTheEpoch, int page, int size) {
