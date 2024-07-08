@@ -46,7 +46,7 @@ app_settings = [
   },
   {
     name = "MAIL_TEMPLATE_NOTIFICATION_PATH"
-    value = "contracts/template/mail/users-list-notification/1.0.0.json"
+    value = "contracts/template/mail/user-list-notification/1.0.0.json"
   },
   {
     name = "STORAGE_CONTAINER_PRODUCT"

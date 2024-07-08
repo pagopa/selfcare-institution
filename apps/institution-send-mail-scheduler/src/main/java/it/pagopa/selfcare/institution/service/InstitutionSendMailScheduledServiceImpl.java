@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.institution.service;
 
+import io.quarkus.mongodb.panache.PanacheQuery;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.impl.logging.Logger;
@@ -25,7 +26,6 @@ public class InstitutionSendMailScheduledServiceImpl implements InstitutionSendM
     private static final String PRODUCT_PLACEHOLDER = "nome_prodotto";
     private final PecNotificationsRepository pecNotificationsRepository;
     private final MailServiceImpl mailService;
-    private final String subject;
     private final String templateMail;
     private final ProductService productService;
     private final String startDate;
@@ -33,14 +33,12 @@ public class InstitutionSendMailScheduledServiceImpl implements InstitutionSendM
 
     public InstitutionSendMailScheduledServiceImpl(PecNotificationsRepository pecNotificationsRepository,
                                                    MailServiceImpl mailService,
-                                                   @ConfigProperty(name = "institution-send-mail.notification-subject") String subject,
                                                    @ConfigProperty(name = "institution-send-mail.notification-path") String templateMail,
                                                    @ConfigProperty(name = "institution-send-mail.notification-sending-frequency") Integer sendingFrequency,
                                                    @ConfigProperty(name = "institution-send-mail.notification-start-date") String startDate,
                                                    ProductService productService) {
         this.pecNotificationsRepository = pecNotificationsRepository;
         this.mailService = mailService;
-        this.subject = subject;
         this.templateMail = templateMail;
         this.productService = productService;
         this.startDate = startDate;
@@ -50,19 +48,36 @@ public class InstitutionSendMailScheduledServiceImpl implements InstitutionSendM
     @Override
     public Uni<Integer> retrieveInstitutionFromPecNotificationAndSendMail() {
         Long moduleDayOfTheEpoch = calculateModuleDayOfTheEpoch();
-        List<PecNotification> pecNotifications = pecNotificationsRepository.list("moduleDayOfTheEpoch = ?1", moduleDayOfTheEpoch);
-        return Multi.createFrom().iterable(pecNotifications)
+        return retrieveFilteredAndPaginatedPecNotification(moduleDayOfTheEpoch, 0, 500);
+    }
+
+    public Uni<Integer> retrieveFilteredAndPaginatedPecNotification(Long moduleDayOfTheEpoch, int page, int size) {
+        log.info("Retrieving page " + page + " of PecNotification");
+        PanacheQuery<PecNotification> query = pecNotificationsRepository.find("moduleDayOfTheEpoch", moduleDayOfTheEpoch)
+                .page(page, size);
+        if(query.hasNextPage()) {
+            return retrievePecNotificationListAndSendMail(query)
+                    .onItem().transformToUni(unused -> retrieveFilteredAndPaginatedPecNotification(moduleDayOfTheEpoch, page + 1, size))
+                    .replaceWith(0);
+        }else{
+            return retrievePecNotificationListAndSendMail(query)
+                    .replaceWith(0);
+        }
+    }
+
+    private Uni<Void> retrievePecNotificationListAndSendMail(PanacheQuery<PecNotification> query) {
+        return Multi.createFrom().iterable(query.list())
                 .onItem().transformToUniAndMerge(this::constructAndSendMail)
                 .onFailure().invoke(throwable -> log.error("Error during send scheduled mail", throwable))
                 .collect().asList()
-                .onItem().invoke(list -> log.info("Mail sent to " + list.size() + " institutions"))
-                .replaceWith(0);
+                .onItem().invoke(list -> log.info("Mail sent to institutions"))
+                .replaceWith(Uni.createFrom().voidItem());
     }
 
     private Uni<Void> constructAndSendMail(PecNotification pecNotification) {
         Product product = productService.getProduct(pecNotification.getProductId());
         Map<String, String> mailParameters = retrieveMailParameters(product.getTitle());
-        mailService.sendMailWithFile(List.of(pecNotification.getInstitutionMail()), templateMail, mailParameters, subject, null);
+        mailService.sendMailWithFile(List.of(pecNotification.getInstitutionMail()), templateMail, mailParameters, null, null);
         return Uni.createFrom().voidItem();
     }
 

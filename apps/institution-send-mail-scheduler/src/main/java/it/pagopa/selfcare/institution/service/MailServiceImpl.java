@@ -54,7 +54,7 @@ public class MailServiceImpl implements MailService{
                     ? destinationMailTestAddress
                     : destinationMail.get(0);
 
-            log.info(String.format("Sending mail to %s, with prefixSubject %s", destination, prefixSubject));
+            log.info(String.format("Sending mail to %s", destination));
             String template = azureBlobClient.getFileAsText(templateName);
             MailTemplate mailTemplate = objectMapper.readValue(template, MailTemplate.class);
             String html = StringSubstitutor.replace(mailTemplate.getBody(), mailParameters);

@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.institution.service;
 
+import io.quarkus.mongodb.panache.PanacheQuery;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.smallrye.mutiny.Uni;
@@ -16,7 +17,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 
 @QuarkusTest
 class InstitutionSendMailScheduledServiceImplTest {
@@ -35,25 +36,45 @@ class InstitutionSendMailScheduledServiceImplTest {
 
     @Test
     void shouldSendMailToAllPecNotificationsForCurrentModuleDay() {
-        PecNotification notification1 = new PecNotification();
-        PecNotification notification2 = new PecNotification();
-        notification1.setProductId("product-id");
-        notification1.setInstitutionMail("test@test.it");
-        notification1.setModuleDayOfTheEpoch(1);
-        notification2.setProductId("product-id");
-        notification2.setInstitutionMail("test@test.it");
-        notification2.setModuleDayOfTheEpoch(1);
-        List<PecNotification> notifications = List.of(notification1, notification2);
-        Mockito.when(pecNotificationsRepository.list(any(), any(Object.class))).thenReturn(notifications);
+        List<PecNotification> notifications = getPecNotifications();
+        PanacheQuery<PecNotification> query = Mockito.mock(PanacheQuery.class);
+        PanacheQuery<PecNotification> query2 = Mockito.mock(PanacheQuery.class);
+        when(pecNotificationsRepository.find(any(), any(Object.class))).thenReturn(query);
+        when(query.hasNextPage()).thenReturn(true);
+        when(query2.hasNextPage()).thenReturn(false);
+        when(query.page(0, 500)).thenReturn(query);
+        when(query.page(1, 500)).thenReturn(query2);
+        when(query.list()).thenReturn(List.of(notifications.get(0), notifications.get(1)));
+        when(query2.list()).thenReturn(List.of(notifications.get(2), notifications.get(3)));
         Product product = new Product();
         product.setTitle("prod-io");
-        Mockito.when(productService.getProduct("product-id")).thenReturn(product);
+        when(productService.getProduct("product-id")).thenReturn(product);
 
         Uni<Integer> result = service.retrieveInstitutionFromPecNotificationAndSendMail();
         UniAssertSubscriber<Integer> subscriber = result.subscribe().withSubscriber(UniAssertSubscriber.create());
         subscriber.assertItem(0).assertCompleted();
-        Mockito.verify(mailService, Mockito.times(2))
-                .sendMailWithFile(eq(List.of("test@test.it")), Mockito.anyString(), Mockito.anyMap(), Mockito.anyString(), Mockito.isNull());
+        Mockito.verify(mailService, Mockito.times(4))
+                .sendMailWithFile(Mockito.anyList(), Mockito.anyString(), Mockito.anyMap(), Mockito.anyString(), Mockito.isNull());
+    }
+
+    private static List<PecNotification> getPecNotifications() {
+        PecNotification notification1 = new PecNotification();
+        PecNotification notification2 = new PecNotification();
+        PecNotification notification3 = new PecNotification();
+        PecNotification notification4 = new PecNotification();
+        notification1.setProductId("product-id");
+        notification1.setInstitutionMail("test@test1.it");
+        notification1.setModuleDayOfTheEpoch(1);
+        notification2.setProductId("product-id");
+        notification2.setInstitutionMail("test@test2.it");
+        notification2.setModuleDayOfTheEpoch(1);
+        notification3.setProductId("product-id");
+        notification3.setInstitutionMail("test@test3.it");
+        notification3.setModuleDayOfTheEpoch(1);
+        notification4.setProductId("product-id");
+        notification4.setInstitutionMail("test@test4.it");
+        notification4.setModuleDayOfTheEpoch(1);
+        return List.of(notification1, notification2, notification3, notification4);
     }
 
     @Test
@@ -63,10 +84,14 @@ class InstitutionSendMailScheduledServiceImplTest {
         notification1.setProductId("product-id");
         notification1.setInstitutionMail("test@test.it");
         notification1.setModuleDayOfTheEpoch(1);
-        Mockito.when(pecNotificationsRepository.list(any(), any(Object.class))).thenReturn(List.of(notification1));
+        PanacheQuery<PecNotification> query = Mockito.mock(PanacheQuery.class);
+        when(pecNotificationsRepository.find(any(), any(Object.class))).thenReturn(query);
+        when(query.page(Mockito.anyInt(), Mockito.anyInt())).thenReturn(query);
+        when(query.hasNextPage()).thenReturn(true);
+        when(query.list()).thenReturn(List.of(notification1));
         Product product = new Product();
         product.setTitle("prod-io");
-        Mockito.when(productService.getProduct("product-id")).thenReturn(product);
+        when(productService.getProduct("product-id")).thenReturn(product);
         Mockito.doThrow(new RuntimeException("Mail send failed")).when(mailService).sendMailWithFile(Mockito.anyList(), Mockito.anyString(), Mockito.anyMap(), Mockito.anyString(), Mockito.isNull());
 
         // Execute
@@ -81,7 +106,11 @@ class InstitutionSendMailScheduledServiceImplTest {
     @Test
     void shouldHandleNoPecNotificationsForCurrentModuleDay() {
         // Setup mocks
-        Mockito.when(pecNotificationsRepository.list(Mockito.anyString(), Mockito.anyLong())).thenReturn(Collections.emptyList());
+        PanacheQuery<PecNotification> query = Mockito.mock(PanacheQuery.class);
+        when(pecNotificationsRepository.find(any(), any(Object.class))).thenReturn(query);
+        when(query.page(Mockito.anyInt(), Mockito.anyInt())).thenReturn(query);
+        when(query.hasNextPage()).thenReturn(false);
+        when(query.list()).thenReturn(Collections.emptyList());
 
         // Execute
         Uni<Integer> result = service.retrieveInstitutionFromPecNotificationAndSendMail();
