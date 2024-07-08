@@ -13,6 +13,11 @@ public class PecNotification {
     private Integer moduleDayOfTheEpoch;
     private String productId;
     private String institutionId;
+    private String institutionMail;
+
+    public void setInstitutionMail(String institutionMail) {
+        this.institutionMail = institutionMail;
+    }
 
     public void setId(ObjectId id) {
         this.id = id;
@@ -37,6 +42,7 @@ public class PecNotification {
                 ", moduleDayOfTheEpoch=" + moduleDayOfTheEpoch +
                 ", productId='" + productId + '\'' +
                 ", institutionId='" + institutionId + '\'' +
+                ", institutionMail='" + institutionMail + '\'' +
                 '}';
     }
 }

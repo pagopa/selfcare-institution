@@ -56,8 +56,12 @@ app_settings = [
     value = "465"
   },
   {
-    name = "MAIL_TEMPLATE_USERSLIST_NOTIFICATION_PATH"
+    name = "MAIL_TEMPLATE_NOTIFICATION_PATH"
     value = "contracts/template/mail/users-list-notification/1.0.0.json"
+  },
+  {
+    name = "STORAGE_CONTAINER_PRODUCT"
+    value = "selc-d-product"
   }
 ]
 
@@ -65,9 +69,10 @@ app_settings = [
 secrets_names = {
     "MONGODB-CONNECTION-STRING"               = "mongodb-connection-string"
     "BLOB-STORAGE-CONTRACT-CONNECTION-STRING" = "blob-storage-contract-connection-string"
-    "MAIL_SERVER_USERNAME"                    = "@Microsoft.KeyVault(SecretUri=https://selc-d-kv.vault.azure.net/secrets/smtp-usr/)",
-    "MAIL_SENDER_ADDRESS"                     = "@Microsoft.KeyVault(SecretUri=https://selc-d-kv.vault.azure.net/secrets/smtp-usr/)",
-    "MAIL_SERVER_PASSWORD"                    = "@Microsoft.KeyVault(SecretUri=https://selc-d-kv.vault.azure.net/secrets/smtp-psw/)",
+    "BLOB_STORAGE_CONN_STRING_PRODUCT"        = "blob-storage-product-connection-string"
+    "MAIL_SERVER_USERNAME"                    = "smtp-usr"
+    "MAIL_SENDER_ADDRESS"                     = "smtp-usr"
+    "MAIL_SERVER_PASSWORD"                    = "smtp-psw"
 
 }
 

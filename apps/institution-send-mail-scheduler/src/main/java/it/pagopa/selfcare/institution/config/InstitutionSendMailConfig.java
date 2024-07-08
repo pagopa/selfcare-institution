@@ -12,6 +12,8 @@ import io.vertx.core.json.jackson.DatabindCodec;
 import it.pagopa.selfcare.azurestorage.AzureBlobClient;
 import it.pagopa.selfcare.azurestorage.AzureBlobClientDefault;
 import it.pagopa.selfcare.institution.repository.PecNotificationsRepository;
+import it.pagopa.selfcare.product.service.ProductService;
+import it.pagopa.selfcare.product.service.ProductServiceCacheable;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.inject.Produces;
@@ -38,5 +40,10 @@ public class InstitutionSendMailConfig {
     @ApplicationScoped
     public AzureBlobClient azureBobClientContract(AzureStorageConfig azureStorageConfig){
         return new AzureBlobClientDefault(azureStorageConfig.connectionStringContract(), azureStorageConfig.containerContract());
+    }
+
+    @ApplicationScoped
+    public ProductService productService(AzureStorageConfig azureStorageConfig){
+        return new ProductServiceCacheable(azureStorageConfig.connectionStringProduct(), azureStorageConfig.containerProduct(), azureStorageConfig.productFilepath());
     }
 }
