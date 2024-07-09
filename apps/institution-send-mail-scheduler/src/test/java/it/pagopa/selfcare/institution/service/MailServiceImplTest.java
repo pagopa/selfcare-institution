@@ -3,11 +3,10 @@ package it.pagopa.selfcare.institution.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.mailer.Mail;
-import io.quarkus.mailer.Mailer;
+import io.quarkus.mailer.reactive.ReactiveMailer;
 import io.quarkus.test.junit.QuarkusTest;
 import it.pagopa.selfcare.azurestorage.AzureBlobClient;
 import it.pagopa.selfcare.institution.exception.GenericException;
-import it.pagopa.selfcare.institution.model.FileMailData;
 import it.pagopa.selfcare.institution.model.MailTemplate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,13 +29,13 @@ class MailServiceImplTest {
 
     ObjectMapper objectMapper;
 
-    Mailer mailer;
+    ReactiveMailer mailer;
 
     MailServiceImpl mailService;
 
     @BeforeEach
     void setUp() {
-        mailer = mock(Mailer.class);
+        mailer = mock(ReactiveMailer.class);
         azureBlobClient = mock(AzureBlobClient.class);
         objectMapper = mock(ObjectMapper.class);
         this.mailService = new MailServiceImpl( azureBlobClient, objectMapper, "pec@pec.it", Boolean.TRUE,
@@ -57,11 +56,7 @@ class MailServiceImplTest {
         Mockito.when(objectMapper.readValue(Mockito.anyString(), Mockito.eq(MailTemplate.class)))
                 .thenReturn(mailTemplate);
         // When
-        FileMailData fileMailData = new FileMailData();
-        fileMailData.setData("test".getBytes());
-        fileMailData.setContentType("text/plain");
-        fileMailData.setName("test.txt");
-        mailService.sendMailWithFile(destinationMails, "templateName", mailParameters, "Prefix", fileMailData);
+        mailService.sendMail(destinationMails, "templateName", mailParameters);
 
         // Then
         ArgumentCaptor<Mail> mailCaptor = ArgumentCaptor.forClass(Mail.class);
@@ -77,7 +72,7 @@ class MailServiceImplTest {
         // Then
         assertThrows(GenericException.class, () -> {
             // When
-            mailService.sendMailWithFile(Collections.singletonList("recipient@example.com"), "templateName", Collections.singletonMap("name", "John Doe"), "Prefix", null);
+            mailService.sendMail(Collections.singletonList("recipient@example.com"), "templateName", Collections.singletonMap("name", "John Doe"));
         });
     }
 }

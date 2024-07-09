@@ -7,6 +7,8 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldNameConstants;
 import org.bson.types.ObjectId;
 
+import java.time.OffsetDateTime;
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 @FieldNameConstants(asEnum = true)
@@ -17,6 +19,7 @@ public class PecNotification extends ReactivePanacheMongoEntity{
     private Integer moduleDayOfTheEpoch;
     private String productId;
     private String institutionId;
-    private String institutionMail;
-    private String createdAt;
+    private String digitalAddress;
+    private OffsetDateTime createdAt;
+
 }

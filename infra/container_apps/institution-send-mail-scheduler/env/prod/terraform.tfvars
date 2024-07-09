@@ -49,6 +49,10 @@ app_settings = [
   {
     name = "STORAGE_CONTAINER_PRODUCT"
     value = "selc-p-product"
+  },
+  {
+    name = "MAIL_DESTINATION_TEST"
+    value = "false"
   }
 ]
 

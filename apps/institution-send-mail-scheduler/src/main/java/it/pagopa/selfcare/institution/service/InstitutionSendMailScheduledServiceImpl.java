@@ -13,12 +13,12 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @ApplicationScoped
-public class InstitutionSendMailScheduledServiceImpl implements InstitutionSendMailScheduledService{
+public class InstitutionSendMailScheduledServiceImpl implements InstitutionSendMailScheduledService {
 
     private static final Logger log = LoggerFactory.getLogger(InstitutionSendMailScheduledServiceImpl.class);
 
@@ -53,23 +53,24 @@ public class InstitutionSendMailScheduledServiceImpl implements InstitutionSendM
 
     public Uni<Integer> retrieveFilteredAndPaginatedPecNotification(Long moduleDayOfTheEpoch, int page, int size) {
         log.info("Retrieving page " + page + " of PecNotification");
+        return Multi.createBy().repeating()
+                .uni(AtomicInteger::new,
+                        currentPage -> runQueryAndSendNotification(moduleDayOfTheEpoch, currentPage.getAndIncrement(), size)
+                                .onItem().invoke(() -> log.info("Page " + currentPage + " processed")))
+                .until(Boolean.FALSE::equals)
+                .collect()
+                .asList()
+                .flatMap(ignored -> Uni.createFrom().item(0));
 
+    }
+
+    public Uni<Boolean> runQueryAndSendNotification(Long moduleDayOfTheEpoch, int page, int size) {
         var pecNotificationPage = PecNotification.find(PecNotification.Fields.moduleDayOfTheEpoch.name(), moduleDayOfTheEpoch)
                 .page(page, size);
 
-        return Uni.combine().all()
-                .unis(pecNotificationPage.hasNextPage(), pecNotificationPage.list())
-                .asTuple()
-                .onItem().transformToUni(tuple -> {
-                    if(tuple.getItem1()) {
-                        return retrievePecNotificationListAndSendMail(tuple.getItem2())
-                                .onItem().transformToUni(unused -> retrieveFilteredAndPaginatedPecNotification(moduleDayOfTheEpoch, page + 1, size))
-                                .replaceWith(0);
-                    }else{
-                        return retrievePecNotificationListAndSendMail(tuple.getItem2())
-                                .replaceWith(0);
-                    }
-                })
+        return pecNotificationPage.list()
+                .onItem().transformToUni(this::retrievePecNotificationListAndSendMail)
+                .replaceWith(pecNotificationPage.hasNextPage())
                 .onFailure().invoke(throwable -> log.error("Error during send scheduled mail", throwable));
 
     }
@@ -85,16 +86,10 @@ public class InstitutionSendMailScheduledServiceImpl implements InstitutionSendM
 
     private Uni<Void> constructAndSendMail(PecNotification pecNotification) {
         Product product = productService.getProduct(pecNotification.getProductId());
-        Map<String, String> mailParameters = retrieveMailParameters(product.getTitle());
-        mailService.sendMailWithFile(List.of(pecNotification.getInstitutionMail()), templateMail, mailParameters, null, null);
-        log.info("Mail sent to institutions");
-        return Uni.createFrom().voidItem();
-    }
-
-    private Map<String, String> retrieveMailParameters(String productName) {
-        Map<String, String> mailParameters = new HashMap<>();
-        mailParameters.put(PRODUCT_PLACEHOLDER, productName);
-        return mailParameters;
+        Map<String, String> mailParameters = Map.of(PRODUCT_PLACEHOLDER, product.getTitle());
+        return mailService.sendMail(List.of(pecNotification.getDigitalAddress()), templateMail, mailParameters)
+                .onItem().invoke(() -> log.info(String.format("Mail sent for institution %s and product %s", pecNotification.getInstitutionId(), pecNotification.getProductId())))
+                .onFailure().recoverWithNull();
     }
 
     private Long calculateModuleDayOfTheEpoch() {
