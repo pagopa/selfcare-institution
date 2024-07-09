@@ -1,12 +1,13 @@
 package it.pagopa.selfcare.institution.service;
 
-import io.quarkus.mongodb.panache.PanacheQuery;
+import io.quarkus.mongodb.panache.reactive.ReactivePanacheMongoEntityBase;
+import io.quarkus.mongodb.panache.reactive.ReactivePanacheQuery;
+import io.quarkus.panache.mock.PanacheMock;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.helpers.test.UniAssertSubscriber;
 import it.pagopa.selfcare.institution.entity.PecNotification;
-import it.pagopa.selfcare.institution.repository.PecNotificationsRepository;
 import it.pagopa.selfcare.product.entity.Product;
 import it.pagopa.selfcare.product.service.ProductService;
 import jakarta.inject.Inject;
@@ -23,9 +24,6 @@ import static org.mockito.Mockito.when;
 class InstitutionSendMailScheduledServiceImplTest {
 
     @InjectMock
-    PecNotificationsRepository pecNotificationsRepository;
-
-    @InjectMock
     MailServiceImpl mailService;
 
     @InjectMock
@@ -37,15 +35,20 @@ class InstitutionSendMailScheduledServiceImplTest {
     @Test
     void shouldSendMailToAllPecNotificationsForCurrentModuleDay() {
         List<PecNotification> notifications = getPecNotifications();
-        PanacheQuery<PecNotification> query = Mockito.mock(PanacheQuery.class);
-        PanacheQuery<PecNotification> query2 = Mockito.mock(PanacheQuery.class);
-        when(pecNotificationsRepository.find(any(), any(Object.class))).thenReturn(query);
-        when(query.hasNextPage()).thenReturn(true);
-        when(query2.hasNextPage()).thenReturn(false);
-        when(query.page(0, 500)).thenReturn(query);
-        when(query.page(1, 500)).thenReturn(query2);
-        when(query.list()).thenReturn(List.of(notifications.get(0), notifications.get(1)));
-        when(query2.list()).thenReturn(List.of(notifications.get(2), notifications.get(3)));
+        PanacheMock.mock(PecNotification.class);
+        ReactivePanacheQuery<ReactivePanacheMongoEntityBase> query = Mockito.mock(ReactivePanacheQuery.class);
+        when(PecNotification.find(any(), any(Object.class)))
+                .thenReturn(query);
+        when(query.page(0, 1000)).thenReturn(query);
+
+        ReactivePanacheQuery<ReactivePanacheMongoEntityBase> query2 = Mockito.mock(ReactivePanacheQuery.class);
+
+
+        when(query.page(1, 1000)).thenReturn(query2);
+        when(query.hasNextPage()).thenReturn(Uni.createFrom().item(true));
+        when(query2.hasNextPage()).thenReturn(Uni.createFrom().item(false));
+        when(query.list()).thenReturn(Uni.createFrom().item(List.of(notifications.get(0), notifications.get(1))));
+        when(query2.list()).thenReturn(Uni.createFrom().item(List.of(notifications.get(2), notifications.get(3))));
         Product product = new Product();
         product.setTitle("prod-io");
         when(productService.getProduct("product-id")).thenReturn(product);
@@ -54,7 +57,7 @@ class InstitutionSendMailScheduledServiceImplTest {
         UniAssertSubscriber<Integer> subscriber = result.subscribe().withSubscriber(UniAssertSubscriber.create());
         subscriber.assertItem(0).assertCompleted();
         Mockito.verify(mailService, Mockito.times(4))
-                .sendMailWithFile(Mockito.anyList(), Mockito.anyString(), Mockito.anyMap(), Mockito.anyString(), Mockito.isNull());
+                .sendMailWithFile(Mockito.anyList(), Mockito.anyString(), Mockito.anyMap(), Mockito.isNull(), Mockito.isNull());
     }
 
     private static List<PecNotification> getPecNotifications() {
@@ -84,33 +87,35 @@ class InstitutionSendMailScheduledServiceImplTest {
         notification1.setProductId("product-id");
         notification1.setInstitutionMail("test@test.it");
         notification1.setModuleDayOfTheEpoch(1);
-        PanacheQuery<PecNotification> query = Mockito.mock(PanacheQuery.class);
-        when(pecNotificationsRepository.find(any(), any(Object.class))).thenReturn(query);
-        when(query.page(Mockito.anyInt(), Mockito.anyInt())).thenReturn(query);
-        when(query.hasNextPage()).thenReturn(true);
-        when(query.list()).thenReturn(List.of(notification1));
+        PanacheMock.mock(PecNotification.class);
+        ReactivePanacheQuery<ReactivePanacheMongoEntityBase> query = Mockito.mock(ReactivePanacheQuery.class);
+        when(PecNotification.find(any(), any(Object.class)))
+                .thenReturn(query);
+        when(query.page(0, 1000)).thenReturn(query);
+        when(query.hasNextPage()).thenReturn(Uni.createFrom().item(false));
+        when(query.list()).thenReturn(Uni.createFrom().item(List.of(notification1)));
         Product product = new Product();
         product.setTitle("prod-io");
         when(productService.getProduct("product-id")).thenReturn(product);
-        Mockito.doThrow(new RuntimeException("Mail send failed")).when(mailService).sendMailWithFile(Mockito.anyList(), Mockito.anyString(), Mockito.anyMap(), Mockito.anyString(), Mockito.isNull());
+        Mockito.doThrow(new RuntimeException("Mail send failed")).when(mailService).sendMailWithFile(Mockito.anyList(), Mockito.anyString(), Mockito.anyMap(), Mockito.isNull(), Mockito.isNull());
 
         // Execute
         Uni<Integer> result = service.retrieveInstitutionFromPecNotificationAndSendMail();
         UniAssertSubscriber<Integer> subscriber = result.subscribe().withSubscriber(UniAssertSubscriber.create());
 
         // Verify
-        Mockito.verify(mailService).sendMailWithFile(Mockito.anyList(), Mockito.anyString(), Mockito.anyMap(), Mockito.anyString(), Mockito.isNull());
         subscriber.assertFailedWith(RuntimeException.class, "Mail send failed");
     }
 
     @Test
     void shouldHandleNoPecNotificationsForCurrentModuleDay() {
-        // Setup mocks
-        PanacheQuery<PecNotification> query = Mockito.mock(PanacheQuery.class);
-        when(pecNotificationsRepository.find(any(), any(Object.class))).thenReturn(query);
-        when(query.page(Mockito.anyInt(), Mockito.anyInt())).thenReturn(query);
-        when(query.hasNextPage()).thenReturn(false);
-        when(query.list()).thenReturn(Collections.emptyList());
+        PanacheMock.mock(PecNotification.class);
+        ReactivePanacheQuery<ReactivePanacheMongoEntityBase> query = Mockito.mock(ReactivePanacheQuery.class);
+        when(PecNotification.find(any(), any(Object.class)))
+                .thenReturn(query);
+        when(query.page(0, 1000)).thenReturn(query);
+        when(query.hasNextPage()).thenReturn(Uni.createFrom().item(false));
+        when(query.list()).thenReturn(Uni.createFrom().item(Collections.emptyList()));
 
         // Execute
         Uni<Integer> result = service.retrieveInstitutionFromPecNotificationAndSendMail();
