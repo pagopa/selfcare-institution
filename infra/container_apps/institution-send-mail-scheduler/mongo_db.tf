@@ -1,5 +1,5 @@
 module "mongodb_collection_pec_notifications" {
-  source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//cosmosdb_mongodb_collection?ref=v7.39.0"
+  source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//cosmosdb_mongodb_collection?ref=v8.26.4"
 
   name                = "PecNotification"
   resource_group_name = local.mongo_db.mongodb_rg_name
@@ -8,8 +8,8 @@ module "mongodb_collection_pec_notifications" {
   cosmosdb_mongo_database_name = "selcMsCore"
 
   indexes = [{
-      keys   = ["_id"]
-      unique = true
+    keys   = ["_id"]
+    unique = true
     },
     {
       keys   = ["moduleDayOfTheEpoch"]
