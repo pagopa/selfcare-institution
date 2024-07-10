@@ -2,6 +2,12 @@ name: Swagger Detect Rules and Conflict
 on:
   pull_request:
     types: [ opened, synchronize, reopened ]
+    branches:
+      - main
+      - releases/*
+    paths:
+      - "apps/institution-ms/**"
+      
 #  workflow_dispatch:
 permissions:
   contents: write

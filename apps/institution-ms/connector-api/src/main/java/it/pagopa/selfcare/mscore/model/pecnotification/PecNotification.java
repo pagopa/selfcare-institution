@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 public class PecNotification {
 
-    private String id;
+    private Object id;
     private String institutionId;
     private String productId;
     private Integer moduleDayOfTheEpoch;
