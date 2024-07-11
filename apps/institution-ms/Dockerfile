@@ -4,13 +4,13 @@ WORKDIR /src
 COPY --link ./pom.xml .
 
 WORKDIR /src/test-coverage
-COPY --link ./test-coverage/pom.xml ./
+COPY --link ./test-coverage/pom.xml .
 
 WORKDIR /src/apps
-COPY --link ./apps/pom.xml ./
+COPY --link ./apps/pom.xml .
 
 WORKDIR /src/apps/institution-ms
-COPY --link ./apps/institution-ms/pom.xml ./
+COPY --link ./apps/institution-ms/pom.xml .
 COPY ./apps/institution-ms/ ./
 
 RUN echo "<settings>\n" \
