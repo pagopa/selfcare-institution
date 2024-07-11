@@ -33,7 +33,7 @@ jobs:
       tf_environment: dev
       dir: 'infra/container_apps/institution-ms'
       dockerfile_path: ./apps/institution-ms/Dockerfile
-      docker_image_name: pagopa/institution-ms
+      docker_image_name: pagopa/selfcare-institution-ms
       path_openapi_docs: ./apps/institution-ms/app/src/main/docs/openapi.json
 
   release_uat:
@@ -46,7 +46,7 @@ jobs:
       tf_environment: uat
       dir: 'infra/container_apps/institution-ms'
       dockerfile_path: ./apps/institution-ms/Dockerfile
-      docker_image_name: pagopa/institution-ms
+      docker_image_name: pagopa/selfcare-institution-ms
       path_openapi_docs: ./apps/institution-ms/app/src/main/docs/openapi.json
 
   release_prod:
@@ -59,7 +59,7 @@ jobs:
       tf_environment: prod
       dir: 'infra/container_apps/institution-ms'
       dockerfile_path: ./apps/institution-ms/Dockerfile
-      docker_image_name: pagopa/institution-ms
+      docker_image_name: pagopa/selfcare-institution-ms
       path_openapi_docs: ./apps/institution-ms/app/src/main/docs/openapi.json
 
   promote_release:

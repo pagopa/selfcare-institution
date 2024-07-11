@@ -33,7 +33,7 @@ jobs:
       tf_environment: dev-pnpg
       dir: 'infra/container_apps/institution-ms'
       dockerfile_path: ./apps/institution-ms/Dockerfile
-      docker_image_name: pagopa/institution-ms
+      docker_image_name: pagopa/selfcare-institution-ms
       upload_openapi_enabled: false
 
   release_uat:
@@ -46,7 +46,7 @@ jobs:
       tf_environment: uat-pnpg
       dir: 'infra/container_apps/institution-ms'
       dockerfile_path: ./apps/institution-ms/Dockerfile
-      docker_image_name: pagopa/institution-ms
+      docker_image_name: pagopa/selfcare-institution-ms
       upload_openapi_enabled: false
 
   release_prod:
@@ -59,5 +59,5 @@ jobs:
       tf_environment: prod-pnpg
       dir: 'infra/container_apps/institution-ms'
       dockerfile_path: ./apps/institution-ms/Dockerfile
-      docker_image_name: pagopa/institution-ms
+      docker_image_name: pagopa/selfcare-institution-ms
       upload_openapi_enabled: false
