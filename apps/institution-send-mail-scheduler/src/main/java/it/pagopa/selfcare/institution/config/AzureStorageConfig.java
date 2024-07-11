@@ -8,4 +8,9 @@ public interface AzureStorageConfig {
     String connectionStringContract();
     String containerContract();
 
+    String connectionStringProduct();
+
+    String containerProduct();
+
+    String productFilepath();
 }
