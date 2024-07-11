@@ -31,7 +31,7 @@ jobs:
     with:
       environment: dev
       tf_environment: dev
-      dir: 'infra/container_apps/container_apps'
+      dir: 'infra/container_apps'
       dockerfile_path: ./apps/institution-ms/Dockerfile
       docker_image_name: pagopa/institution-ms
       upload_openapi_enabled: false
@@ -44,7 +44,7 @@ jobs:
     with:
       environment: uat
       tf_environment: uat
-      dir: 'infra/container_apps/container_apps'
+      dir: 'infra/container_apps'
       dockerfile_path: ./apps/institution-ms/Dockerfile
       docker_image_name: pagopa/institution-ms
       upload_openapi_enabled: false
@@ -57,7 +57,7 @@ jobs:
     with:
       environment: prod
       tf_environment: prod
-      dir: 'infra/container_apps/container_apps'
+      dir: 'infra/container_apps'
       dockerfile_path: ./apps/institution-ms/Dockerfile
       docker_image_name: pagopa/institution-ms
       upload_openapi_enabled: false
