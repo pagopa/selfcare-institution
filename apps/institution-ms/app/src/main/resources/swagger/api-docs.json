@@ -1,7 +1,7 @@
 {
   "openapi" : "3.0.3",
   "info" : {
-    "title" : "selc-ms-core",
+    "title" : "institution-ms",
     "version" : "1.0-SNAPSHOT"
   },
   "servers" : [ {
