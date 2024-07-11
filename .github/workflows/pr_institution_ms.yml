@@ -30,7 +30,3 @@ jobs:
       target_branch: ${{ github.base_ref }}
       sonar_key: 'pagopa_selfcare-ms-core'
       module: 'institution-ms'
-
-  docker_build:
-    uses: ./.github/workflows/call_code_review.yml
-    name: 'Docker'
