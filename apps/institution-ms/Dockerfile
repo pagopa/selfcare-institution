@@ -1,7 +1,7 @@
-FROM maven:3-eclipse-temurin-17@sha256:0d328fa6843bb26b60cf44d69833f241ffe96218fb29fa19df7a6603863eaae7 AS builder
+FROM maven:3-eclipse-temurin-17@sha256:6ca4f2d4c7a8affa4a7cdec526dd2aa5d433ddd63f8ed3337a543408136b174e AS builder
 
 WORKDIR /src
-COPY --link pom.xml .
+COPY --link ./pom.xml .
 
 WORKDIR /src/test-coverage
 COPY --link ./test-coverage/pom.xml .
