@@ -45,6 +45,7 @@ public class MailServiceImpl implements MailService {
 
     @Override
     public Uni<Void> sendMail(List<String> destinationMail, String templateName, Map<String, String> mailParameters) {
+        log.info(String.format("Sending mail with template %s", templateName));
         Mail mail = constructMail(destinationMail, mailParameters, templateName);
         return reactiveMailer.send(mail)
                 .onItem().invoke(unused -> log.info(String.format("Mail sent to %s, with subject %s", mail.getTo(), mail.getSubject())))

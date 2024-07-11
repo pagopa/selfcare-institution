@@ -57,11 +57,19 @@ app_settings = [
   },
   {
     name = "MAIL_TEMPLATE_NOTIFICATION_PATH"
-    value = "contracts/template/mail/user-list-notification/1.0.0.json"
+    value = "contracts/template/mail/institution-user-list-notification/1.0.0.json"
+  },
+  {
+    name = "MAIL_TEMPLATE_FIRST_NOTIFICATION_PATH"
+    value = "contracts/template/mail/institution-user-list-first-notification/1.0.0.json"
   },
   {
     name = "STORAGE_CONTAINER_PRODUCT"
     value = "selc-d-product"
+  },
+  {
+    name = "SELFCARE_USER_URL"
+    value = "https://selc-d-user-ms-ca.politewater-9af33050.westeurope.azurecontainerapps.io"
   }
 ]
 
@@ -73,6 +81,6 @@ secrets_names = {
     "MAIL_SERVER_USERNAME"                    = "smtp-usr"
     "MAIL_SENDER_ADDRESS"                     = "smtp-usr"
     "MAIL_SERVER_PASSWORD"                    = "smtp-psw"
-
+    "JWT_BEARER_TOKEN"                        = "jwt-bearer-token-functions"
 }
 

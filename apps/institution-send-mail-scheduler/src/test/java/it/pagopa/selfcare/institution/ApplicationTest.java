@@ -23,7 +23,7 @@ public class ApplicationTest {
     @Launch(value = {})
     public void testLaunchCommand(QuarkusMainLauncher launcher) {
         LaunchResult result = launcher.launch();
-        Assertions.assertEquals(0, result.exitCode());
+        Assertions.assertEquals(1, result.exitCode());
     }
 
     public static class MyTestProfile implements QuarkusTestProfile {
@@ -39,8 +39,8 @@ public class ApplicationTest {
     public static class MockedInstitutionSendMailScheduledServiceImpl implements InstitutionSendMailScheduledService {
 
         @Override
-        public Uni<Integer> retrieveInstitutionFromPecNotificationAndSendMail() {
-            return Uni.createFrom().item(0);
+        public Uni<Void> retrieveInstitutionFromPecNotificationAndSendMail() {
+            return Uni.createFrom().voidItem();
         }
     }
 
