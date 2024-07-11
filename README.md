@@ -1,11 +1,8 @@
-# selfcare-institution
+# Selfcare Institution
 
-This repo structure and build monorepo with Apache Maven for selfcare user domain. 
-
+This repo structure and build monorepo with Apache Maven for selfcare institution domain.
 Applications under apps/ depend on shared code under libs/.
 test-coverage/ is used to assess the test coverage of the entire project.
-
-
 
 ```
 .
@@ -39,3 +36,13 @@ Maven is really not a monorepo-*native* build tool (e.g. lacks
 trustworthy incremental builds, can only build java code natively, is recursive and
 struggles with partial repo checkouts) but can be made good use of with some tricks
 and usage of a couple of lesser known command line switches.
+
+| Action                                                       |           in working directory           | with Maven                                                                                                 |
+|:-------------------------------------------------------------|:----------------------------------------:|:-----------------------------------------------------------------------------------------------------------|
+| Build the world                                              |                   `.`                    | `mvn clean package -DskipTests`                                                                            |
+| Run `institution-send-mail-scheduler`                        |                   `.`                    | `java -jar apps/institution-send-mail-scheduler/target/institution-send-mail-scheduler-1.0.0-SNAPSHOT.jar` |
+| Build and test the world                                     |               `.`                        | `mvn clean package`                                                                                        |
+| Build the world                                              | `./apps/institution-send-mail-scheduler` | `mvn --file ../.. clean package -DskipTests`                                                               |
+| Build `institution-send-mail-scheduler` and its dependencies |                   `.`                    | `mvn --projects :institution-send-mail-scheduler  --also-make clean package -DskipTests`                   |
+| Build `institution-send-mail-scheduler` and its dependencies | `./apps/institution-send-mail-scheduler` | `mvn --file ../.. --projects :institution-send-mail-scheduler --also-make clean package -DskipTests`       |
+
