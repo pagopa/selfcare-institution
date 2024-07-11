@@ -13,6 +13,8 @@ WORKDIR /src/apps/institution-ms
 COPY --link ./apps/institution-ms/pom.xml .
 COPY ./apps/institution-ms/ ./
 
+WORKDIR /src
+
 RUN echo "<settings>\n" \
          "<servers>\n" \
          "<server>\n" \
