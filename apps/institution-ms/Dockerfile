@@ -3,17 +3,12 @@ FROM maven:3-eclipse-temurin-17@sha256:6ca4f2d4c7a8affa4a7cdec526dd2aa5d433ddd63
 WORKDIR /src
 COPY --link ./pom.xml .
 
-WORKDIR /src/test-coverage
-COPY --link ./test-coverage/pom.xml .
-
 WORKDIR /src/apps
 COPY --link ./apps/pom.xml .
 
 WORKDIR /src/apps/institution-ms
 COPY --link ./apps/institution-ms/pom.xml .
 COPY ./apps/institution-ms/ ./
-
-WORKDIR /src
 
 RUN echo "<settings>\n" \
          "<servers>\n" \
