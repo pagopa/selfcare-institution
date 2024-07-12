@@ -4,9 +4,7 @@ locals {
 
   container_app_environment_name = "${local.project}-${var.cae_name}"
   ca_resource_group_name         = "${local.project}-container-app${var.suffix_increment}-rg"
-  container_app_name             = "institution-send-mail-job"
-  container_name                 = "${local.project}-${local.container_app_name}"
-  app_name                       = "${local.container_name}-ca"
+  container_app_name             = "${local.project}-institution-send-mail-job"
 
   key_vault_resource_group_name = "${local.project}-sec-rg"
   key_vault_name                = "${local.project}-kv"

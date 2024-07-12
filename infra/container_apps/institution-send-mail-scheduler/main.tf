@@ -25,7 +25,7 @@ resource "azurerm_container_app_job" "container_app_job_institution_send_mail_sc
   replica_timeout_in_seconds = 7200
   replica_retry_limit        = 30
   schedule_trigger_config {
-    cron_expression          = "0* /5 * * * *"
+    cron_expression          = "00 06 * * *"
     parallelism              = 1
     replica_completion_count = 1
   }
@@ -49,7 +49,7 @@ resource "azurerm_container_app_job" "container_app_job_institution_send_mail_sc
   template {
     container {
       image = "ghcr.io/pagopa/${local.image_name}:${var.image_tag}"
-      name  = local.container_name
+      name  = local.container_app_name
       readiness_probe {
         transport = "HTTP"
         port      = 5000
