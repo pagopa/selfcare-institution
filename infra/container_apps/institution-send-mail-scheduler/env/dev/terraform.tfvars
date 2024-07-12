@@ -69,7 +69,7 @@ app_settings = [
   },
   {
     name = "SELFCARE_USER_URL"
-    value = "https://selc-d-user-ms-ca.politewater-9af33050.westeurope.azurecontainerapps.io"
+    value = "https://selc-d-user-ms-ca"
   }
 ]
 
