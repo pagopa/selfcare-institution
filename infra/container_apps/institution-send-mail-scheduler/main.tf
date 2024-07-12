@@ -13,6 +13,8 @@ provider "azurerm" {
   features {}
 }
 
+data "azurerm_client_config" "current" {}
+
 resource "azurerm_container_app_job" "container_app_job_institution_send_mail_scheduler" {
   name                         = local.container_app_name
   location                     = data.azurerm_resource_group.resource_group_app.location
@@ -87,4 +89,14 @@ resource "azurerm_container_app_job" "container_app_job_institution_send_mail_sc
       memory = "1Gi"
     }
   }
+}
+
+resource "azurerm_key_vault_access_policy" "keyvault_containerapp_access_policy" {
+  key_vault_id = data.azurerm_key_vault.key_vault.id
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  object_id    = azurerm_container_app_job.container_app_job_institution_send_mail_scheduler.identity[0].principal_id
+
+  secret_permissions = [
+    "Get",
+  ]
 }
