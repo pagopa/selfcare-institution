@@ -59,6 +59,10 @@ app_settings = [
   {
     name  = "SELFCARE_USER_URL"
     value = "https://selc-u-user-ms-ca.proudglacier-20652b81.westeurope.azurecontainerapps.io"
+  },
+  {
+    name  = "SEND_ALL_NOTIFICATION"
+    value = "false"
   }
 ]
 
