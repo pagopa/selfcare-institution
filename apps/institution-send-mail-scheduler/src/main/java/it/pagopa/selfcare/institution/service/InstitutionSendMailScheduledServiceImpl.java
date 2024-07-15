@@ -6,6 +6,7 @@ import io.smallrye.mutiny.Uni;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
 import it.pagopa.selfcare.institution.entity.PecNotification;
+import it.pagopa.selfcare.institution.exception.GenericException;
 import it.pagopa.selfcare.product.entity.Product;
 import it.pagopa.selfcare.product.service.ProductService;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -43,6 +44,8 @@ public class InstitutionSendMailScheduledServiceImpl implements InstitutionSendM
     private final Integer sendingFrequency;
     private final Integer querySize;
 
+    private final boolean sendAllNotification;
+
     @RestClient
     @Inject
     private InstitutionApi userInstitutionApi;
@@ -53,7 +56,8 @@ public class InstitutionSendMailScheduledServiceImpl implements InstitutionSendM
                                                    @ConfigProperty(name = "institution-send-mail.notification-sending-frequency") Integer sendingFrequency,
                                                    @ConfigProperty(name = "institution-send-mail.notification-start-date") String startDate,
                                                    ProductService productService,
-                                                   @ConfigProperty(name = "institution-send-mail.notification-query-size") Integer querySize) {
+                                                   @ConfigProperty(name = "institution-send-mail.notification-query-size") Integer querySize,
+                                                   @ConfigProperty(name = "institution-send-mail.notification-send-all") boolean sendAllNotification) {
         this.mailService = mailService;
         this.templateMail = templateMail;
         this.templateMailFirstNotification = templateMailFirstNotification;
@@ -61,11 +65,13 @@ public class InstitutionSendMailScheduledServiceImpl implements InstitutionSendM
         this.startDate = startDate;
         this.sendingFrequency = sendingFrequency;
         this.querySize = querySize;
+        this.sendAllNotification = sendAllNotification;
     }
 
     @Override
     public Uni<Void> retrieveInstitutionFromPecNotificationAndSendMail() {
         Long moduleDayOfTheEpoch = calculateModuleDayOfTheEpoch();
+        log.info("Module day of the epoch: " + moduleDayOfTheEpoch);
         return retrieveFilteredAndPaginatedPecNotification(moduleDayOfTheEpoch, querySize);
     }
 
@@ -85,7 +91,15 @@ public class InstitutionSendMailScheduledServiceImpl implements InstitutionSendM
         var pecNotificationPage = PecNotification.find(PecNotification.Fields.moduleDayOfTheEpoch.name(), moduleDayOfTheEpoch)
                 .page(page, size);
 
-        return pecNotificationPage.list()
+        if(sendAllNotification){
+            return pecNotificationPage.list()
+                    .onItem().transformToUni(this::retrievePecNotificationListAndSendMail)
+                    .replaceWith(pecNotificationPage.hasNextPage())
+                    .onFailure().invoke(throwable -> log.error("Error during send scheduled mail", throwable));
+        }
+        return pecNotificationPage.firstResult()
+                .onItem().ifNotNull().transform(List::of)
+                .onItem().ifNull().failWith(new GenericException("Notification to send not found"))
                 .onItem().transformToUni(this::retrievePecNotificationListAndSendMail)
                 .replaceWith(pecNotificationPage.hasNextPage())
                 .onFailure().invoke(throwable -> log.error("Error during send scheduled mail", throwable));
