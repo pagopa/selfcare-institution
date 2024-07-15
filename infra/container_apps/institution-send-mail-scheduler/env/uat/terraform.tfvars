@@ -1,7 +1,7 @@
 prefix           = "selc"
 env_short        = "u"
-suffix_increment = "-001"
-cae_name         = "cae-001"
+suffix_increment = "-002"
+cae_name         = "cae-002"
 
 tags = {
   CreatedBy   = "Terraform"
@@ -29,35 +29,35 @@ app_settings = [
     value = "institution_send_mail_scheduler",
   },
   {
-    name = "STORAGE_CONTAINER_CONTRACT"
+    name  = "STORAGE_CONTAINER_CONTRACT"
     value = "selc-u-contracts-blob"
   },
   {
-    name = "MAIL_DESTINATION_TEST_ADDRESS"
+    name  = "MAIL_DESTINATION_TEST_ADDRESS"
     value = "pectest@pec.pagopa.it"
   },
   {
-    name = "MAIL_SERVER_HOST"
+    name  = "MAIL_SERVER_HOST"
     value = "smtps.pec.aruba.it"
   },
   {
-    name = "MAIL_SERVER_PORT"
+    name  = "MAIL_SERVER_PORT"
     value = "465"
   },
   {
-    name = "MAIL_TEMPLATE_NOTIFICATION_PATH"
+    name  = "MAIL_TEMPLATE_NOTIFICATION_PATH"
     value = "contracts/template/mail/institution-user-list-notification/1.0.0.json"
   },
   {
-    name = "MAIL_TEMPLATE_FIRST_NOTIFICATION_PATH"
+    name  = "MAIL_TEMPLATE_FIRST_NOTIFICATION_PATH"
     value = "contracts/template/mail/institution-user-list-first-notification/1.0.0.json"
   },
   {
-    name = "STORAGE_CONTAINER_PRODUCT"
+    name  = "STORAGE_CONTAINER_PRODUCT"
     value = "selc-u-product"
   },
   {
-    name = "SELFCARE_USER_URL"
+    name  = "SELFCARE_USER_URL"
     value = "https://selc-u-user-ms-ca.proudglacier-20652b81.westeurope.azurecontainerapps.io"
   }
 ]
