@@ -1,7 +1,7 @@
 prefix           = "selc"
 env_short        = "u"
-suffix_increment = "-001"
-cae_name         = "cae-001"
+suffix_increment = "-002"
+cae_name         = "cae-002"
 
 tags = {
   CreatedBy   = "Terraform"
@@ -58,7 +58,11 @@ app_settings = [
   },
   {
     name  = "SELFCARE_USER_URL"
-    value = "https://selc-u-user-ms-ca.proudglacier-20652b81.westeurope.azurecontainerapps.io"
+    value = "https://selc-u-user-ms-ca.mangopond-2a5d4d65.westeurope.azurecontainerapps.io"
+  },
+  {
+    name  = "SEND_ALL_NOTIFICATION"
+    value = "false"
   }
 ]
 

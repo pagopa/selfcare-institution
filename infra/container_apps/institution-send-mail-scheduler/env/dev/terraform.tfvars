@@ -1,5 +1,7 @@
-prefix    = "selc"
-env_short = "d"
+prefix           = "selc"
+env_short        = "d"
+suffix_increment = "-002"
+cae_name         = "cae-002"
 
 tags = {
   CreatedBy   = "Terraform"
@@ -69,7 +71,11 @@ app_settings = [
   },
   {
     name  = "SELFCARE_USER_URL"
-    value = "https://selc-d-user-ms-ca.politewater-9af33050.westeurope.azurecontainerapps.io"
+    value = "https://selc-d-user-ms-ca"
+  },
+  {
+    name  = "SEND_ALL_NOTIFICATION"
+    value = "false"
   }
 ]
 
