@@ -8,8 +8,8 @@ module "mongodb_collection_pec_notifications" {
   cosmosdb_mongo_database_name = "selcMsCore"
 
   indexes = [{
-      keys   = ["_id"]
-      unique = true
+    keys   = ["_id"]
+    unique = true
     },
     {
       keys   = ["moduleDayOfTheEpoch"]
