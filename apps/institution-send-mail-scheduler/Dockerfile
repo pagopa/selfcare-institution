@@ -10,14 +10,9 @@ COPY --link ./test-coverage/pom.xml .
 WORKDIR /src/apps
 COPY --link ./apps/pom.xml .
 
-WORKDIR /src/apps/institution-ms
-COPY --link ./apps/institution-ms/pom.xml .
-
 WORKDIR /src/apps/institution-send-mail-scheduler
 COPY --link ./apps/institution-send-mail-scheduler/pom.xml .
 COPY ./apps/institution-send-mail-scheduler/src/main/ ./src/main/
-
-WORKDIR /src
 
 RUN echo "<settings>\n" \
          "<servers>\n" \
