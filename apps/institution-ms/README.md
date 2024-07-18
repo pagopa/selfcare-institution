@@ -1,4 +1,4 @@
-# selfcare-ms-core
+# selfcare-institition-ms
 
 ## Description
 This Spring Boot-based microservice is designed to handle several key functionalities in the selfcare operations domain. It includes business logic for:
@@ -24,8 +24,8 @@ To run the microservice locally, follow these steps:
 1. **Clone the Repository**
 
 ```shell script
-git clone https://github.com/pagopa/selfcare-ms-core.git
-cd selfcare-ms-core
+git clone https://github.com/pagopa/selfcare-institution.git
+cd apps/selfcare-institution-ms/
 ```
 
 2. **Build the Project**

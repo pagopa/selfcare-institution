@@ -5,7 +5,7 @@ tags = {
   CreatedBy   = "Terraform"
   Environment = "Prod"
   Owner       = "SelfCare"
-  Source      = "https://github.com/pagopa/selfcare-ms-core"
+  Source      = "https://github.com/pagopa/selfcare-institution"
   CostCenter  = "TS310 - PAGAMENTI & SERVIZI"
 }
 
@@ -67,7 +67,7 @@ app_settings = [
   },
   {
     name  = "APPLICATIONINSIGHTS_ROLE_NAME"
-    value = "ms-core"
+    value = "institution-ms"
   },
   {
     name  = "JAVA_TOOL_OPTIONS"
