@@ -1,4 +1,4 @@
-name: Release - institution-ms
+name: Deploy SELC - institution-ms
 
 on:
   push:
