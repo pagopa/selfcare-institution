@@ -1,15 +1,15 @@
 # Selfcare Institution
 
 This repo structure and build monorepo with Apache Maven for selfcare institution domain.
-
+Applications under apps/ depend on shared code under libs/.
 test-coverage/ is used to assess the test coverage of the entire project.
-
 
 ```
 .
 
 ├── apps
-│   ├── user-institution-send-mail-scheduler
+│   ├── institution-send-mail-scheduler
+│   └── institution-ms
 └── test-coverage
 ```
 
@@ -45,3 +45,4 @@ and usage of a couple of lesser known command line switches.
 | Build the world                                              | `./apps/institution-send-mail-scheduler` | `mvn --file ../.. clean package -DskipTests`                                                               |
 | Build `institution-send-mail-scheduler` and its dependencies |                   `.`                    | `mvn --projects :institution-send-mail-scheduler  --also-make clean package -DskipTests`                   |
 | Build `institution-send-mail-scheduler` and its dependencies | `./apps/institution-send-mail-scheduler` | `mvn --file ../.. --projects :institution-send-mail-scheduler --also-make clean package -DskipTests`       |
+
