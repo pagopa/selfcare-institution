@@ -160,7 +160,7 @@ class CustomExceptionHandlerTest {
     }
 
     /**
-     * Method under test: {@link CustomExceptionHandler#handleInvalidRequestException(HttpServletRequest, InvalidRequestException)}
+     * Method under test: {@link CustomExceptionHandler#handleValidationException(HttpServletRequest, ValidationException)}
      */
     @Test
     void testHandleValidationException() {
