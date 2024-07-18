@@ -20,6 +20,7 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.ValidationException;
 import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.Objects;
@@ -156,6 +157,23 @@ class CustomExceptionHandlerTest {
                 .handleMsCoreException(request, new MsCoreException("An error occurred", "Code"));
         assertTrue(actualHandleInvalidRequestExceptionResult.hasBody());
         assertEquals(1, actualHandleInvalidRequestExceptionResult.getHeaders().size());
+    }
+
+    /**
+     * Method under test: {@link CustomExceptionHandler#handleInvalidRequestException(HttpServletRequest, InvalidRequestException)}
+     */
+    @Test
+    void testHandleValidationException() {
+        CustomExceptionHandler customExceptionHandler = new CustomExceptionHandler();
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        ResponseEntity<Problem> actualHandleInvalidRequestExceptionResult = customExceptionHandler
+                .handleValidationException(request, new ValidationException("An error occurred"));
+        assertTrue(actualHandleInvalidRequestExceptionResult.hasBody());
+        assertEquals(1, actualHandleInvalidRequestExceptionResult.getHeaders().size());
+        assertEquals(HttpStatus.BAD_REQUEST, actualHandleInvalidRequestExceptionResult.getStatusCode());
+        Problem body = actualHandleInvalidRequestExceptionResult.getBody();
+        assertEquals(400, Objects.requireNonNull(body).getStatus().intValue());
+        assertEquals(1, body.getErrors().size());
     }
 
 
