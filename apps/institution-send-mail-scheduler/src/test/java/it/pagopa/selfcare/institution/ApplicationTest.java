@@ -39,7 +39,7 @@ public class ApplicationTest {
     public static class MockedInstitutionSendMailScheduledServiceImpl implements InstitutionSendMailScheduledService {
 
         @Override
-        public Uni<Void> retrieveInstitutionFromPecNotificationAndSendMail() {
+        public Uni<Void> retrieveInstitutionFromPecNotificationAndSendMail(String productId) {
             return Uni.createFrom().voidItem();
         }
     }

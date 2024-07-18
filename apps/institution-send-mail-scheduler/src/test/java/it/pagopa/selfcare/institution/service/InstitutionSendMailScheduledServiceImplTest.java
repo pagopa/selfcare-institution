@@ -73,7 +73,7 @@ class InstitutionSendMailScheduledServiceImplTest {
                 null,
                 null)).thenReturn(Uni.createFrom().item(getUserInstitutionResponse(institutionId, productId)));
 
-        Uni<Void> result = service.retrieveInstitutionFromPecNotificationAndSendMail();
+        Uni<Void> result = service.retrieveInstitutionFromPecNotificationAndSendMail("prod-io");
         UniAssertSubscriber<Void> subscriber = result.subscribe().withSubscriber(UniAssertSubscriber.create());
         subscriber.assertCompleted();
         Mockito.verify(mailService, Mockito.times(4))
@@ -102,7 +102,7 @@ class InstitutionSendMailScheduledServiceImplTest {
         Mockito.doThrow(new RuntimeException("Mail send failed")).when(mailService).sendMail(Mockito.anyList(), Mockito.anyString(), Mockito.anyMap());
 
         // Execute
-        Uni<Void> result = service.retrieveInstitutionFromPecNotificationAndSendMail();
+        Uni<Void> result = service.retrieveInstitutionFromPecNotificationAndSendMail("prod-io");
         UniAssertSubscriber<Void> subscriber = result.subscribe().withSubscriber(UniAssertSubscriber.create());
 
         // Verify
@@ -120,7 +120,7 @@ class InstitutionSendMailScheduledServiceImplTest {
         when(query.list()).thenReturn(Uni.createFrom().item(Collections.emptyList()));
 
         // Execute
-        Uni<Void> result = service.retrieveInstitutionFromPecNotificationAndSendMail();
+        Uni<Void> result = service.retrieveInstitutionFromPecNotificationAndSendMail("prod-io");
         UniAssertSubscriber<Void> subscriber = result.subscribe().withSubscriber(UniAssertSubscriber.create());
 
         // Verify
