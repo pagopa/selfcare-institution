@@ -1,4 +1,4 @@
-name: Release - PNPG institution-ms
+name: Deploy PNPG - institution-ms
 
 on:
   push:
