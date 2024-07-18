@@ -7,7 +7,6 @@ import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
 import it.pagopa.selfcare.institution.config.ProductConfig;
 import it.pagopa.selfcare.institution.entity.PecNotification;
-import it.pagopa.selfcare.institution.exception.GenericException;
 import it.pagopa.selfcare.product.entity.Product;
 import it.pagopa.selfcare.product.service.ProductService;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -21,10 +20,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @ApplicationScoped
@@ -95,15 +91,13 @@ public class InstitutionSendMailScheduledServiceImpl implements InstitutionSendM
                         + PecNotification.Fields.productId.name() + "=?2", moduleDayOfTheEpoch, productId)
                 .page(page, querySize);
 
-        if(sendAllNotification){
-            return pecNotificationPage.list()
-                    .onItem().transformToUni(this::retrievePecNotificationListAndSendMail)
-                    .replaceWith(pecNotificationPage.hasNextPage())
-                    .onFailure().invoke(throwable -> log.error("Error during send scheduled mail", throwable));
-        }
-        return pecNotificationPage.firstResult()
-                .onItem().ifNotNull().transform(List::of)
-                .onItem().ifNull().failWith(new GenericException("Notification to send not found"))
+        Uni<List<ReactivePanacheMongoEntityBase>> uniResultEntity = sendAllNotification
+                ? pecNotificationPage.list()
+                : pecNotificationPage.firstResult()
+                    .onItem().ifNotNull().transform(List::of)
+                    .onItem().ifNull().continueWith(ArrayList::new);
+
+        return uniResultEntity
                 .onItem().transformToUni(this::retrievePecNotificationListAndSendMail)
                 .onItem().invoke(mailSize -> log.info(String.format("[%s, moduleDayOfTheEpoch=%d] Page %d processed, mailSize=%d", productId, moduleDayOfTheEpoch, page, mailSize)))
                 .replaceWith(pecNotificationPage.hasNextPage())

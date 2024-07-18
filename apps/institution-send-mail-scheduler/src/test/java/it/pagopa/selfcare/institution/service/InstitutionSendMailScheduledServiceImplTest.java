@@ -21,7 +21,6 @@ import org.openapi.quarkus.selfcare_user_json.model.UserInstitutionResponse;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -59,10 +58,10 @@ class InstitutionSendMailScheduledServiceImplTest {
         ReactivePanacheQuery<ReactivePanacheMongoEntityBase> query2 = Mockito.mock(ReactivePanacheQuery.class);
         when(query.page(1, PAGE_SIZE)).thenReturn(query2);
         when(query.hasNextPage()).thenReturn(Uni.createFrom().item(true));
-        when(query.list()).thenReturn(Uni.createFrom().item(List.of(notifications.get(0), notifications.get(1))));
+        when(query.firstResult()).thenReturn(Uni.createFrom().item(notifications.get(0)));
 
 
-        when(query2.list()).thenReturn(Uni.createFrom().item(List.of(notifications.get(2), notifications.get(3))));
+        when(query2.firstResult()).thenReturn(Uni.createFrom().item(notifications.get(2)));
         when(query2.hasNextPage()).thenReturn(Uni.createFrom().item(false));
 
         Product product = new Product();
@@ -98,7 +97,7 @@ class InstitutionSendMailScheduledServiceImplTest {
                 .thenReturn(query);
         when(query.page(0, 1000)).thenReturn(query);
         when(query.hasNextPage()).thenReturn(Uni.createFrom().item(false));
-        when(query.list()).thenReturn(Uni.createFrom().item(List.of(notification1)));
+        when(query.firstResult()).thenReturn(Uni.createFrom().item(notification1));
         Product product = new Product();
         product.setTitle("prod-io");
         when(productService.getProduct("product-id")).thenReturn(product);
@@ -120,7 +119,7 @@ class InstitutionSendMailScheduledServiceImplTest {
                 .thenReturn(query);
         when(query.page(0, 1000)).thenReturn(query);
         when(query.hasNextPage()).thenReturn(Uni.createFrom().item(false));
-        when(query.list()).thenReturn(Uni.createFrom().item(Collections.emptyList()));
+        when(query.firstResult()).thenReturn(Uni.createFrom().nullItem());
 
         // Execute
         Uni<Void> result = service.retrieveInstitutionFromPecNotificationAndSendMail();
