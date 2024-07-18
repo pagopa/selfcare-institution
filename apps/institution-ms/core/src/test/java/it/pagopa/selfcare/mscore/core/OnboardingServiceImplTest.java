@@ -3,6 +3,7 @@ package it.pagopa.selfcare.mscore.core;
 import it.pagopa.selfcare.mscore.api.InstitutionConnector;
 import it.pagopa.selfcare.mscore.api.PecNotificationConnector;
 import it.pagopa.selfcare.mscore.api.ProductConnector;
+import it.pagopa.selfcare.mscore.config.InstitutionSendMailConfig;
 import it.pagopa.selfcare.mscore.constant.RelationshipState;
 import it.pagopa.selfcare.mscore.core.mapper.TokenMapper;
 import it.pagopa.selfcare.mscore.core.mapper.TokenMapperImpl;
@@ -27,6 +28,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static it.pagopa.selfcare.mscore.constant.GenericError.DELETE_NOTIFICATION_OPERATION_ERROR;
@@ -61,6 +63,9 @@ class OnboardingServiceImplTest {
 
     @Spy
     private TokenMapper tokenMapper = new TokenMapperImpl();
+
+    @Mock
+    private InstitutionSendMailConfig institutionSendMailConfig;
 
     /**
      * Method under test: {@link OnboardingServiceImpl#verifyOnboardingInfo(String, String)}
@@ -136,7 +141,6 @@ class OnboardingServiceImplTest {
 
         ReflectionTestUtils.setField(onboardingServiceImpl, "sendingFrequencyPecNotification", 30);
         ReflectionTestUtils.setField(onboardingServiceImpl, "epochDatePecNotification", "2024-01-01");
-        ReflectionTestUtils.setField(onboardingServiceImpl, "disabledPecNotification", false);
 
         Onboarding onboarding = dummyOnboarding();
         onboarding.setStatus(UtilEnumList.VALID_RELATIONSHIP_STATES.get(0));
@@ -146,6 +150,8 @@ class OnboardingServiceImplTest {
 
         when(pecNotificationConnector.insertPecNotification(any(PecNotification.class))).thenReturn(true);
         when(institutionConnector.findById(institution.getId())).thenReturn(institution);
+        when(institutionSendMailConfig.getPecNotificationDisabled()).thenReturn(false);
+        when(institutionSendMailConfig.getProducts()).thenReturn(Map.of(onboarding.getProductId(),30));
 
         String institutionId = institution.getId();
 
@@ -165,7 +171,6 @@ class OnboardingServiceImplTest {
 
         ReflectionTestUtils.setField(onboardingServiceImpl, "sendingFrequencyPecNotification", 30);
         ReflectionTestUtils.setField(onboardingServiceImpl, "epochDatePecNotification", "2024-01-01");
-        ReflectionTestUtils.setField(onboardingServiceImpl, "disabledPecNotification", true);
 
         Onboarding onboarding = dummyOnboarding();
         onboarding.setStatus(UtilEnumList.VALID_RELATIONSHIP_STATES.get(0));
@@ -174,6 +179,7 @@ class OnboardingServiceImplTest {
         institution.setOnboarding(List.of(onboarding, dummyOnboarding()));
 
         when(institutionConnector.findById(institution.getId())).thenReturn(institution);
+        when(institutionSendMailConfig.getPecNotificationDisabled()).thenReturn(true);
 
         String institutionId = institution.getId();
 
@@ -193,7 +199,7 @@ class OnboardingServiceImplTest {
 
 
     /**
-     * Method under test: {@link OnboardingServiceImpl#persistOnboarding(String, String, Onboarding)}
+     * Method under test: {@link OnboardingServiceImpl#persistOnboarding(String, String, Onboarding, StringBuilder)}
      */
     @Test
     void persistOnboarding_shouldRollback() {
@@ -225,14 +231,13 @@ class OnboardingServiceImplTest {
     }
 
     /**
-     * Method under test: {@link OnboardingServiceImpl#persistOnboarding(String, String, Onboarding)}
+     * Method under test: {@link OnboardingServiceImpl#persistOnboarding(String, String, Onboarding, StringBuilder)}
      */
     @Test
     void persistOnboarding_whenUserNotExistsOnRegistry() {
 
         ReflectionTestUtils.setField(onboardingServiceImpl, "sendingFrequencyPecNotification", 30);
         ReflectionTestUtils.setField(onboardingServiceImpl, "epochDatePecNotification", "2024-01-01");
-        ReflectionTestUtils.setField(onboardingServiceImpl, "disabledPecNotification", false);
 
         String pricingPlan = "pricingPlan";
         String productId = "productId";
@@ -267,6 +272,8 @@ class OnboardingServiceImplTest {
         when(pecNotificationConnector.insertPecNotification(any(PecNotification.class))).thenReturn(true);
         when(institutionConnector.findById(institution.getId())).thenReturn(institution);
         when(institutionConnector.findAndUpdate(any(), any(), any(), any())).thenReturn(institution);
+        when(institutionSendMailConfig.getPecNotificationDisabled()).thenReturn(false);
+        when(institutionSendMailConfig.getProducts()).thenReturn(Map.of(productId,30));
         
         StringBuilder statusCode = new StringBuilder();
 

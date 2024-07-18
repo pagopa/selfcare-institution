@@ -2,6 +2,7 @@ package it.pagopa.selfcare.mscore.core;
 
 import it.pagopa.selfcare.mscore.api.InstitutionConnector;
 import it.pagopa.selfcare.mscore.api.PecNotificationConnector;
+import it.pagopa.selfcare.mscore.config.InstitutionSendMailConfig;
 import it.pagopa.selfcare.mscore.constant.CustomError;
 import it.pagopa.selfcare.mscore.constant.RelationshipState;
 import it.pagopa.selfcare.mscore.core.util.UtilEnumList;
@@ -39,7 +40,7 @@ public class OnboardingServiceImpl implements OnboardingService {
     private final String epochDatePecNotification;
     private final LocalDate currentDate = LocalDate.now();
 
-    private final Boolean disabledPecNotification;
+    private final InstitutionSendMailConfig institutionSendMailConfig;
 
     public OnboardingServiceImpl(OnboardingDao onboardingDao,
                                  InstitutionService institutionService,
@@ -47,7 +48,7 @@ public class OnboardingServiceImpl implements OnboardingService {
                                  PecNotificationConnector pecNotificationConnector,
                                  @Value("${mscore.sending-frequency-pec-notification}") Integer sendingFrequencyPecNotification,
                                  @Value("${mscore.epoch-date-pec-notification}") String epochDatePecNotification,
-                                 @Value("${mscore.pec-notification.disabled}") Boolean disabledPecNotification) {
+                                 InstitutionSendMailConfig institutionSendMailConfig) {
 
         this.onboardingDao = onboardingDao;
         this.institutionService = institutionService;
@@ -55,7 +56,7 @@ public class OnboardingServiceImpl implements OnboardingService {
         this.pecNotificationConnector = pecNotificationConnector;
         this.sendingFrequencyPecNotification = sendingFrequencyPecNotification;
         this.epochDatePecNotification = epochDatePecNotification;
-        this.disabledPecNotification = disabledPecNotification;
+        this.institutionSendMailConfig = institutionSendMailConfig;
     }
 
     @Override
@@ -86,16 +87,21 @@ public class OnboardingServiceImpl implements OnboardingService {
 
     public void insertPecNotification(String institutionId, String productId, String digitalAddress) {
 
-        PecNotification pecNotification = new PecNotification();
-        pecNotification.setId(ObjectId.get());
-        pecNotification.setCreatedAt(Instant.now());
-        pecNotification.setProductId(productId);
-        pecNotification.setInstitutionId(institutionId);
-        pecNotification.setModuleDayOfTheEpoch(calculateModuleDayOfTheEpoch());
-        pecNotification.setDigitalAddress(digitalAddress);
+        //If sending mail ActiveUsers enabled for this product
+        if (!institutionSendMailConfig.getPecNotificationDisabled()
+                && institutionSendMailConfig.getProducts().containsKey(productId)) {
 
-        if (!pecNotificationConnector.insertPecNotification(pecNotification)){
-            throw new InvalidRequestException(INVALID_INSERT_PEC_NOTIFICATION_ERROR.getMessage(), INVALID_INSERT_PEC_NOTIFICATION_ERROR.getCode());
+            PecNotification pecNotification = new PecNotification();
+            pecNotification.setId(ObjectId.get());
+            pecNotification.setCreatedAt(Instant.now());
+            pecNotification.setProductId(productId);
+            pecNotification.setInstitutionId(institutionId);
+            pecNotification.setModuleDayOfTheEpoch(calculateModuleDayOfTheEpoch());
+            pecNotification.setDigitalAddress(digitalAddress);
+
+            if (!pecNotificationConnector.insertPecNotification(pecNotification)) {
+                throw new InvalidRequestException(INVALID_INSERT_PEC_NOTIFICATION_ERROR.getMessage(), INVALID_INSERT_PEC_NOTIFICATION_ERROR.getCode());
+            }
         }
 
     }
@@ -111,10 +117,7 @@ public class OnboardingServiceImpl implements OnboardingService {
             productId, Onboarding onboarding, StringBuilder httpStatus) {
 
         Institution institution = persistAndGetInstitution(institutionId, productId, onboarding, httpStatus);
-
-        if (!disabledPecNotification){
-           this.insertPecNotification(institutionId, productId, institution.getDigitalAddress());
-        }
+        insertPecNotification(institutionId, productId, institution.getDigitalAddress());
 
         return institution;
     }
