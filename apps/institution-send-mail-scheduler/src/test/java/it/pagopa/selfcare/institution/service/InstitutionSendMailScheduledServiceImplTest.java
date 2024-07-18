@@ -30,6 +30,7 @@ import static org.mockito.Mockito.when;
 @QuarkusTest
 class InstitutionSendMailScheduledServiceImplTest {
 
+    public static final int PAGE_SIZE = 1000;
     @InjectMock
     MailServiceImpl mailService;
 
@@ -43,29 +44,31 @@ class InstitutionSendMailScheduledServiceImplTest {
     @InjectMock
     InstitutionApi institutionApi;
 
-
     @Test
     void sendMailToAllPecNotificationsForCurrentModuleDay() {
         String institutionId = "institution-id";
-        String productId = "product-id";
+        String productId = "product-io";
         List<PecNotification> notifications = getPecNotifications();
         PanacheMock.mock(PecNotification.class);
         ReactivePanacheQuery<ReactivePanacheMongoEntityBase> query = Mockito.mock(ReactivePanacheQuery.class);
         when(PecNotification.find(any(), any(Object.class)))
                 .thenReturn(query);
-        when(query.page(0, 1000)).thenReturn(query);
+        when(query.page(0, PAGE_SIZE)).thenReturn(query);
+
 
         ReactivePanacheQuery<ReactivePanacheMongoEntityBase> query2 = Mockito.mock(ReactivePanacheQuery.class);
-
-
-        when(query.page(1, 1000)).thenReturn(query2);
+        when(query.page(1, PAGE_SIZE)).thenReturn(query2);
         when(query.hasNextPage()).thenReturn(Uni.createFrom().item(true));
-        when(query2.hasNextPage()).thenReturn(Uni.createFrom().item(false));
         when(query.list()).thenReturn(Uni.createFrom().item(List.of(notifications.get(0), notifications.get(1))));
+
+
         when(query2.list()).thenReturn(Uni.createFrom().item(List.of(notifications.get(2), notifications.get(3))));
+        when(query2.hasNextPage()).thenReturn(Uni.createFrom().item(false));
+
         Product product = new Product();
         product.setTitle("prod-io");
-        when(productService.getProduct("product-id")).thenReturn(product);
+        when(productService.getProduct("product-io")).thenReturn(product);
+
         when(institutionApi.institutionsInstitutionIdUserInstitutionsGet(institutionId,
                 null,
                 List.of(productId),
@@ -73,10 +76,10 @@ class InstitutionSendMailScheduledServiceImplTest {
                 null,
                 null)).thenReturn(Uni.createFrom().item(getUserInstitutionResponse(institutionId, productId)));
 
-        Uni<Void> result = service.retrieveInstitutionFromPecNotificationAndSendMail("prod-io");
+        Uni<Void> result = service.retrieveInstitutionFromPecNotificationAndSendMail();
         UniAssertSubscriber<Void> subscriber = result.subscribe().withSubscriber(UniAssertSubscriber.create());
         subscriber.assertCompleted();
-        Mockito.verify(mailService, Mockito.times(4))
+        Mockito.verify(mailService, Mockito.atLeast(4))
                 .sendMail(Mockito.anyList(), Mockito.anyString(), Mockito.anyMap());
     }
 
@@ -102,7 +105,7 @@ class InstitutionSendMailScheduledServiceImplTest {
         Mockito.doThrow(new RuntimeException("Mail send failed")).when(mailService).sendMail(Mockito.anyList(), Mockito.anyString(), Mockito.anyMap());
 
         // Execute
-        Uni<Void> result = service.retrieveInstitutionFromPecNotificationAndSendMail("prod-io");
+        Uni<Void> result = service.retrieveInstitutionFromPecNotificationAndSendMail();
         UniAssertSubscriber<Void> subscriber = result.subscribe().withSubscriber(UniAssertSubscriber.create());
 
         // Verify
@@ -120,7 +123,7 @@ class InstitutionSendMailScheduledServiceImplTest {
         when(query.list()).thenReturn(Uni.createFrom().item(Collections.emptyList()));
 
         // Execute
-        Uni<Void> result = service.retrieveInstitutionFromPecNotificationAndSendMail("prod-io");
+        Uni<Void> result = service.retrieveInstitutionFromPecNotificationAndSendMail();
         UniAssertSubscriber<Void> subscriber = result.subscribe().withSubscriber(UniAssertSubscriber.create());
 
         // Verify

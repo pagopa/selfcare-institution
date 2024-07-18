@@ -77,7 +77,7 @@ app_settings = [
 
 
 secrets_names = {
-  "MONGODB-CONNECTION-STRING"               = "mongodb-connection-string"
+  "MONGODB_CONNECTION_STRING"               = "mongodb-connection-string"
   "BLOB-STORAGE-CONTRACT-CONNECTION-STRING" = "blob-storage-contract-connection-string"
   "BLOB_STORAGE_CONN_STRING_PRODUCT"        = "blob-storage-product-connection-string"
   "MAIL_SERVER_USERNAME"                    = "smtp-usr"

@@ -23,6 +23,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @ApplicationScoped
@@ -47,7 +48,7 @@ public class InstitutionSendMailScheduledServiceImpl implements InstitutionSendM
 
     @RestClient
     @Inject
-    private InstitutionApi userInstitutionApi;
+    InstitutionApi userInstitutionApi;
 
     public InstitutionSendMailScheduledServiceImpl(MailServiceImpl mailService,
                                                    @ConfigProperty(name = "institution-send-mail.notification-path") String templateMail,
@@ -66,17 +67,18 @@ public class InstitutionSendMailScheduledServiceImpl implements InstitutionSendM
     }
 
     @Override
-    public Uni<Void> retrieveInstitutionFromPecNotificationAndSendMail(String productId) {
-        Integer sendingFrequency = productConfig.getProductMap().getOrDefault(productId, productConfig.getProductMap().get("default"));
-        Long moduleDayOfTheEpoch = calculateModuleDayOfTheEpoch(sendingFrequency);
-        return retrieveFilteredAndPaginatedPecNotification(moduleDayOfTheEpoch, querySize, sendingFrequency, productId);
+    public Uni<Void> retrieveInstitutionFromPecNotificationAndSendMail() {
+
+        return Multi.createFrom().iterable(productConfig.products().keySet())
+                .onItem().transformToUniAndMerge(productId ->
+                        retrieveFilteredAndPaginatedPecNotification(calculateModuleDayOfTheEpoch(productConfig.products().get(productId)), productId))
+                .toUni().replaceWithVoid();
     }
 
-    private Uni<Void> retrieveFilteredAndPaginatedPecNotification(Long moduleDayOfTheEpoch, int size, Integer sendingFrequency, String productId) {
+    private Uni<Void> retrieveFilteredAndPaginatedPecNotification(Long moduleDayOfTheEpoch, String productId) {
         return Multi.createBy().repeating()
                 .uni(AtomicInteger::new,
-                        currentPage -> runQueryAndSendNotification(moduleDayOfTheEpoch, currentPage.getAndIncrement(), size, sendingFrequency, productId)
-                                .onItem().invoke(() -> log.info("Page " + currentPage + " processed")))
+                        currentPage -> runQueryAndSendNotification(moduleDayOfTheEpoch, currentPage.getAndIncrement(), productId))
                 .until(Boolean.FALSE::equals)
                 .collect()
                 .asList()
@@ -84,29 +86,30 @@ public class InstitutionSendMailScheduledServiceImpl implements InstitutionSendM
 
     }
 
-    private Uni<Boolean> runQueryAndSendNotification(Long moduleDayOfTheEpoch, int page, int size, Integer sendingFrequency, String productId) {
+    private Uni<Boolean> runQueryAndSendNotification(Long moduleDayOfTheEpoch, int page, String productId) {
         var pecNotificationPage = PecNotification.find(PecNotification.Fields.moduleDayOfTheEpoch.name() + "=?1 AND "
                         + PecNotification.Fields.productId.name() + "=?2", moduleDayOfTheEpoch, productId)
-                .page(page, size);
+                .page(page, querySize);
 
         return pecNotificationPage.list()
-                .onItem().transformToUni(reactivePanacheMongoEntityBases -> retrievePecNotificationListAndSendMail(reactivePanacheMongoEntityBases, sendingFrequency))
+                .onItem().transformToUni(this::retrievePecNotificationListAndSendMail)
+                .onItem().invoke(mailSize -> log.info(String.format("[%s, moduleDayOfTheEpoch=%d] Page %d processed, mailSize=%d", productId, moduleDayOfTheEpoch, page, mailSize)))
                 .replaceWith(pecNotificationPage.hasNextPage())
-                .onFailure().invoke(throwable -> log.error("Error during send scheduled mail", throwable));
+                .onFailure().invoke(throwable -> log.error(String.format("[%s, moduleDayOfTheEpoch=%d] Error during send mail page %d processed, error=%s", productId, moduleDayOfTheEpoch, page, throwable.getMessage())));
 
     }
 
-    private Uni<Void> retrievePecNotificationListAndSendMail(List<ReactivePanacheMongoEntityBase> query, Integer sendingFrequency) {
+    private Uni<Integer> retrievePecNotificationListAndSendMail(List<ReactivePanacheMongoEntityBase> query) {
         return Multi.createFrom().iterable(query)
                 .onItem().transform(entityBase -> (PecNotification) entityBase)
-                .onItem().transformToUniAndMerge(pecNotification -> constructAndSendMail(pecNotification, sendingFrequency))
+                .onItem().transformToUniAndMerge(this::constructAndSendMail)
                 .onFailure().invoke(throwable -> log.error("Error during send scheduled mail", throwable))
                 .collect().asList()
-                .replaceWith(Uni.createFrom().voidItem());
+                .map(List::size);
     }
 
-    private Uni<Void> constructAndSendMail(PecNotification pecNotification, Integer sendingFrequency) {
-        if (sendFirstMail(pecNotification, sendingFrequency)) {
+    private Uni<Void> constructAndSendMail(PecNotification pecNotification) {
+        if (sendFirstMail(pecNotification)) {
             Product product = productService.getProduct(pecNotification.getProductId());
             Map<String, String> mailParameters = getMailParameters(pecNotification.getInstitutionId(), product, null);
             return mailService.sendMail(List.of(pecNotification.getDigitalAddress()), templateMailFirstNotification, mailParameters)
@@ -126,9 +129,9 @@ public class InstitutionSendMailScheduledServiceImpl implements InstitutionSendM
 
     private static Map<String, String> getMailParameters(String institutionId, Product product, Integer users) {
         Map<String, String> mailParameters = new HashMap<>();
-        mailParameters.put(PRODUCT_PLACEHOLDER, product.getTitle());
+        mailParameters.put(PRODUCT_PLACEHOLDER, Optional.ofNullable(product).map(Product::getTitle).orElse(null));
         mailParameters.put(ID_INSTITUTION_PLACEHOLDER, institutionId);
-        mailParameters.put(ID_PRODUCT_PLACEHOLDER, product.getId());
+        mailParameters.put(ID_PRODUCT_PLACEHOLDER, Optional.ofNullable(product).map(Product::getId).orElse(null));
         if (users != null) {
             mailParameters.put(USER_COUNT_PLACEHOLDER, users.toString());
         }
@@ -170,10 +173,10 @@ public class InstitutionSendMailScheduledServiceImpl implements InstitutionSendM
     }
 
 
-    private boolean sendFirstMail(PecNotification pecNotification, Integer sendingFrequency) {
+    private boolean sendFirstMail(PecNotification pecNotification) {
         Instant date = pecNotification.getCreatedAt();
         Instant now = Instant.now();
         long dayDifference = ChronoUnit.DAYS.between(date, now);
-        return dayDifference < sendingFrequency;
+        return dayDifference < productConfig.products().getOrDefault(pecNotification.getProductId(), 0);
     }
 }

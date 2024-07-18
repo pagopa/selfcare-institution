@@ -5,9 +5,7 @@ import lombok.Data;
 
 import java.util.Map;
 
-@Data
-@ConfigMapping(prefix = "institution-send-mail.scheduled-product")
-public class ProductConfig {
-
-    private Map<String, Integer> productMap;
+@ConfigMapping(prefix = "institution-send-mail.scheduler")
+public interface ProductConfig {
+    Map<String, Integer> products();
 }
