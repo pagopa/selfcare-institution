@@ -7,6 +7,7 @@ import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
 import it.pagopa.selfcare.institution.config.ProductConfig;
 import it.pagopa.selfcare.institution.entity.PecNotification;
+import it.pagopa.selfcare.institution.exception.GenericException;
 import it.pagopa.selfcare.product.entity.Product;
 import it.pagopa.selfcare.product.service.ProductService;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -44,6 +45,7 @@ public class InstitutionSendMailScheduledServiceImpl implements InstitutionSendM
     private final String startDate;
     private final Integer querySize;
 
+    private final boolean sendAllNotification;
     private final ProductConfig productConfig;
 
     @RestClient
@@ -56,6 +58,7 @@ public class InstitutionSendMailScheduledServiceImpl implements InstitutionSendM
                                                    @ConfigProperty(name = "institution-send-mail.notification-start-date") String startDate,
                                                    ProductService productService,
                                                    @ConfigProperty(name = "institution-send-mail.notification-query-size") Integer querySize,
+                                                   @ConfigProperty(name = "institution-send-mail.notification-send-all") boolean sendAllNotification,
                                                    ProductConfig productConfig) {
         this.mailService = mailService;
         this.templateMail = templateMail;
@@ -63,6 +66,7 @@ public class InstitutionSendMailScheduledServiceImpl implements InstitutionSendM
         this.productService = productService;
         this.startDate = startDate;
         this.querySize = querySize;
+        this.sendAllNotification = sendAllNotification;
         this.productConfig = productConfig;
     }
 
@@ -91,7 +95,15 @@ public class InstitutionSendMailScheduledServiceImpl implements InstitutionSendM
                         + PecNotification.Fields.productId.name() + "=?2", moduleDayOfTheEpoch, productId)
                 .page(page, querySize);
 
-        return pecNotificationPage.list()
+        if(sendAllNotification){
+            return pecNotificationPage.list()
+                    .onItem().transformToUni(this::retrievePecNotificationListAndSendMail)
+                    .replaceWith(pecNotificationPage.hasNextPage())
+                    .onFailure().invoke(throwable -> log.error("Error during send scheduled mail", throwable));
+        }
+        return pecNotificationPage.firstResult()
+                .onItem().ifNotNull().transform(List::of)
+                .onItem().ifNull().failWith(new GenericException("Notification to send not found"))
                 .onItem().transformToUni(this::retrievePecNotificationListAndSendMail)
                 .onItem().invoke(mailSize -> log.info(String.format("[%s, moduleDayOfTheEpoch=%d] Page %d processed, mailSize=%d", productId, moduleDayOfTheEpoch, page, mailSize)))
                 .replaceWith(pecNotificationPage.hasNextPage())

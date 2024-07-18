@@ -13,6 +13,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>institution-send-mail-scheduler</module>
+        <module>institution-ms</module>
     </modules>
 
     <profiles>
@@ -25,6 +26,17 @@
             </activation>
             <modules>
                 <module>institution-send-mail-scheduler</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>institution-ms</id>
+            <activation>
+                <file>
+                    <exists>institution-ms/pom.xml</exists>
+                </file>
+            </activation>
+            <modules>
+                <module>institution-ms</module>
             </modules>
         </profile>
     </profiles>
