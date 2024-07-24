@@ -62,7 +62,7 @@ app_settings = [
   },
   {
     name  = "SELFCARE_USER_URL"
-    value = "https://selc-p-user-ms-ca.greensand-62fc96da.westeurope.azurecontainerapps.io"
+    value = "http://selc-p-user-ms-ca"
   },
   {
     name  = "SEND_ALL_NOTIFICATION"

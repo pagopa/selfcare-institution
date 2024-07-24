@@ -71,7 +71,7 @@ app_settings = [
   },
   {
     name  = "SELFCARE_USER_URL"
-    value = "https://selc-d-user-ms-ca"
+    value = "http://selc-d-user-ms-ca"
   },
   {
     name  = "SEND_ALL_NOTIFICATION"
