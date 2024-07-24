@@ -24,10 +24,24 @@ resource "azurerm_container_app_job" "container_app_job_institution_send_mail_sc
 
   replica_timeout_in_seconds = 7200
   replica_retry_limit        = 30
-  schedule_trigger_config {
-    cron_expression          = "00 06 * * *"
-    parallelism              = 1
-    replica_completion_count = 1
+
+  dynamic "schedule_trigger_config" {
+    for_each = var.schedule_trigger_config
+
+    content {
+      cron_expression          = schedule_trigger_config.value.cron_expression
+      parallelism              = schedule_trigger_config.value.parallelism
+      replica_completion_count = schedule_trigger_config.value.replica_completion_count
+    }
+  }
+
+  dynamic "manual_trigger_config" {
+    for_each = var.manual_trigger_config
+
+    content {
+      parallelism              = manual_trigger_config.value.parallelism
+      replica_completion_count = manual_trigger_config.value.replica_completion_count
+    }
   }
 
   identity {
