@@ -86,4 +86,26 @@ variable "suffix_increment" {
   default     = ""
 }
 
+variable "manual_trigger_config" {
+  type = list(object({
+    parallelism              = number
+    replica_completion_count = number
+  }))
+  description = "Manual Trigger config of container app job"
+  default = [{
+    parallelism              = 1
+    replica_completion_count = 1
+  }]
+}
+
+variable "schedule_trigger_config" {
+  type = list(object({
+    cron_expression          = string
+    parallelism              = number
+    replica_completion_count = number
+  }))
+  description = "Schedule Trigger config of container app job"
+  default     = []
+}
+
 
