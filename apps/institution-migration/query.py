@@ -109,11 +109,12 @@ def count_institutions_whithout_description():
     ]
 
 
-def count_institutions_with_active_onboarding():
+def count_institutions_with_active_onboarding(product_ids):
     return [
         {
             "$match": {
-                "onboarding.status": "ACTIVE"
+                "onboarding.status": "ACTIVE",
+                "onboarding.productId": {"$in": product_ids}
             }
         },
         {
@@ -122,11 +123,12 @@ def count_institutions_with_active_onboarding():
     ]
 
 
-def get_institutions_with_active_onboarding(page, size):
+def get_institutions_with_active_onboarding(product_ids, page, size):
     return [
         {
             "$match": {
-                "onboarding.status": "ACTIVE"
+                "onboarding.status": "ACTIVE",
+                "onboarding.productId": {"$in": product_ids}
             }
         },
         *paging(page, size)

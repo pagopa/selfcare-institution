@@ -7,7 +7,7 @@ from datetime import datetime
 from dateutil.parser import parse
 from query import *
 
-load_dotenv()
+load_dotenv(dotenv_path=".env", override=True)
 HOST = os.getenv('MONGO_HOST')
 
 CORE_DB = 'selcMsCore'
@@ -17,17 +17,21 @@ PEC_NOTIFICATION_COLLECTION = 'PecNotification'
 
 epochDatePecNotification = os.getenv('EPOCH_DATE_PEC_NOTIFICATION')
 sendingFrequencyPecNotification = int(os.getenv('SENDING_FREQUENCY_PEC_NOTIFICATION'))
+#ex "productId1,productId2,productId3"
+productIdsString = os.getenv('MIGRATE_PEC_PRODUCT_ID')
+productIds = productIdsString.split(",")
 
 BATCH_SIZE = 100
 START_PAGE = 0
 def institution_to_pec_notification(client):
     print("Starting process to create PecNotification")
+    print("Products=" + productIdsString)
 
     module_day_of_the_epoch = calculate_module_day_of_the_epoch(
         epochDatePecNotification, datetime.now().isoformat(), sendingFrequencyPecNotification)
     print("Module day of the epoch: " + str(module_day_of_the_epoch))
 
-    institutions_size_cursor = client[CORE_DB][INSTITUTION_COLLECTION].aggregate(count_institutions_with_active_onboarding())
+    institutions_size_cursor = client[CORE_DB][INSTITUTION_COLLECTION].aggregate(count_institutions_with_active_onboarding(productIds))
     institutions_size = next(institutions_size_cursor)['count']
     print("Institutions size: " + str(institutions_size))
     pages = math.ceil(institutions_size / BATCH_SIZE)
@@ -36,12 +40,12 @@ def institution_to_pec_notification(client):
         print("Start page " + str(page + 1) + "/" + str(pages))
 
         institutions_pages = client[CORE_DB][INSTITUTION_COLLECTION].aggregate(
-            get_institutions_with_active_onboarding(page, BATCH_SIZE)
+            get_institutions_with_active_onboarding(productIds, page, BATCH_SIZE)
         )
 
         for institution in institutions_pages:
             for onboarding in institution.get('onboarding', []):
-                if onboarding.get('status') == 'ACTIVE':
+                if onboarding.get('status') == 'ACTIVE' and onboarding["productId"] in productIds:
                     pec_notification_document = {
                         "institutionId": institution["_id"],
                         "productId": onboarding["productId"],
