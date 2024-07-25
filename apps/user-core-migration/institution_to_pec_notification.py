@@ -8,7 +8,7 @@ from dateutil.parser import parse
 from query import *
 
 load_dotenv()
-HOST = os.getenv('HOST')
+HOST = os.getenv('MONGO_HOST')
 
 CORE_DB = 'selcMsCore'
 INSTITUTION_COLLECTION = 'Institution'
@@ -18,7 +18,7 @@ PEC_NOTIFICATION_COLLECTION = 'PecNotification'
 epochDatePecNotification = os.getenv('EPOCH_DATE_PEC_NOTIFICATION')
 sendingFrequencyPecNotification = int(os.getenv('SENDING_FREQUENCY_PEC_NOTIFICATION'))
 
-BATCH_SIZE = 1
+BATCH_SIZE = 100
 START_PAGE = 0
 def institution_to_pec_notification(client):
     print("Starting process to create PecNotification")
@@ -32,7 +32,7 @@ def institution_to_pec_notification(client):
     print("Institutions size: " + str(institutions_size))
     pages = math.ceil(institutions_size / BATCH_SIZE)
 
-    for page in range(START_PAGE, 1):
+    for page in range(START_PAGE, pages):
         print("Start page " + str(page + 1) + "/" + str(pages))
 
         institutions_pages = client[CORE_DB][INSTITUTION_COLLECTION].aggregate(
@@ -45,16 +45,15 @@ def institution_to_pec_notification(client):
                     pec_notification_document = {
                         "institutionId": institution["_id"],
                         "productId": onboarding["productId"],
-                        "moduleDayOfTheEpoch": module_day_of_the_epoch,
-                        "digitalAddress": institution.get("digitalAddress"),
-                        "createdAt": datetime.now()
+                        "moduleDayOfTheEpoch": calculate_module_day_of_the_epoch(epochDatePecNotification, onboarding.get('createdAt'), sendingFrequencyPecNotification),
+                        "digitalAddress": institution.get("digitalAddress")
                     }
                     client[USERS_DB][PEC_NOTIFICATION_COLLECTION].update_one(
                         {"institutionId": institution["_id"], "productId": onboarding["productId"]},
-                        {"$set": pec_notification_document},
+                        {"$set": pec_notification_document, "$setOnInsert": {"createdAt": datetime.now()}},
                         upsert=True
                     )
-                    print("Create PecNotification for institution" + institution["_id"] + "and product" + onboarding["productId"])
+                    print("Create PecNotification for institution " + institution["_id"] + " and product " + onboarding["productId"])
         print("End page " + str(page + 1) + "/" + str(pages))
         time.sleep(15)
 
