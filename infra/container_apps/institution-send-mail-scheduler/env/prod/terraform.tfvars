@@ -11,6 +11,13 @@ tags = {
   CostCenter  = "TS310 - PAGAMENTI & SERVIZI"
 }
 
+manual_trigger_config = []
+schedule_trigger_config = [{
+  cron_expression          = "00 06 * * *"
+  parallelism              = 1
+  replica_completion_count = 1
+}]
+
 container_app = {
   min_replicas = 1
   max_replicas = 1
