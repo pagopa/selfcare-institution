@@ -16,9 +16,7 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.openapi.quarkus.selfcare_user_json.api.InstitutionApi;
 import org.openapi.quarkus.selfcare_user_json.model.UserInstitutionResponse;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -115,7 +113,14 @@ public class InstitutionSendMailScheduledServiceImpl implements InstitutionSendM
     }
 
     private Uni<Void> constructAndSendMail(PecNotification pecNotification) {
-        if (sendFirstMail(pecNotification)) {
+
+        long dayDifference = ChronoUnit.DAYS.between(pecNotification.getCreatedAt(), Instant.now());
+        //Onboarding happened today, we must not send mail
+        if(dayDifference <= 0) {
+            return Uni.createFrom().voidItem();
+        }
+
+        if (sendFirstMail(dayDifference, pecNotification.getProductId())) {
             Product product = productService.getProduct(pecNotification.getProductId());
             Map<String, String> mailParameters = getMailParameters(pecNotification.getInstitutionId(), product, null);
             return mailService.sendMail(List.of(pecNotification.getDigitalAddress()), templateMailFirstNotification, mailParameters)
@@ -178,11 +183,7 @@ public class InstitutionSendMailScheduledServiceImpl implements InstitutionSendM
         return dayDifference % sendingFrequency;
     }
 
-
-    private boolean sendFirstMail(PecNotification pecNotification) {
-        Instant date = pecNotification.getCreatedAt();
-        Instant now = Instant.now();
-        long dayDifference = ChronoUnit.DAYS.between(date, now);
-        return dayDifference < productConfig.products().getOrDefault(pecNotification.getProductId(), 0);
+    private boolean sendFirstMail(long dayDifference, String productId) {
+        return dayDifference <= productConfig.products().getOrDefault(productId, 0);
     }
 }
