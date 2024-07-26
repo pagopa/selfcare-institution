@@ -82,6 +82,33 @@ class InstitutionSendMailScheduledServiceImplTest {
                 .sendMail(Mockito.anyList(), Mockito.anyString(), Mockito.anyMap());
     }
 
+
+    @Test
+    void shouldNotSendMail_whenOnboardingHappenToday() {
+        PecNotification notification1 = new PecNotification();
+        notification1.setProductId("product-id");
+        notification1.setDigitalAddress("test@test.it");
+        notification1.setModuleDayOfTheEpoch(1);
+        notification1.setCreatedAt(Instant.now().minusSeconds(360));
+        notification1.setInstitutionId("institution-id");
+        PanacheMock.mock(PecNotification.class);
+
+        ReactivePanacheQuery<ReactivePanacheMongoEntityBase> query = Mockito.mock(ReactivePanacheQuery.class);
+        when(PecNotification.find(any(), any(Object.class)))
+                .thenReturn(query);
+        when(query.page(0, PAGE_SIZE)).thenReturn(query);
+
+
+        when(query.hasNextPage()).thenReturn(Uni.createFrom().item(false));
+        when(query.firstResult()).thenReturn(Uni.createFrom().item(notification1));
+
+        Uni<Void> result = service.retrieveInstitutionFromPecNotificationAndSendMail();
+        UniAssertSubscriber<Void> subscriber = result.subscribe().withSubscriber(UniAssertSubscriber.create());
+        subscriber.assertCompleted();
+        Mockito.verify(mailService, Mockito.times(0))
+                .sendMail(Mockito.anyList(), Mockito.anyString(), Mockito.anyMap());
+    }
+
     @Test
     void shouldLogErrorAndContinueOnMailSendFailure() {
         // Setup mocks
@@ -89,7 +116,7 @@ class InstitutionSendMailScheduledServiceImplTest {
         notification1.setProductId("product-id");
         notification1.setDigitalAddress("test@test.it");
         notification1.setModuleDayOfTheEpoch(1);
-        notification1.setCreatedAt(Instant.now());
+        notification1.setCreatedAt(Instant.now().minusSeconds(86500));
         notification1.setInstitutionId("institution-id");
         PanacheMock.mock(PecNotification.class);
         ReactivePanacheQuery<ReactivePanacheMongoEntityBase> query = Mockito.mock(ReactivePanacheQuery.class);
