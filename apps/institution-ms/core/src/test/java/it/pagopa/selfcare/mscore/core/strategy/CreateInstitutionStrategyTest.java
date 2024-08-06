@@ -55,6 +55,8 @@ class CreateInstitutionStrategyTest {
     private static final AreaOrganizzativaOmogenea dummyAreaOrganizzativaOmogenea;
     private static final GeographicTaxonomies dummyGeotaxonomies;
     private static final InstitutionGeographicTaxonomies dummyInstitutionGeotaxonomies;
+    public static final String SUPPORT_EMAIL = "email";
+    public static final String SUPPORT_PHONE = "phone";
 
     static {
         dummyInstitutionProxyInfo = new InstitutionProxyInfo();
@@ -114,11 +116,25 @@ class CreateInstitutionStrategyTest {
     @Test
     void shouldThrowExceptionOnCreateInstitutionFromIpaIfAlreadyExists() {
 
-        when(institutionConnector.findByTaxCodeAndSubunitCode(any(), any()))
-                .thenReturn(List.of(new Institution()));
-        assertThrows(ResourceConflictException.class, () -> strategyFactory.createInstitutionStrategyIpa()
-                .createInstitution(CreateInstitutionStrategyInput.builder().subunitType(InstitutionPaSubunitType.AOO)
-                        .build()));
+        Institution institution = new Institution();
+        institution.setId("id");
+
+        when(institutionConnector.findByTaxCodeAndSubunitCode(any(), any())). thenReturn(List.of(institution));
+        when(institutionConnector.save(any())).thenAnswer(args -> args.getArguments()[0]);
+
+        Institution actual = strategyFactory.createInstitutionStrategyIpa()
+                .createInstitution(CreateInstitutionStrategyInput.builder()
+                        .taxCode(dummyAreaOrganizzativaOmogenea.getCodiceFiscaleEnte())
+                        .subunitType(InstitutionPaSubunitType.AOO)
+                        .subunitCode(dummyAreaOrganizzativaOmogenea.getCodAoo())
+                        .geographicTaxonomies(List.of(dummyInstitutionGeotaxonomies))
+                        .supportEmail(SUPPORT_EMAIL)
+                        .supportPhone(SUPPORT_PHONE)
+                        .build());
+
+        assertThat(actual.getSupportEmail()).isEqualTo(SUPPORT_EMAIL);
+        assertThat(actual.getSupportPhone()).isEqualTo(SUPPORT_PHONE);
+        verifyNoInteractions(partyRegistryProxyConnector);
 
     }
 
@@ -267,6 +283,8 @@ class CreateInstitutionStrategyTest {
                         .subunitType(InstitutionPaSubunitType.AOO)
                         .subunitCode(dummyAreaOrganizzativaOmogenea.getCodAoo())
                         .geographicTaxonomies(List.of(dummyInstitutionGeotaxonomies))
+                        .supportEmail(SUPPORT_EMAIL)
+                        .supportPhone(SUPPORT_PHONE)
                         .build());
 
         //Then
@@ -283,6 +301,8 @@ class CreateInstitutionStrategyTest {
         assertThat(actual.getCity()).isEqualTo(dummyGeotaxonomies.getDescription().replace(" - COMUNE", ""));
         assertThat(actual.getGeographicTaxonomies().size()).isEqualTo(1);
         assertThat(actual.getGeographicTaxonomies().get(0).getCode()).isEqualTo(dummyInstitutionGeotaxonomies.getCode());
+        assertThat(actual.getSupportEmail()).isEqualTo(SUPPORT_EMAIL);
+        assertThat(actual.getSupportPhone()).isEqualTo(SUPPORT_PHONE);
 
         verify(institutionConnector, times(2)).save(any());
         verify(institutionConnector).findByTaxCodeAndSubunitCode(anyString(), anyString());

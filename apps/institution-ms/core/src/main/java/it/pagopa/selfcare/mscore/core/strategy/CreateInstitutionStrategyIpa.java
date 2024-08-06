@@ -42,28 +42,35 @@ public class CreateInstitutionStrategyIpa extends CreateInstitutionStrategyCommo
     @Override
     public Institution createInstitution(CreateInstitutionStrategyInput strategyInput) {
 
-        checkIfAlreadyExistsByTaxCodeAndSubunitCode(strategyInput.getTaxCode(), strategyInput.getSubunitCode());
+        List<Institution> institutions = institutionConnector.findByTaxCodeAndSubunitCode(strategyInput.getTaxCode(), strategyInput.getSubunitCode());
+        Institution toSavedOrUpdate;
 
-        final InstitutionPaSubunitType subunitType = strategyInput.getSubunitType();
-        final InstitutionProxyInfo institutionProxyInfo = partyRegistryProxyConnector.getInstitutionById(strategyInput.getTaxCode());
-        final CategoryProxyInfo categoryProxyInfo = partyRegistryProxyConnector.getCategory(institutionProxyInfo.getOrigin(), institutionProxyInfo.getCategory());
+        if (institutions.isEmpty()) {
+            final InstitutionPaSubunitType subunitType = strategyInput.getSubunitType();
+            final InstitutionProxyInfo institutionProxyInfo = partyRegistryProxyConnector.getInstitutionById(strategyInput.getTaxCode());
+            final CategoryProxyInfo categoryProxyInfo = partyRegistryProxyConnector.getCategory(institutionProxyInfo.getOrigin(), institutionProxyInfo.getCategory());
 
-        Institution institution;
-        if (InstitutionPaSubunitType.AOO.equals(subunitType)) {
-            Institution institutionEC = getOrSaveInstitutionEc(strategyInput, institutionProxyInfo, categoryProxyInfo);
-            institution = mappingToInstitutionIPAAoo(strategyInput, institutionEC.getId(), institutionProxyInfo, categoryProxyInfo);
-        } else if (InstitutionPaSubunitType.UO.equals(subunitType)) {
-            Institution institutionEC = getOrSaveInstitutionEc(strategyInput, institutionProxyInfo, categoryProxyInfo);
-            institution = mappingToInstitutionIPAUo(strategyInput, institutionEC.getId(), institutionProxyInfo, categoryProxyInfo);
+            if (InstitutionPaSubunitType.AOO.equals(subunitType)) {
+                Institution institutionEC = getOrSaveInstitutionEc(strategyInput, institutionProxyInfo, categoryProxyInfo);
+                toSavedOrUpdate = mappingToInstitutionIPAAoo(strategyInput, institutionEC.getId(), institutionProxyInfo, categoryProxyInfo);
+            } else if (InstitutionPaSubunitType.UO.equals(subunitType)) {
+                Institution institutionEC = getOrSaveInstitutionEc(strategyInput, institutionProxyInfo, categoryProxyInfo);
+                toSavedOrUpdate = mappingToInstitutionIPAUo(strategyInput, institutionEC.getId(), institutionProxyInfo, categoryProxyInfo);
+            } else {
+                log.info("createInstitution :: unsupported subunitType {}", subunitType);
+                toSavedOrUpdate = getInstitutionEC(strategyInput.getTaxCode(), institutionProxyInfo, categoryProxyInfo, strategyInput.getInstitutionType());
+            }
+            toSavedOrUpdate.setGeographicTaxonomies(strategyInput.getGeographicTaxonomies());
+            setUpdatedFields(strategyInput, toSavedOrUpdate);
+
         } else {
-            log.info("createInstitution :: unsupported subunitType {}", subunitType);
-            institution = getInstitutionEC(strategyInput.getTaxCode(), institutionProxyInfo, categoryProxyInfo, strategyInput.getInstitutionType());
+            //Institution exists but other fields could be updated
+            toSavedOrUpdate = institutions.get(0);
+            setUpdatedFields(strategyInput, institutions.get(0));
         }
 
-        institution.setGeographicTaxonomies(strategyInput.getGeographicTaxonomies());
-
         try {
-            return institutionConnector.save(institution);
+            return institutionConnector.save(toSavedOrUpdate);
         } catch (Exception e) {
             throw new MsCoreException(CREATE_INSTITUTION_ERROR.getMessage(), CREATE_INSTITUTION_ERROR.getCode());
         }

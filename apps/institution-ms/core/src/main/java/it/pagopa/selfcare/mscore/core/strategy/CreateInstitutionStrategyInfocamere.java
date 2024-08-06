@@ -40,7 +40,7 @@ public class CreateInstitutionStrategyInfocamere extends CreateInstitutionStrate
         Institution toSavedOrUpdate;
         List<Institution> institutions = institutionConnector.findByTaxCodeAndSubunitCode(strategyInput.getTaxCode(), null);
         if (institutions.isEmpty()) {
-            //Institution does not exists, it will be created
+            //Institution does not exist, it will be created
             try {
                 NationalRegistriesProfessionalAddress professionalAddress = partyRegistryProxyConnector.getLegalAddress(strategyInput.getTaxCode());
                 fillInstitutionFromInfocamereData(strategyInput.getTaxCode(), strategyInput.getDescription(), professionalAddress);

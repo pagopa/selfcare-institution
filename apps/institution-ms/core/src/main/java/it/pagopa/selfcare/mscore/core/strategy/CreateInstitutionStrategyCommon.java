@@ -2,11 +2,13 @@ package it.pagopa.selfcare.mscore.core.strategy;
 
 import it.pagopa.selfcare.mscore.api.InstitutionConnector;
 import it.pagopa.selfcare.mscore.constant.CustomError;
+import it.pagopa.selfcare.mscore.core.strategy.input.CreateInstitutionStrategyInput;
 import it.pagopa.selfcare.mscore.exception.ResourceConflictException;
 import it.pagopa.selfcare.mscore.model.institution.Institution;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import static it.pagopa.selfcare.mscore.constant.CustomError.CREATE_INSTITUTION_ORIGIN_CONFLICT;
@@ -34,5 +36,21 @@ public class CreateInstitutionStrategyCommon {
             throw new ResourceConflictException(String.format(
                     CREATE_INSTITUTION_ORIGIN_CONFLICT.getMessage(), origin, originId),
                     CREATE_INSTITUTION_ORIGIN_CONFLICT.getCode());
+    }
+
+    protected static void setUpdatedFields(CreateInstitutionStrategyInput strategyInput, Institution toSavedOrUpdate) {
+        if (strategyInput.getDescription() != null) {
+            toSavedOrUpdate.setDescription(strategyInput.getDescription());
+        }
+
+        if (strategyInput.getSupportEmail() != null) {
+            toSavedOrUpdate.setSupportEmail(strategyInput.getSupportEmail());
+        }
+
+        if (strategyInput.getSupportPhone() != null) {
+            toSavedOrUpdate.setSupportPhone(strategyInput.getSupportPhone());
+        }
+
+        toSavedOrUpdate.setUpdatedAt(OffsetDateTime.now());
     }
 }
