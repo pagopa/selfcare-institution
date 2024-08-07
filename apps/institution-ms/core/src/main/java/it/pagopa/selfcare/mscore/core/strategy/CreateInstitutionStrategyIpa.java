@@ -62,7 +62,7 @@ public class CreateInstitutionStrategyIpa extends CreateInstitutionStrategyCommo
                 toSavedOrUpdate = getInstitutionEC(strategyInput.getTaxCode(), institutionProxyInfo, categoryProxyInfo, strategyInput.getInstitutionType());
             }
             toSavedOrUpdate.setGeographicTaxonomies(strategyInput.getGeographicTaxonomies());
-            setUpdatedFields(strategyInput, toSavedOrUpdate);
+            setContacts(strategyInput, toSavedOrUpdate);
 
         } else {
             //Institution exists but other fields could be updated

@@ -42,7 +42,11 @@ public class CreateInstitutionStrategyCommon {
         if (strategyInput.getDescription() != null) {
             toSavedOrUpdate.setDescription(strategyInput.getDescription());
         }
+        setContacts(strategyInput, toSavedOrUpdate);
+        toSavedOrUpdate.setUpdatedAt(OffsetDateTime.now());
+    }
 
+    protected static void setContacts(CreateInstitutionStrategyInput strategyInput, Institution toSavedOrUpdate) {
         if (strategyInput.getSupportEmail() != null) {
             toSavedOrUpdate.setSupportEmail(strategyInput.getSupportEmail());
         }
@@ -50,7 +54,10 @@ public class CreateInstitutionStrategyCommon {
         if (strategyInput.getSupportPhone() != null) {
             toSavedOrUpdate.setSupportPhone(strategyInput.getSupportPhone());
         }
-
-        toSavedOrUpdate.setUpdatedAt(OffsetDateTime.now());
     }
+
+
+
+
+
 }
