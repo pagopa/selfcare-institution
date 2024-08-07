@@ -2973,6 +2973,12 @@
             "type" : "string",
             "enum" : [ "AOO", "UO" ]
           },
+          "supportEmail" : {
+            "type" : "string"
+          },
+          "supportPhone" : {
+            "type" : "string"
+          },
           "taxCode" : {
             "type" : "string"
           }

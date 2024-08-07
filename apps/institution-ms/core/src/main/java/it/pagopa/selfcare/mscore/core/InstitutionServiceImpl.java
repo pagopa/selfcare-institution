@@ -105,7 +105,7 @@ public class InstitutionServiceImpl implements InstitutionService {
     }
 
     @Override
-    public Institution createInstitutionFromIpa(String taxCode, InstitutionPaSubunitType subunitType, String subunitCode, List<InstitutionGeographicTaxonomies> geographicTaxonomies, InstitutionType institutionType) {
+    public Institution createInstitutionFromIpa(String taxCode, InstitutionPaSubunitType subunitType, String subunitCode, List<InstitutionGeographicTaxonomies> geographicTaxonomies, InstitutionType institutionType, String supportEmail, String supportPhone) {
         CreateInstitutionStrategy institutionStrategy = createInstitutionStrategyFactory.createInstitutionStrategyIpa();
         return institutionStrategy.createInstitution(CreateInstitutionStrategyInput.builder()
                 .taxCode(taxCode)
@@ -113,6 +113,8 @@ public class InstitutionServiceImpl implements InstitutionService {
                 .subunitType(subunitType)
                 .geographicTaxonomies(geographicTaxonomies)
                 .institutionType(institutionType)
+                .supportEmail(supportEmail)
+                .supportPhone(supportPhone)
                 .build());
     }
 
