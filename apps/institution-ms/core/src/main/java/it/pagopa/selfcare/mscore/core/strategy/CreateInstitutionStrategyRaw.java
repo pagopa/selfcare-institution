@@ -8,6 +8,7 @@ import it.pagopa.selfcare.mscore.model.institution.Institution;
 import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
 import static it.pagopa.selfcare.mscore.constant.GenericError.CREATE_INSTITUTION_ERROR;
 
@@ -23,12 +24,18 @@ public class CreateInstitutionStrategyRaw extends CreateInstitutionStrategyCommo
     @Override
     public Institution createInstitution(CreateInstitutionStrategyInput strategyInput) {
 
-        checkIfAlreadyExistsByTaxCodeAndSubunitCode(strategyInput.getTaxCode(), strategyInput.getSubunitCode());
+        List<Institution> institutions = institutionConnector.findByTaxCodeAndSubunitCode(strategyInput.getTaxCode(), strategyInput.getSubunitCode());
 
-        institution.setExternalId(getExternalId(strategyInput));
-        institution.setOrigin(Origin.SELC.getValue());
-        institution.setOriginId("SELC_" + institution.getExternalId());
-        institution.setCreatedAt(OffsetDateTime.now());
+        if (institutions.isEmpty()) {
+            institution.setExternalId(getExternalId(strategyInput));
+            institution.setOrigin(Origin.SELC.getValue());
+            institution.setOriginId("SELC_" + institution.getExternalId());
+            institution.setCreatedAt(OffsetDateTime.now());
+            setContacts(strategyInput, institution);
+        } else {
+            institution = institutions.get(0);
+            setUpdatedFields(strategyInput, institution);
+        }
 
         try {
             return institutionConnector.save(institution);
