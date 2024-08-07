@@ -13,6 +13,7 @@ import it.pagopa.selfcare.mscore.model.UnitaOrganizzativa;
 import it.pagopa.selfcare.mscore.model.institution.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.owasp.encoder.Encode;
 import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
@@ -57,7 +58,7 @@ public class CreateInstitutionStrategyIpa extends CreateInstitutionStrategyCommo
                 Institution institutionEC = getOrSaveInstitutionEc(strategyInput, institutionProxyInfo, categoryProxyInfo);
                 toSavedOrUpdate = mappingToInstitutionIPAUo(strategyInput, institutionEC.getId(), institutionProxyInfo, categoryProxyInfo);
             } else {
-                log.info("createInstitution :: unsupported subunitType {}", subunitType);
+                log.info("createInstitution :: unsupported subunitType {}", Encode.forJava(String.valueOf(subunitType)));
                 toSavedOrUpdate = getInstitutionEC(strategyInput.getTaxCode(), institutionProxyInfo, categoryProxyInfo, strategyInput.getInstitutionType());
             }
             toSavedOrUpdate.setGeographicTaxonomies(strategyInput.getGeographicTaxonomies());
