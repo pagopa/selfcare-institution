@@ -163,6 +163,8 @@ public class InstitutionServiceImpl implements InstitutionService {
         return createInstitutionStrategyFactory.createInstitutionStrategyIvass(institution)
                 .createInstitution(CreateInstitutionStrategyInput.builder()
                         .ivassCode(institution.getOriginId())
+                        .supportEmail(institution.getSupportEmail())
+                        .supportPhone(institution.getSupportPhone())
                         .build());
     }
 

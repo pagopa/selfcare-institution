@@ -139,16 +139,29 @@ class CreateInstitutionStrategyTest {
     }
 
     @Test
-    void shouldThrowMsCoreExceptionWhenInstitutionAlreadyExists() {
+    void shouldCreateInstitutionFromIvassIfAlreadyExists() {
         String origin = "IVASS";
         String originId = "12345";
 
-        when(institutionConnector.findByOriginAndOriginId(origin, originId)).thenReturn(List.of(new Institution()));
+        Institution institution = new Institution();
+        institution.setId("id");
+        institution.setOrigin(origin);
+        institution.setOriginId(originId);
 
-        assertThrows(ResourceConflictException.class, () -> strategyFactory.createInstitutionStrategyIvass(new Institution())
+        when(institutionConnector.findByOriginAndOriginId(any(), any())). thenReturn(List.of(institution));
+        when(institutionConnector.save(any())).thenAnswer(args -> args.getArguments()[0]);
+
+
+        Institution actual = strategyFactory.createInstitutionStrategyIvass(new Institution())
                 .createInstitution(CreateInstitutionStrategyInput.builder()
                         .ivassCode(originId)
-                        .build()));
+                        .supportEmail(SUPPORT_EMAIL)
+                        .supportPhone(SUPPORT_PHONE)
+                        .build());
+
+        assertThat(actual.getSupportEmail()).isEqualTo(SUPPORT_EMAIL);
+        assertThat(actual.getSupportPhone()).isEqualTo(SUPPORT_PHONE);
+        verifyNoInteractions(partyRegistryProxyConnector);
     }
 
     @Test
