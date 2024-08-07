@@ -7,9 +7,11 @@ import it.pagopa.selfcare.mscore.core.strategy.input.CreateInstitutionStrategyIn
 import it.pagopa.selfcare.mscore.exception.MsCoreException;
 import it.pagopa.selfcare.mscore.model.institution.Institution;
 import it.pagopa.selfcare.mscore.model.institution.SaResource;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
 import static it.pagopa.selfcare.mscore.constant.GenericError.CREATE_INSTITUTION_ERROR;
 
@@ -17,6 +19,7 @@ import static it.pagopa.selfcare.mscore.constant.GenericError.CREATE_INSTITUTION
 public class CreateInstitutionStrategyAnac extends CreateInstitutionStrategyCommon implements CreateInstitutionStrategy {
     private final PartyRegistryProxyConnector partyRegistryProxyConnector;
 
+    @Setter
     private Institution institution;
 
     public CreateInstitutionStrategyAnac(PartyRegistryProxyConnector partyRegistryProxyConnector,
@@ -25,18 +28,25 @@ public class CreateInstitutionStrategyAnac extends CreateInstitutionStrategyComm
         this.partyRegistryProxyConnector = partyRegistryProxyConnector;
     }
 
-    public void setInstitution(Institution institution) {
-        this.institution = institution;
-    }
-
     @Override
     public Institution createInstitution(CreateInstitutionStrategyInput strategyInput) {
 
-        checkIfAlreadyExistsByTaxCodeAndSubunitCode(strategyInput.getTaxCode(), strategyInput.getSubunitCode());
+        List<Institution> institutions = institutionConnector.findByTaxCodeAndSubunitCode(strategyInput.getTaxCode(), strategyInput.getSubunitCode());
 
-        SaResource saResource = partyRegistryProxyConnector.getSAFromAnac(strategyInput.getTaxCode());
+        if (institutions.isEmpty()) {
 
-        institution = addFieldsToInstitution(saResource);
+            SaResource saResource = partyRegistryProxyConnector.getSAFromAnac(strategyInput.getTaxCode());
+
+            institution = addFieldsToInstitution(saResource);
+
+            setContacts(strategyInput, institution);
+
+        } else {
+            //Institution exists but other fields could be updated
+            institution = institutions.get(0);
+            setUpdatedFields(strategyInput, institution);
+        }
+
         try {
             return institutionConnector.save(institution);
         } catch (Exception e) {

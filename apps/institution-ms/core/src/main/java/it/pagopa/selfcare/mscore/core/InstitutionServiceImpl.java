@@ -153,6 +153,8 @@ public class InstitutionServiceImpl implements InstitutionService {
                         .subunitType(Optional.ofNullable(institution.getSubunitType())
                                 .map(InstitutionPaSubunitType::valueOf)
                                 .orElse(null))
+                        .supportEmail(institution.getSupportEmail())
+                        .supportPhone(institution.getSupportPhone())
                         .build());
     }
 

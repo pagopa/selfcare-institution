@@ -165,6 +165,35 @@ class CreateInstitutionStrategyTest {
      * Method under test: {@link CreateInstitutionStrategy#createInstitution(CreateInstitutionStrategyInput)}
      */
     @Test
+    void shouldCreateInstitutionFromAnacIfAlreadyExists() {
+
+        Institution institution = new Institution();
+        institution.setId("id");
+
+        when(institutionConnector.findByTaxCodeAndSubunitCode(any(), any())). thenReturn(List.of(institution));
+        when(institutionConnector.save(any())).thenAnswer(args -> args.getArguments()[0]);
+
+        //When
+        Institution actual = strategyFactory.createInstitutionStrategyAnac(institution)
+                .createInstitution(CreateInstitutionStrategyInput.builder()
+                        .taxCode(institution.getTaxCode())
+                        .supportPhone(SUPPORT_PHONE)
+                        .supportEmail(SUPPORT_EMAIL)
+                        .build());
+
+        //Then
+        assertThat(actual.getTaxCode()).isEqualTo(institution.getTaxCode());
+        assertThat(actual.getSubunitCode()).isNull();
+        assertThat(actual.getSupportPhone()).isEqualTo(SUPPORT_PHONE);
+        assertThat(actual.getSupportEmail()).isEqualTo(SUPPORT_EMAIL);
+
+        verify(institutionConnector).save(any());
+    }
+
+    /**
+     * Method under test: {@link CreateInstitutionStrategy#createInstitution(CreateInstitutionStrategyInput)}
+     */
+    @Test
     void shouldCreateInstitutionFromAnac() {
 
         Institution institution = TestUtils.dummyInstitutionSa();
@@ -179,6 +208,8 @@ class CreateInstitutionStrategyTest {
         Institution actual = strategyFactory.createInstitutionStrategyAnac(institution)
                 .createInstitution(CreateInstitutionStrategyInput.builder()
                         .taxCode(institution.getTaxCode())
+                        .supportPhone(SUPPORT_PHONE)
+                        .supportEmail(SUPPORT_EMAIL)
                         .build());
 
         //Then
@@ -191,6 +222,8 @@ class CreateInstitutionStrategyTest {
         assertThat(actual.getSubunitType()).isNull();
         assertThat(actual.getInstitutionType()).isEqualTo(InstitutionType.SA);
         assertThat(actual.getSubunitType()).isNull();
+        assertThat(actual.getSupportPhone()).isEqualTo(SUPPORT_PHONE);
+        assertThat(actual.getSupportEmail()).isEqualTo(SUPPORT_EMAIL);
 
         verify(institutionConnector).save(any());
     }
