@@ -11,7 +11,6 @@ import it.pagopa.selfcare.mscore.core.strategy.factory.CreateInstitutionStrategy
 import it.pagopa.selfcare.mscore.core.strategy.input.CreateInstitutionStrategyInput;
 import it.pagopa.selfcare.mscore.core.util.InstitutionPaSubunitType;
 import it.pagopa.selfcare.mscore.core.util.TestUtils;
-import it.pagopa.selfcare.mscore.exception.ResourceConflictException;
 import it.pagopa.selfcare.mscore.exception.ResourceNotFoundException;
 import it.pagopa.selfcare.mscore.model.AreaOrganizzativaOmogenea;
 import it.pagopa.selfcare.mscore.model.UnitaOrganizzativa;
@@ -27,7 +26,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -167,11 +165,24 @@ class CreateInstitutionStrategyTest {
     @Test
     void shouldThrowExceptionOnCreateInstitutionIfAlreadyExists() {
 
+        Institution institution = new Institution();
+        institution.setId("id");
+
+        when(institutionConnector.findByTaxCodeAndSubunitCode(any(), any())). thenReturn(List.of(institution));
+        when(institutionConnector.save(any())).thenAnswer(args -> args.getArguments()[0]);
+
         when(institutionConnector.findByTaxCodeAndSubunitCode(any(), any()))
                 .thenReturn(List.of(new Institution()));
-        assertThrows(ResourceConflictException.class, () -> strategyFactory.createInstitutionStrategy(new Institution())
+
+        Institution actual = strategyFactory.createInstitutionStrategy(new Institution())
                 .createInstitution(CreateInstitutionStrategyInput.builder()
-                        .build()));
+                        .supportEmail(SUPPORT_EMAIL)
+                        .supportPhone(SUPPORT_PHONE)
+                        .build());
+
+        assertThat(actual.getSupportEmail()).isEqualTo(SUPPORT_EMAIL);
+        assertThat(actual.getSupportPhone()).isEqualTo(SUPPORT_PHONE);
+        verifyNoInteractions(partyRegistryProxyConnector);
     }
 
     /**
