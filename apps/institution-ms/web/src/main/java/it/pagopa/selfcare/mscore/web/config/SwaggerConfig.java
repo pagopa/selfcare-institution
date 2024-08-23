@@ -1,12 +1,14 @@
 package it.pagopa.selfcare.mscore.web.config;
 
 import com.fasterxml.classmate.TypeResolver;
-
+import it.pagopa.selfcare.commons.web.model.Problem;
 import it.pagopa.selfcare.commons.web.swagger.EmailAnnotationSwaggerPluginConfig;
 import it.pagopa.selfcare.commons.web.swagger.ServerSwaggerConfig;
-import it.pagopa.selfcare.mscore.model.error.Problem;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
