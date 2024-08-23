@@ -1,10 +1,10 @@
 package it.pagopa.selfcare.mscore.web.exception;
 
+import it.pagopa.selfcare.commons.web.model.Problem;
 import it.pagopa.selfcare.mscore.exception.InvalidRequestException;
 import it.pagopa.selfcare.mscore.exception.MsCoreException;
 import it.pagopa.selfcare.mscore.exception.ResourceConflictException;
 import it.pagopa.selfcare.mscore.exception.ResourceNotFoundException;
-import it.pagopa.selfcare.mscore.model.error.Problem;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -46,8 +46,7 @@ class CustomExceptionHandlerTest {
         assertTrue(actualHandleMissingServletRequestParameterResult.hasBody());
         assertEquals(1, actualHandleMissingServletRequestParameterResult.getHeaders().size());
         assertEquals(HttpStatus.BAD_REQUEST, actualHandleMissingServletRequestParameterResult.getStatusCode());
-        assertEquals(400, ((Problem) Objects.requireNonNull(actualHandleMissingServletRequestParameterResult.getBody())).getStatus().intValue());
-        assertEquals(1, ((Problem) actualHandleMissingServletRequestParameterResult.getBody()).getErrors().size());
+        assertEquals(400, ((Problem) Objects.requireNonNull(actualHandleMissingServletRequestParameterResult.getBody())).getStatus());
         List<String> getResult = httpHeaders.get(HttpHeaders.CONTENT_TYPE);
         assertEquals(1, Objects.requireNonNull(getResult).size());
         assertEquals("application/json", getResult.get(0));
@@ -76,8 +75,7 @@ class CustomExceptionHandlerTest {
         assertTrue(actualHandleMissingServletRequestParameterResult.hasBody());
         assertEquals(1, actualHandleMissingServletRequestParameterResult.getHeaders().size());
         assertEquals(HttpStatus.BAD_REQUEST, actualHandleMissingServletRequestParameterResult.getStatusCode());
-        assertEquals(400, ((Problem) Objects.requireNonNull(actualHandleMissingServletRequestParameterResult.getBody())).getStatus().intValue());
-        assertEquals(1, ((Problem) actualHandleMissingServletRequestParameterResult.getBody()).getErrors().size());
+        assertEquals(400, ((Problem) Objects.requireNonNull(actualHandleMissingServletRequestParameterResult.getBody())).getStatus());
     }
 
     /**
@@ -94,8 +92,7 @@ class CustomExceptionHandlerTest {
         assertEquals(1, actualHandleResourceNotFoundExceptionResult.getHeaders().size());
         assertEquals(HttpStatus.NOT_FOUND, actualHandleResourceNotFoundExceptionResult.getStatusCode());
         Problem body = actualHandleResourceNotFoundExceptionResult.getBody();
-        assertEquals(404, Objects.requireNonNull(body).getStatus().intValue());
-        assertEquals(1, body.getErrors().size());
+        assertEquals(404, Objects.requireNonNull(body).getStatus());
     }
 
     /**
@@ -111,8 +108,7 @@ class CustomExceptionHandlerTest {
         assertEquals(1, actualHandleResourceConflictExceptionResult.getHeaders().size());
         assertEquals(HttpStatus.CONFLICT, actualHandleResourceConflictExceptionResult.getStatusCode());
         Problem body = actualHandleResourceConflictExceptionResult.getBody();
-        assertEquals(409, Objects.requireNonNull(body).getStatus().intValue());
-        assertEquals(1, body.getErrors().size());
+        assertEquals(409, Objects.requireNonNull(body).getStatus());
     }
 
     /**
@@ -128,8 +124,7 @@ class CustomExceptionHandlerTest {
         assertEquals(1, actualHandleInvalidRequestExceptionResult.getHeaders().size());
         assertEquals(HttpStatus.BAD_REQUEST, actualHandleInvalidRequestExceptionResult.getStatusCode());
         Problem body = actualHandleInvalidRequestExceptionResult.getBody();
-        assertEquals(400, Objects.requireNonNull(body).getStatus().intValue());
-        assertEquals(1, body.getErrors().size());
+        assertEquals(400, Objects.requireNonNull(body).getStatus());
     }
 
     /**
@@ -145,8 +140,7 @@ class CustomExceptionHandlerTest {
         assertTrue(actualHandleExceptionResult.getHeaders().isEmpty());
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, actualHandleExceptionResult.getStatusCode());
         Problem body = actualHandleExceptionResult.getBody();
-        assertEquals(1, Objects.requireNonNull(body).getErrors().size());
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), body.getStatus().intValue());
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), body.getStatus());
     }
 
     @Test
@@ -172,8 +166,7 @@ class CustomExceptionHandlerTest {
         assertEquals(1, actualHandleInvalidRequestExceptionResult.getHeaders().size());
         assertEquals(HttpStatus.BAD_REQUEST, actualHandleInvalidRequestExceptionResult.getStatusCode());
         Problem body = actualHandleInvalidRequestExceptionResult.getBody();
-        assertEquals(400, Objects.requireNonNull(body).getStatus().intValue());
-        assertEquals(1, body.getErrors().size());
+        assertEquals(400, Objects.requireNonNull(body).getStatus());
     }
 
 
