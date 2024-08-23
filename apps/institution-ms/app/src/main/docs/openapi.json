@@ -219,7 +219,7 @@
     },
     "/delegations/from-taxcode" : {
       "post" : {
-        "tags" : [ "Delegation" ],
+        "tags" : [ "Delegation", "internal-v1" ],
         "summary" : "Create an association between institution and technical partner using taxCode for both instead of internal id. It is useful when we don't know institution's internal id.",
         "description" : "Create an association between institution and technical partner using taxCode for both instead of internal id. It is useful when we don't know institution's internal id.",
         "operationId" : "createDelegationFromInstitutionsTaxCodeUsingPOST",
@@ -337,7 +337,7 @@
     },
     "/v2/delegations" : {
       "get" : {
-        "tags" : [ "Delegation", "internal-v1" ],
+        "tags" : [ "Delegation" ],
         "summary" : "Retrieve institution's delegations with pagination",
         "description" : "Retrieve institution's delegations with pagination",
         "operationId" : "getDelegationsUsingGET_1",

@@ -72,6 +72,8 @@ public class DelegationController {
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "${swagger.mscore.delegation.createFromTaxCode}", notes = "${swagger.mscore.delegation.createFromTaxCode}")
     @PostMapping(value = "/from-taxcode", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Tag(name = "Delegation")
+    @Tag(name = "internal-v1")
     public ResponseEntity<DelegationResponse> createDelegationFromInstitutionsTaxCode(@RequestBody @Valid DelegationRequestFromTaxcode delegation) {
         CustomExceptionMessage.setCustomMessage(GenericError.CREATE_DELEGATION_ERROR);
         Delegation saved = delegationService.createDelegationFromInstitutionsTaxCode(delegationMapper.toDelegation(delegation));
