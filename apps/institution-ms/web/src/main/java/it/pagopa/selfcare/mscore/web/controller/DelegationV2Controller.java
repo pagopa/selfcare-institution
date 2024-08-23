@@ -3,6 +3,7 @@
     import io.swagger.annotations.Api;
     import io.swagger.annotations.ApiOperation;
     import io.swagger.annotations.ApiParam;
+    import io.swagger.v3.oas.annotations.tags.Tag;
     import it.pagopa.selfcare.mscore.constant.GenericError;
     import it.pagopa.selfcare.mscore.constant.Order;
     import it.pagopa.selfcare.mscore.core.DelegationService;
@@ -49,6 +50,8 @@
          */
         @ApiOperation(value = "${swagger.mscore.institutions.delegationsV2}", notes = "${swagger.mscore.institutions.delegationsv2}")
         @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+        @Tag(name = "Delegation")
+        @Tag(name = "internal-v1")
         public ResponseEntity<DelegationWithPaginationResponse> getDelegations(@ApiParam("${swagger.mscore.institutions.model.institutionId}")
                                                                        @RequestParam(name = "institutionId", required = false) String institutionId,
                                                                        @ApiParam("${swagger.mscore.institutions.model.institutionId}")

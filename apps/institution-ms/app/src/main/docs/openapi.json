@@ -337,7 +337,7 @@
     },
     "/v2/delegations" : {
       "get" : {
-        "tags" : [ "Delegation" ],
+        "tags" : [ "Delegation", "internal-v1" ],
         "summary" : "Retrieve institution's delegations with pagination",
         "description" : "Retrieve institution's delegations with pagination",
         "operationId" : "getDelegationsUsingGET_1",
