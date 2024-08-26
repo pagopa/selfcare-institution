@@ -420,7 +420,9 @@ public class InstitutionController {
                                                                        @PathVariable("id") String id) {
         CustomExceptionMessage.setCustomMessage(GenericError.GET_INSTITUTION_BY_ID_ERROR);
         Institution institution = institutionService.retrieveInstitutionById(id);
-        return ResponseEntity.ok().body(institutionResourceMapper.toInstitutionResponse(institution));
+        InstitutionResponse institutionResponse = institutionResourceMapper.toInstitutionResponse(institution);
+        institutionResponse.setLogo(institutionService.getLogo(id));
+        return ResponseEntity.ok().body(institutionResponse);
     }
 
 

@@ -67,4 +67,6 @@ public interface InstitutionService {
 
     List<Institution> getInstitutionBrokers(String productId, InstitutionType type);
 
+    String getLogo(String institutionId);
+
 }

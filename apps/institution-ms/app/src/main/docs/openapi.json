@@ -3334,6 +3334,9 @@
           "istatCode" : {
             "type" : "string"
           },
+          "logo" : {
+            "type" : "string"
+          },
           "onboarding" : {
             "type" : "array",
             "items" : {

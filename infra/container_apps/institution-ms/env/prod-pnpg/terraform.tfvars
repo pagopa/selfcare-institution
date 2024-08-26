@@ -36,6 +36,10 @@ app_settings = [
     value = "https://selfcare.pagopa.it"
   },
   {
+    name  = "LOGO_URL"
+    value = "https://pnpg.selfcare.pagopa.it/institutions/"
+  },
+  {
     name  = "MAIL_TEMPLATE_DELEGATION_NOTIFICATION_PATH"
     value = "contracts/template/mail/delegation-notification/1.0.0.json"
   },
