@@ -267,6 +267,7 @@ class InstitutionControllerTest {
         SecurityContext securityContext = Mockito.mock(SecurityContext.class);
         SecurityContextHolder.setContext(securityContext);
         when(institutionService.retrieveInstitutionById("42")).thenReturn(staticInstitution);
+        when(institutionService.getLogo("42")).thenReturn("logoUrl");
         staticInstitution.setId("id");
         MockHttpServletRequestBuilder requestBuilder = get("/institutions/{id}", "42");
         ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(institutionController)

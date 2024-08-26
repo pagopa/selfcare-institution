@@ -409,4 +409,9 @@ public class InstitutionServiceImpl implements InstitutionService {
     public List<Institution> getInstitutionBrokers(String productId, InstitutionType type) {
         return institutionConnector.findBrokers(productId, type);
     }
+
+    @Override
+    public String getLogo(String institutionId) {
+        return coreConfig.getLogoUrl().concat(institutionId).concat("/logo.png");
+    }
 }
