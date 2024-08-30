@@ -13,6 +13,7 @@ import java.util.Map;
 @ConfigurationProperties(prefix = "mscore.institution-send-mail.scheduler")
 public class InstitutionSendMailConfig {
 
+    String epochDatePecNotification;
     Boolean pecNotificationDisabled;
     Map<String, Integer> products;
 }

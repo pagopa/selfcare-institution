@@ -13,9 +13,7 @@ import it.pagopa.selfcare.mscore.model.institution.Onboarding;
 import it.pagopa.selfcare.mscore.model.onboarding.VerifyOnboardingFilters;
 import it.pagopa.selfcare.mscore.model.pecnotification.PecNotification;
 import lombok.extern.slf4j.Slf4j;
-
 import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -36,9 +34,6 @@ public class OnboardingServiceImpl implements OnboardingService {
     private final InstitutionService institutionService;
     private final InstitutionConnector institutionConnector;
     private final PecNotificationConnector pecNotificationConnector;
-    private final Integer sendingFrequencyPecNotification;
-    private final String epochDatePecNotification;
-    private final LocalDate currentDate = LocalDate.now();
 
     private final InstitutionSendMailConfig institutionSendMailConfig;
 
@@ -46,16 +41,12 @@ public class OnboardingServiceImpl implements OnboardingService {
                                  InstitutionService institutionService,
                                  InstitutionConnector institutionConnector,
                                  PecNotificationConnector pecNotificationConnector,
-                                 @Value("${mscore.sending-frequency-pec-notification}") Integer sendingFrequencyPecNotification,
-                                 @Value("${mscore.epoch-date-pec-notification}") String epochDatePecNotification,
                                  InstitutionSendMailConfig institutionSendMailConfig) {
 
         this.onboardingDao = onboardingDao;
         this.institutionService = institutionService;
         this.institutionConnector = institutionConnector;
         this.pecNotificationConnector = pecNotificationConnector;
-        this.sendingFrequencyPecNotification = sendingFrequencyPecNotification;
-        this.epochDatePecNotification = epochDatePecNotification;
         this.institutionSendMailConfig = institutionSendMailConfig;
     }
 
@@ -85,7 +76,7 @@ public class OnboardingServiceImpl implements OnboardingService {
         }
     }
 
-    public void insertPecNotification(String institutionId, String productId, String digitalAddress) {
+    public void insertPecNotification(String institutionId, String productId, String digitalAddress, OffsetDateTime createdAtOnboarding) {
 
         //If sending mail ActiveUsers enabled for this product
         if (!institutionSendMailConfig.getPecNotificationDisabled()
@@ -96,7 +87,8 @@ public class OnboardingServiceImpl implements OnboardingService {
             pecNotification.setCreatedAt(Instant.now());
             pecNotification.setProductId(productId);
             pecNotification.setInstitutionId(institutionId);
-            pecNotification.setModuleDayOfTheEpoch(calculateModuleDayOfTheEpoch());
+            pecNotification.setModuleDayOfTheEpoch(calculateModuleDayOfTheEpoch(institutionSendMailConfig.getEpochDatePecNotification(),
+                    createdAtOnboarding, institutionSendMailConfig.getProducts().get(productId)));
             pecNotification.setDigitalAddress(digitalAddress);
 
             if (!pecNotificationConnector.insertPecNotification(pecNotification)) {
@@ -106,10 +98,10 @@ public class OnboardingServiceImpl implements OnboardingService {
 
     }
 
-    public int calculateModuleDayOfTheEpoch() {
-        LocalDate epochStart = LocalDate.parse(this.epochDatePecNotification);
-        long daysDiff = ChronoUnit.DAYS.between(epochStart, this.currentDate);
-        return (int) (daysDiff % this.sendingFrequencyPecNotification);
+    public int calculateModuleDayOfTheEpoch(String epochDatePecNotification, OffsetDateTime createdAtOnboarding, Integer sendingFrequencyPecNotification) {
+        LocalDate epochStart = LocalDate.parse(epochDatePecNotification);
+        long daysDiff = ChronoUnit.DAYS.between(epochStart, createdAtOnboarding);
+        return (int) (daysDiff % sendingFrequencyPecNotification);
     }
 
     @Override
@@ -117,7 +109,7 @@ public class OnboardingServiceImpl implements OnboardingService {
             productId, Onboarding onboarding, StringBuilder httpStatus) {
 
         Institution institution = persistAndGetInstitution(institutionId, productId, onboarding, httpStatus);
-        insertPecNotification(institutionId, productId, institution.getDigitalAddress());
+        insertPecNotification(institutionId, productId, institution.getDigitalAddress(), onboarding.getCreatedAt());
 
         return institution;
     }
@@ -139,7 +131,7 @@ public class OnboardingServiceImpl implements OnboardingService {
                 .filter(item -> item.getProductId().equals(productId) && UtilEnumList.VALID_RELATIONSHIP_STATES.contains(item.getStatus()))
                 .findAny()).isPresent()) {
 
-        	httpStatus.append(HttpStatus.OK.value());
+            httpStatus.append(HttpStatus.OK.value());
             return institution;
         }
 
