@@ -751,7 +751,7 @@
         "tags" : [ "Institution", "external-v2", "support", "support-pnpg" ],
         "summary" : "Gets institutions filtering by taxCode and/or subunitCode",
         "description" : "Gets institutions filtering by taxCode and/or subunitCode",
-        "operationId" : "getInstitutionsUsingGET",
+        "operationId" : "getInstitutionsByTaxCodeUsingGET",
         "parameters" : [ {
           "name" : "taxCode",
           "in" : "query",
@@ -3819,7 +3819,7 @@
           },
           "role" : {
             "type" : "string",
-            "enum" : [ "DELEGATE", "MANAGER", "OPERATOR", "SUB_DELEGATE" ]
+            "enum" : [ "ADMIN_EA", "DELEGATE", "MANAGER", "OPERATOR", "SUB_DELEGATE" ]
           },
           "roleLabel" : {
             "type" : "string"

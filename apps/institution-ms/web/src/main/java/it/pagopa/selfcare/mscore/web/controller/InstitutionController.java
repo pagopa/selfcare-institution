@@ -73,7 +73,7 @@ public class InstitutionController {
     @Tag(name = "external-v2")
     @Tag(name = "Institution")
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "${swagger.mscore.institutions}", notes = "${swagger.mscore.institutions}")
+    @ApiOperation(value = "${swagger.mscore.institutions}", notes = "${swagger.mscore.institutions}", nickname = "getInstitutionsByTaxCodeUsingGET")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<InstitutionsResponse> getInstitutions(@ApiParam("${swagger.mscore.institutions.model.taxCode}")
                                                                 @RequestParam(value = "taxCode", required = false) String taxCode,
