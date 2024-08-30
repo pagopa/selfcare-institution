@@ -77,6 +77,7 @@ public class InstitutionSendMailScheduledServiceImpl implements InstitutionSendM
         return Multi.createBy().repeating()
                 .uni(AtomicInteger::new,
                         currentPage -> runQueryAndSendNotification(moduleDayOfTheEpoch, currentPage.getAndIncrement(), productId))
+                .withDelay(Duration.ofSeconds(30))
                 .until(Boolean.FALSE::equals)
                 .collect()
                 .asList()
@@ -84,7 +85,7 @@ public class InstitutionSendMailScheduledServiceImpl implements InstitutionSendM
 
     }
 
-    private Uni<Boolean> runQueryAndSendNotification(Long moduleDayOfTheEpoch, int page, String productId) {
+    public Uni<Boolean> runQueryAndSendNotification(Long moduleDayOfTheEpoch, int page, String productId) {
         var pecNotificationPage = PecNotification.find(PecNotification.Fields.moduleDayOfTheEpoch.name() + "=?1 AND "
                         + PecNotification.Fields.productId.name() + "=?2", moduleDayOfTheEpoch, productId)
                 .page(page, querySize);
