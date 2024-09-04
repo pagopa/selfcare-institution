@@ -56,7 +56,7 @@ public class PecNotificationConnectorImpl implements PecNotificationConnector {
 
         if (exist){
         	log.trace("Cannot insert the PecNotification: {}, as it already exists in the collection", pecNotification.toString());
-            return false;
+            return true;
         }
 
         repository.insert(pecNotificationEntity);
