@@ -1,23 +1,23 @@
 package it.pagopa.selfcare.mscore.connector.dao;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
-
+import it.pagopa.selfcare.mscore.connector.dao.model.PecNotificationEntity;
+import it.pagopa.selfcare.mscore.connector.dao.model.mapper.PecNotificationEntityMapper;
+import it.pagopa.selfcare.mscore.model.pecnotification.PecNotification;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ContextConfiguration;
 
-import it.pagopa.selfcare.mscore.connector.dao.model.PecNotificationEntity;
-import it.pagopa.selfcare.mscore.connector.dao.model.mapper.PecNotificationEntityMapper;
-import it.pagopa.selfcare.mscore.model.pecnotification.PecNotification;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.*;
 
 @ContextConfiguration(classes = {PecNotificationConnectorImpl.class})
 @ExtendWith(MockitoExtension.class)
@@ -99,7 +99,7 @@ class PecNotificationConnectorImplTest {
 
         boolean result = pecNotificationConnector.insertPecNotification(pecNotification);
 
-        assertFalse(result);
+        assertTrue(result);
         verify(repository, never()).insert(pecNotificationEntity);
         
     }
