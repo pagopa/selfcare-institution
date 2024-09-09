@@ -97,8 +97,9 @@ public class InstitutionSendMailScheduledServiceImpl implements InstitutionSendM
                     .onItem().ifNull().continueWith(ArrayList::new);
 
         return uniResultEntity
+                .onItem().invoke(pecNotifications -> log.info(String.format("[%s, moduleDayOfTheEpoch=%d] Page %d processed, iteration has been found %d pec notifications", productId, moduleDayOfTheEpoch, page, pecNotifications.size())))
                 .onItem().transformToUni(this::retrievePecNotificationListAndSendMail)
-                .onItem().invoke(mailSize -> log.info(String.format("[%s, moduleDayOfTheEpoch=%d] Page %d processed, mailSize=%d", productId, moduleDayOfTheEpoch, page, mailSize)))
+                .onItem().invoke(mailSize -> log.info(String.format("[%s, moduleDayOfTheEpoch=%d] Page %d processed, iteration has been send %d mails", productId, moduleDayOfTheEpoch, page, mailSize)))
                 .replaceWith(pecNotificationPage.hasNextPage())
                 .onFailure().invoke(throwable -> log.error(String.format("[%s, moduleDayOfTheEpoch=%d] Error during send mail page %d processed, error=%s", productId, moduleDayOfTheEpoch, page, throwable.getMessage())));
 

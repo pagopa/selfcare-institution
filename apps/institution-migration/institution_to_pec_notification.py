@@ -45,7 +45,7 @@ def institution_to_pec_notification(client):
 
         for institution in institutions_pages:
             for onboarding in institution.get('onboarding', []):
-                if onboarding.get('status') == 'ACTIVE' and onboarding["productId"] in productIds:
+                if onboarding.get('status') == 'ACTIVE' and onboarding["productId"] in productIds and institution.get("digitalAddress"):
                     pec_notification_document = {
                         "institutionId": institution["_id"],
                         "productId": onboarding["productId"],
