@@ -15,6 +15,7 @@ public enum Origin {
     UNKNOWN("UNKNOWN"),
     ADE("ADE"),
     INFOCAMERE("INFOCAMERE"),
+    PDND_INFOCAMERE("PDND_INFOCAMERE"),
     IVASS("IVASS");
 
     private final String value;
