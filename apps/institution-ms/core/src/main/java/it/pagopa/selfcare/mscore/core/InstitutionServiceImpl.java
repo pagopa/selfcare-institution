@@ -105,7 +105,7 @@ public class InstitutionServiceImpl implements InstitutionService {
     }
 
     @Override
-    public Institution createInstitutionFromIpa(String taxCode, InstitutionPaSubunitType subunitType, String subunitCode, List<InstitutionGeographicTaxonomies> geographicTaxonomies, InstitutionType institutionType) {
+    public Institution createInstitutionFromIpa(String taxCode, InstitutionPaSubunitType subunitType, String subunitCode, List<InstitutionGeographicTaxonomies> geographicTaxonomies, InstitutionType institutionType, String supportEmail, String supportPhone) {
         CreateInstitutionStrategy institutionStrategy = createInstitutionStrategyFactory.createInstitutionStrategyIpa();
         return institutionStrategy.createInstitution(CreateInstitutionStrategyInput.builder()
                 .taxCode(taxCode)
@@ -113,6 +113,8 @@ public class InstitutionServiceImpl implements InstitutionService {
                 .subunitType(subunitType)
                 .geographicTaxonomies(geographicTaxonomies)
                 .institutionType(institutionType)
+                .supportEmail(supportEmail)
+                .supportPhone(supportPhone)
                 .build());
     }
 
@@ -139,6 +141,8 @@ public class InstitutionServiceImpl implements InstitutionService {
                         .subunitType(Optional.ofNullable(institution.getSubunitType())
                                 .map(InstitutionPaSubunitType::valueOf)
                                 .orElse(null))
+                        .supportEmail(institution.getSupportEmail())
+                        .supportPhone(institution.getSupportPhone())
                         .build());
     }
 
@@ -151,6 +155,8 @@ public class InstitutionServiceImpl implements InstitutionService {
                         .subunitType(Optional.ofNullable(institution.getSubunitType())
                                 .map(InstitutionPaSubunitType::valueOf)
                                 .orElse(null))
+                        .supportEmail(institution.getSupportEmail())
+                        .supportPhone(institution.getSupportPhone())
                         .build());
     }
 
@@ -159,6 +165,8 @@ public class InstitutionServiceImpl implements InstitutionService {
         return createInstitutionStrategyFactory.createInstitutionStrategyIvass(institution)
                 .createInstitution(CreateInstitutionStrategyInput.builder()
                         .ivassCode(institution.getOriginId())
+                        .supportEmail(institution.getSupportEmail())
+                        .supportPhone(institution.getSupportPhone())
                         .build());
     }
 
@@ -400,5 +408,10 @@ public class InstitutionServiceImpl implements InstitutionService {
     @Override
     public List<Institution> getInstitutionBrokers(String productId, InstitutionType type) {
         return institutionConnector.findBrokers(productId, type);
+    }
+
+    @Override
+    public String getLogo(String institutionId) {
+        return coreConfig.getLogoUrl().concat(institutionId).concat("/logo.png");
     }
 }

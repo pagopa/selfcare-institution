@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
 import static it.pagopa.selfcare.mscore.constant.GenericError.CREATE_INSTITUTION_ERROR;
 
@@ -24,16 +25,22 @@ public class CreateInstitutionStrategyRaw extends CreateInstitutionStrategyCommo
     @Override
     public Institution createInstitution(CreateInstitutionStrategyInput strategyInput) {
 
-        checkIfAlreadyExistsByTaxCodeAndSubunitCode(strategyInput.getTaxCode(), strategyInput.getSubunitCode());
+        List<Institution> institutions = institutionConnector.findByTaxCodeAndSubunitCode(strategyInput.getTaxCode(), strategyInput.getSubunitCode());
 
-        institution.setExternalId(getExternalId(strategyInput));
-        if(!StringUtils.hasText(institution.getOrigin())){
-            institution.setOrigin(Origin.SELC.getValue());
+        if (institutions.isEmpty()) {
+            institution.setExternalId(getExternalId(strategyInput));
+            if(!StringUtils.hasText(institution.getOrigin())){
+                institution.setOrigin(Origin.SELC.getValue());
+            }
+            if(!StringUtils.hasText(institution.getOriginId())){
+                institution.setOriginId("SELC_" + institution.getExternalId());
+            }
+            institution.setCreatedAt(OffsetDateTime.now());
+            setContacts(strategyInput, institution);
+        } else {
+            institution = institutions.get(0);
+            setUpdatedFields(strategyInput, institution);
         }
-        if(!StringUtils.hasText(institution.getOriginId())){
-            institution.setOriginId("SELC_" + institution.getExternalId());
-        }
-        institution.setCreatedAt(OffsetDateTime.now());
 
         try {
             return institutionConnector.save(institution);

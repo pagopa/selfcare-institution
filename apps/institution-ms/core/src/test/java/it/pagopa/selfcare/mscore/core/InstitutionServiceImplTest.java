@@ -314,7 +314,7 @@ class InstitutionServiceImplTest {
     void testCreateInstitutionFromIpa() {
         when(createInstitutionStrategyFactory.createInstitutionStrategyIpa()).thenReturn(createInstitutionStrategy);
         when(createInstitutionStrategy.createInstitution(any())).thenReturn(new Institution());
-        Institution institution = institutionServiceImpl.createInstitutionFromIpa("id", InstitutionPaSubunitType.AOO,"id", List.of(), InstitutionType.PA);
+        Institution institution = institutionServiceImpl.createInstitutionFromIpa("id", InstitutionPaSubunitType.AOO,"id", List.of(), InstitutionType.PA, "email", "phone");
         assertNotNull(institution);
     }
 
@@ -1096,6 +1096,16 @@ class InstitutionServiceImplTest {
         assertEquals(institutions.get(0).getId(), institution.getId());
         verify(institutionConnector).findByTaxCodeAndSubunitCode(any(), any());
 
+    }
+
+    @Test
+    void getLogoTest() {
+        String institutionId = "institutionId";
+        String expectedUrl = "https://test.it/institutions/institutionId/logo.png";
+        String baseUrl = "https://test.it/institutions/";
+        when(coreConfig.getLogoUrl()).thenReturn(baseUrl);
+        String actual = institutionServiceImpl.getLogo(institutionId);
+        assertEquals(expectedUrl, actual);
     }
 
 }

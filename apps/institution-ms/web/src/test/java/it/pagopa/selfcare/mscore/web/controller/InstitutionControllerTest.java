@@ -267,6 +267,7 @@ class InstitutionControllerTest {
         SecurityContext securityContext = Mockito.mock(SecurityContext.class);
         SecurityContextHolder.setContext(securityContext);
         when(institutionService.retrieveInstitutionById("42")).thenReturn(staticInstitution);
+        when(institutionService.getLogo("42")).thenReturn("logoUrl");
         staticInstitution.setId("id");
         MockHttpServletRequestBuilder requestBuilder = get("/institutions/{id}", "42");
         ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(institutionController)
@@ -329,7 +330,7 @@ class InstitutionControllerTest {
         institution.setParentDescription("parentDescription");
         institution.setRootParentId("rootParentId");
 
-        when(institutionService.createInstitutionFromIpa(any(), any(), any(), any(), any())).thenReturn(institution);
+        when(institutionService.createInstitutionFromIpa(any(), any(), any(), any(), any(), any(), any())).thenReturn(institution);
 
         //Then
         MockHttpServletRequestBuilder requestBuilder = post("/institutions/from-ipa/")
@@ -344,7 +345,7 @@ class InstitutionControllerTest {
 
         ArgumentCaptor<List<InstitutionGeographicTaxonomies>> captorGeo = ArgumentCaptor.forClass(List.class);
         verify(institutionService, times(1))
-                .createInstitutionFromIpa(any(),any(),any(),captorGeo.capture(), any());
+                .createInstitutionFromIpa(any(),any(),any(),captorGeo.capture(), any(), any(), any());
         assertEquals(institutionFromIpaPost.getGeographicTaxonomies().size(), captorGeo.getValue().size());
         assertEquals(geoTaxonomies.getCode(), captorGeo.getValue().get(0).getCode());
         assertEquals(geoTaxonomies.getDesc(), captorGeo.getValue().get(0).getDesc());

@@ -219,7 +219,7 @@
     },
     "/delegations/from-taxcode" : {
       "post" : {
-        "tags" : [ "Delegation" ],
+        "tags" : [ "Delegation", "internal-v1" ],
         "summary" : "Create an association between institution and technical partner using taxCode for both instead of internal id. It is useful when we don't know institution's internal id.",
         "description" : "Create an association between institution and technical partner using taxCode for both instead of internal id. It is useful when we don't know institution's internal id.",
         "operationId" : "createDelegationFromInstitutionsTaxCodeUsingPOST",
@@ -2973,6 +2973,12 @@
             "type" : "string",
             "enum" : [ "AOO", "UO" ]
           },
+          "supportEmail" : {
+            "type" : "string"
+          },
+          "supportPhone" : {
+            "type" : "string"
+          },
           "taxCode" : {
             "type" : "string"
           }
@@ -3328,6 +3334,9 @@
           "istatCode" : {
             "type" : "string"
           },
+          "logo" : {
+            "type" : "string"
+          },
           "onboarding" : {
             "type" : "array",
             "items" : {
@@ -3473,6 +3482,21 @@
             "items" : {
               "$ref" : "#/components/schemas/InstitutionResponse"
             }
+          }
+        }
+      },
+      "InvalidParam" : {
+        "title" : "InvalidParam",
+        "required" : [ "name", "reason" ],
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string",
+            "description" : "Invalid parameter name."
+          },
+          "reason" : {
+            "type" : "string",
+            "description" : "Invalid parameter reason."
           }
         }
       },
@@ -3726,23 +3750,40 @@
       },
       "Problem" : {
         "title" : "Problem",
+        "required" : [ "status", "title" ],
         "type" : "object",
         "properties" : {
-          "errors" : {
+          "detail" : {
+            "type" : "string",
+            "description" : "Human-readable description of this specific problem."
+          },
+          "instance" : {
+            "type" : "string",
+            "description" : "A URI that describes where the problem occurred."
+          },
+          "invalidParams" : {
             "type" : "array",
+            "description" : "A list of invalid parameters details.",
             "items" : {
-              "$ref" : "#/components/schemas/ProblemError"
+              "$ref" : "#/components/schemas/InvalidParam"
             }
           },
           "status" : {
             "type" : "integer",
-            "format" : "int32"
+            "description" : "The HTTP status code.",
+            "format" : "int32",
+            "example" : 500
+          },
+          "title" : {
+            "type" : "string",
+            "description" : "Short human-readable summary of the problem."
+          },
+          "type" : {
+            "type" : "string",
+            "description" : "A URL to a page with more details regarding the problem."
           }
-        }
-      },
-      "ProblemError" : {
-        "title" : "ProblemError",
-        "type" : "object"
+        },
+        "description" : "A \"problem detail\" as a way to carry machine-readable details of errors (https://datatracker.ietf.org/doc/html/rfc7807)"
       },
       "RootParentResponse" : {
         "title" : "RootParentResponse",

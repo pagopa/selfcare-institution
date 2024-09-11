@@ -19,4 +19,6 @@ public class CreateInstitutionStrategyInput {
     private List<InstitutionGeographicTaxonomies> geographicTaxonomies;
     private String subunitCode;
     private InstitutionType institutionType;
+    private String supportEmail;
+    private String supportPhone;
 }

@@ -124,7 +124,8 @@ public class InstitutionController {
                 .orElse(List.of());
 
         Institution saved = institutionService.createInstitutionFromIpa(institutionFromIpaPost.getTaxCode(),
-                institutionFromIpaPost.getSubunitType(), institutionFromIpaPost.getSubunitCode(), geographicTaxonomies, institutionFromIpaPost.getInstitutionType());
+                institutionFromIpaPost.getSubunitType(), institutionFromIpaPost.getSubunitCode(), geographicTaxonomies,
+                institutionFromIpaPost.getInstitutionType(), institutionFromIpaPost.getSupportEmail(), institutionFromIpaPost.getSupportPhone());
         return ResponseEntity.status(HttpStatus.CREATED).body(institutionResourceMapper.toInstitutionResponse(saved));
     }
 
@@ -419,7 +420,9 @@ public class InstitutionController {
                                                                        @PathVariable("id") String id) {
         CustomExceptionMessage.setCustomMessage(GenericError.GET_INSTITUTION_BY_ID_ERROR);
         Institution institution = institutionService.retrieveInstitutionById(id);
-        return ResponseEntity.ok().body(institutionResourceMapper.toInstitutionResponse(institution));
+        InstitutionResponse institutionResponse = institutionResourceMapper.toInstitutionResponse(institution);
+        institutionResponse.setLogo(institutionService.getLogo(id));
+        return ResponseEntity.ok().body(institutionResponse);
     }
 
 

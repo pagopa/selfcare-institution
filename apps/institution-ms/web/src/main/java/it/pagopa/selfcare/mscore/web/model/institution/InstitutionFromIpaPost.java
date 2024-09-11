@@ -16,4 +16,6 @@ public class InstitutionFromIpaPost {
     private InstitutionPaSubunitType subunitType;
     private List<GeoTaxonomies> geographicTaxonomies;
     private InstitutionType institutionType;
+    private String supportEmail;
+    private String supportPhone;
 }

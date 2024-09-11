@@ -12,7 +12,7 @@ module "mongodb_collection_pec_notifications" {
     unique = true
     },
     {
-      keys   = ["moduleDayOfTheEpoch"]
+      keys   = ["moduleDayOfTheEpoch","productId"]
       unique = false
     }
   ]

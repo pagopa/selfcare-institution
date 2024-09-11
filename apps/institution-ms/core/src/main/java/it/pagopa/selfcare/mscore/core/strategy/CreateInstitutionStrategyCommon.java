@@ -2,14 +2,14 @@ package it.pagopa.selfcare.mscore.core.strategy;
 
 import it.pagopa.selfcare.mscore.api.InstitutionConnector;
 import it.pagopa.selfcare.mscore.constant.CustomError;
+import it.pagopa.selfcare.mscore.core.strategy.input.CreateInstitutionStrategyInput;
 import it.pagopa.selfcare.mscore.exception.ResourceConflictException;
 import it.pagopa.selfcare.mscore.model.institution.Institution;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.time.OffsetDateTime;
 import java.util.List;
-
-import static it.pagopa.selfcare.mscore.constant.CustomError.CREATE_INSTITUTION_ORIGIN_CONFLICT;
 
 @Slf4j
 @Component
@@ -28,11 +28,26 @@ public class CreateInstitutionStrategyCommon {
                     CustomError.CREATE_INSTITUTION_CONFLICT.getCode());
     }
 
-    protected void checkIfAlreadyExistByOriginAndOriginId(String origin, String originId) {
-        List<Institution> institutions = institutionConnector.findByOriginAndOriginId(origin, originId);
-        if (!institutions.isEmpty())
-            throw new ResourceConflictException(String.format(
-                    CREATE_INSTITUTION_ORIGIN_CONFLICT.getMessage(), origin, originId),
-                    CREATE_INSTITUTION_ORIGIN_CONFLICT.getCode());
+    protected static void setUpdatedFields(CreateInstitutionStrategyInput strategyInput, Institution toSavedOrUpdate) {
+        if (strategyInput.getDescription() != null) {
+            toSavedOrUpdate.setDescription(strategyInput.getDescription());
+        }
+        setContacts(strategyInput, toSavedOrUpdate);
+        toSavedOrUpdate.setUpdatedAt(OffsetDateTime.now());
     }
+
+    protected static void setContacts(CreateInstitutionStrategyInput strategyInput, Institution toSavedOrUpdate) {
+        if (strategyInput.getSupportEmail() != null) {
+            toSavedOrUpdate.setSupportEmail(strategyInput.getSupportEmail());
+        }
+
+        if (strategyInput.getSupportPhone() != null) {
+            toSavedOrUpdate.setSupportPhone(strategyInput.getSupportPhone());
+        }
+    }
+
+
+
+
+
 }

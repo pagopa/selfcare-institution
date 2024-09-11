@@ -16,6 +16,7 @@ import java.util.List;
 public class CoreConfig {
 
     private String logoPath;
+    private String logoUrl;
     private String senderMail;
     private List<String> destinationMails;
     private String institutionAlternativeEmail;

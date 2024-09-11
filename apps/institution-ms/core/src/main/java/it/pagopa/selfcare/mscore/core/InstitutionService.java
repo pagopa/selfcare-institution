@@ -23,7 +23,7 @@ public interface InstitutionService {
 
     List<Institution> getInstitutions(String taxCode, String subunitCode);
 
-    Institution createInstitutionFromIpa(String taxCode, InstitutionPaSubunitType subunitType, String subunitCode, List<InstitutionGeographicTaxonomies> geographicTaxonomies, InstitutionType institutionType);
+    Institution createInstitutionFromIpa(String taxCode, InstitutionPaSubunitType subunitType, String subunitCode, List<InstitutionGeographicTaxonomies> geographicTaxonomies, InstitutionType institutionType, String supportEmail, String supportPhone);
 
     Institution createInstitutionFromPda(Institution institution, String injectionInstitutionType);
 
@@ -66,5 +66,7 @@ public interface InstitutionService {
     List<Institution> getInstitutionsByProductId(String productId, Integer page, Integer size);
 
     List<Institution> getInstitutionBrokers(String productId, InstitutionType type);
+
+    String getLogo(String institutionId);
 
 }
