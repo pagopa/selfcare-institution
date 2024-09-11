@@ -31,4 +31,19 @@ jobs:
         with:
           version_bump: ${{ inputs.version-bump }}
           github_path_token: ${{ secrets.GH_PAT_VARIABLES }}
+
+      - name: Trigger release ms UAT Release
+        run: |
+          gh workflow run release_institution_ms.yml \
+            --ref ${{ steps.create_branch.outputs.new_branch_name }}
+
+      - name: Trigger PNPG release ms UAT Release
+        run: |
+          gh workflow run release_institution_ms_pnpg.yml \
+            --ref ${{ steps.create_branch.outputs.new_branch_name }}
+
+      - name: Trigger release Send-Mail-Scheduler UAT Release
+        run: |
+          gh workflow run release_scheduler.yml \
+            --ref ${{ steps.create_branch.outputs.new_branch_name }}
   
