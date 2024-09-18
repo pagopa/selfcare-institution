@@ -43,7 +43,7 @@ public class InstitutionMapperCustom {
         response.setInstitutionId(institution.getId());
         response.setExternalId(institution.getExternalId());
         response.setDescription(institution.getDescription());
-        response.setInstitutionType(institution.getInstitutionType());
+        response.setInstitutionType(Optional.ofNullable(institution.getInstitutionType()).map(InstitutionType::name).orElse(null));
         response.setDigitalAddress(institution.getDigitalAddress());
         response.setAddress(institution.getAddress());
         response.setZipCode(institution.getZipCode());
@@ -411,7 +411,7 @@ public class InstitutionMapperCustom {
         response.setOrigin(institution.getOrigin());
         response.setOriginId(institution.getOriginId());
         response.setDescription(institution.getDescription());
-        response.setInstitutionType(institution.getInstitutionType());
+        response.setInstitutionType(Optional.ofNullable(institution.getInstitutionType()).map(InstitutionType::name).orElse(null));
         response.setDigitalAddress(institution.getDigitalAddress());
         response.setAddress(institution.getAddress());
         response.setZipCode(institution.getZipCode());

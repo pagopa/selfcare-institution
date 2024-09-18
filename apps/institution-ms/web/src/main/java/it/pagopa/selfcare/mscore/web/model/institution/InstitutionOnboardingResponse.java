@@ -1,6 +1,5 @@
 package it.pagopa.selfcare.mscore.web.model.institution;
 
-import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import lombok.Data;
 
 import java.time.OffsetDateTime;
@@ -15,7 +14,7 @@ public class InstitutionOnboardingResponse {
     private String origin;
     private String originId;
     private String description;
-    private InstitutionType institutionType;
+    private String institutionType;
     private String digitalAddress;
     private String address;
     private String zipCode;
