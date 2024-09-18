@@ -1,7 +1,6 @@
 package it.pagopa.selfcare.mscore.web.model.institution;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import it.pagopa.selfcare.commons.base.utils.InstitutionType;
 import it.pagopa.selfcare.mscore.web.model.onboarding.OnboardedProductResponse;
 import lombok.Data;
 
@@ -21,7 +20,7 @@ public class InstitutionResponse {
     @NotBlank
     private String originId;
     private String description;
-    private InstitutionType institutionType;
+    private String institutionType;
     private String digitalAddress;
     private String address;
     private String zipCode;

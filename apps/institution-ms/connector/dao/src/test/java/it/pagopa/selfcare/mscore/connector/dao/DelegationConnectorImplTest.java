@@ -1,6 +1,6 @@
 package it.pagopa.selfcare.mscore.connector.dao;
 
-import it.pagopa.selfcare.commons.base.utils.InstitutionType;
+import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import it.pagopa.selfcare.mscore.connector.dao.model.DelegationEntity;
 import it.pagopa.selfcare.mscore.connector.dao.model.mapper.DelegationEntityMapper;
 import it.pagopa.selfcare.mscore.connector.dao.model.mapper.DelegationEntityMapperImpl;

@@ -1,6 +1,5 @@
 package it.pagopa.selfcare.mscore.web.model.institution;
 
-import it.pagopa.selfcare.commons.base.utils.InstitutionType;
 import it.pagopa.selfcare.mscore.constant.Origin;
 import lombok.Data;
 
@@ -11,7 +10,7 @@ public class InstitutionBillingResponse {
     private Origin origin;
     private String originId;
     private String description;
-    private InstitutionType institutionType;
+    private String institutionType;
     private String digitalAddress;
     private String address;
     private String zipCode;

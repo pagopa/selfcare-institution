@@ -8,6 +8,7 @@ import it.pagopa.selfcare.mscore.model.user.ProductManagerInfo;
 import it.pagopa.selfcare.mscore.web.model.institution.*;
 import it.pagopa.selfcare.mscore.web.model.onboarding.OnboardedProducts;
 import it.pagopa.selfcare.mscore.web.model.onboarding.ProductInfo;
+import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -42,7 +43,7 @@ public class InstitutionMapperCustom {
         response.setInstitutionId(institution.getId());
         response.setExternalId(institution.getExternalId());
         response.setDescription(institution.getDescription());
-        response.setInstitutionType(institution.getInstitutionType());
+        response.setInstitutionType(Optional.ofNullable(institution.getInstitutionType()).map(InstitutionType::name).orElse(null));
         response.setDigitalAddress(institution.getDigitalAddress());
         response.setAddress(institution.getAddress());
         response.setZipCode(institution.getZipCode());
@@ -410,7 +411,7 @@ public class InstitutionMapperCustom {
         response.setOrigin(institution.getOrigin());
         response.setOriginId(institution.getOriginId());
         response.setDescription(institution.getDescription());
-        response.setInstitutionType(institution.getInstitutionType());
+        response.setInstitutionType(Optional.ofNullable(institution.getInstitutionType()).map(InstitutionType::name).orElse(null));
         response.setDigitalAddress(institution.getDigitalAddress());
         response.setAddress(institution.getAddress());
         response.setZipCode(institution.getZipCode());
@@ -536,7 +537,7 @@ public class InstitutionMapperCustom {
         bulkInstitution.setOrigin(inst.getOrigin());
         bulkInstitution.setOriginId(inst.getOriginId());
         bulkInstitution.setDescription(inst.getDescription());
-        bulkInstitution.setInstitutionType(inst.getInstitutionType());
+        bulkInstitution.setInstitutionType(Optional.ofNullable(inst.getInstitutionType()).map(InstitutionType::name).orElse(null));
         bulkInstitution.setDigitalAddress(inst.getDigitalAddress());
         bulkInstitution.setAddress(inst.getAddress());
         bulkInstitution.setZipCode(inst.getZipCode());
