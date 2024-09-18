@@ -2086,7 +2086,7 @@
           "style" : "simple",
           "schema" : {
             "type" : "string",
-            "enum" : [ "AS", "CON", "GSP", "PA", "PG", "PSP", "PT", "REC", "SA", "SCP" ]
+            "enum" : [ "AS", "CON", "GSP", "PA", "PG", "PRV", "PSP", "PT", "REC", "SA", "SCP" ]
           }
         } ],
         "responses" : {
@@ -2567,7 +2567,7 @@
           },
           "institutionType" : {
             "type" : "string",
-            "enum" : [ "AS", "CON", "GSP", "PA", "PG", "PSP", "PT", "REC", "SA", "SCP" ]
+            "enum" : [ "AS", "CON", "GSP", "PA", "PG", "PRV", "PSP", "PT", "REC", "SA", "SCP" ]
           },
           "origin" : {
             "type" : "string"
@@ -2817,7 +2817,7 @@
           },
           "institutionType" : {
             "type" : "string",
-            "enum" : [ "AS", "CON", "GSP", "PA", "PG", "PSP", "PT", "REC", "SA", "SCP" ]
+            "enum" : [ "AS", "CON", "GSP", "PA", "PG", "PRV", "PSP", "PT", "REC", "SA", "SCP" ]
           },
           "productId" : {
             "type" : "string"
@@ -2926,7 +2926,7 @@
           },
           "institutionType" : {
             "type" : "string",
-            "enum" : [ "AS", "CON", "GSP", "PA", "PG", "PSP", "PT", "REC", "SA", "SCP" ]
+            "enum" : [ "AS", "CON", "GSP", "PA", "PG", "PRV", "PSP", "PT", "REC", "SA", "SCP" ]
           },
           "origin" : {
             "type" : "string",
@@ -2964,7 +2964,7 @@
           },
           "institutionType" : {
             "type" : "string",
-            "enum" : [ "AS", "CON", "GSP", "PA", "PG", "PSP", "PT", "REC", "SA", "SCP" ]
+            "enum" : [ "AS", "CON", "GSP", "PA", "PG", "PRV", "PSP", "PT", "REC", "SA", "SCP" ]
           },
           "subunitCode" : {
             "type" : "string"
@@ -3085,7 +3085,7 @@
           },
           "institutionType" : {
             "type" : "string",
-            "enum" : [ "AS", "CON", "GSP", "PA", "PG", "PSP", "PT", "REC", "SA", "SCP" ]
+            "enum" : [ "AS", "CON", "GSP", "PA", "PG", "PRV", "PSP", "PT", "REC", "SA", "SCP" ]
           },
           "onboardings" : {
             "type" : "object",
@@ -3227,7 +3227,7 @@
           },
           "institutionType" : {
             "type" : "string",
-            "enum" : [ "AS", "CON", "GSP", "PA", "PG", "PSP", "PT", "REC", "SA", "SCP" ]
+            "enum" : [ "AS", "CON", "GSP", "PA", "PG", "PRV", "PSP", "PT", "REC", "SA", "SCP" ]
           },
           "onboarding" : {
             "type" : "array",
@@ -3329,7 +3329,7 @@
           },
           "institutionType" : {
             "type" : "string",
-            "enum" : [ "AS", "CON", "GSP", "PA", "PG", "PSP", "PT", "REC", "SA", "SCP" ]
+            "enum" : [ "AS", "CON", "GSP", "PA", "PG", "PRV", "PSP", "PT", "REC", "SA", "SCP" ]
           },
           "istatCode" : {
             "type" : "string"
@@ -3442,7 +3442,7 @@
           },
           "institutionType" : {
             "type" : "string",
-            "enum" : [ "AS", "CON", "GSP", "PA", "PG", "PSP", "PT", "REC", "SA", "SCP" ]
+            "enum" : [ "AS", "CON", "GSP", "PA", "PG", "PRV", "PSP", "PT", "REC", "SA", "SCP" ]
           },
           "ivassCode" : {
             "type" : "string"
