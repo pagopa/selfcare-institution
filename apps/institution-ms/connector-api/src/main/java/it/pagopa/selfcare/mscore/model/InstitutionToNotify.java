@@ -1,7 +1,7 @@
 package it.pagopa.selfcare.mscore.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import it.pagopa.selfcare.commons.base.utils.InstitutionType;
+import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import it.pagopa.selfcare.mscore.model.institution.PaymentServiceProvider;
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,7 +1,7 @@
 package it.pagopa.selfcare.mscore.web.model.delegation;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import it.pagopa.selfcare.commons.base.utils.InstitutionType;
+import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import it.pagopa.selfcare.mscore.constant.DelegationState;
 import it.pagopa.selfcare.mscore.constant.DelegationType;
 import lombok.Data;
