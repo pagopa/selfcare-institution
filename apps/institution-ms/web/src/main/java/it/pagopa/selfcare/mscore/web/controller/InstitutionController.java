@@ -144,7 +144,7 @@ public class InstitutionController {
     @PostMapping(value = "/from-anac", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<InstitutionResponse> createInstitutionFromAnac(@RequestBody @Valid InstitutionRequest institution) {
         CustomExceptionMessage.setCustomMessage(GenericError.CREATE_INSTITUTION_ERROR);
-        Institution saved = institutionService.createInstitutionFromAnac(InstitutionMapperCustom.toInstitution(institution, null));
+        Institution saved = institutionService.createInstitutionFromAnac(institutionResourceMapper.toInstitution(institution));
         return ResponseEntity.status(HttpStatus.CREATED).body(institutionResourceMapper.toInstitutionResponse(saved));
     }
 
@@ -163,7 +163,7 @@ public class InstitutionController {
     @PostMapping(value = "/from-ivass", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<InstitutionResponse> createInstitutionFromIvass(@RequestBody @Valid InstitutionRequest institution) {
         CustomExceptionMessage.setCustomMessage(GenericError.CREATE_INSTITUTION_ERROR);
-        Institution saved = institutionService.createInstitutionFromIvass(InstitutionMapperCustom.toInstitution(institution, null));
+        Institution saved = institutionService.createInstitutionFromIvass(institutionResourceMapper.toInstitution(institution));
         return ResponseEntity.status(HttpStatus.CREATED).body(institutionResourceMapper.toInstitutionResponse(saved));
     }
 
@@ -183,7 +183,7 @@ public class InstitutionController {
     public ResponseEntity<InstitutionResponse> createInstitutionFromPda(@RequestBody @Valid PdaInstitutionRequest institutionRequest) {
         CustomExceptionMessage.setCustomMessage(GenericError.CREATE_INSTITUTION_ERROR);
 
-        Institution saved = institutionService.createInstitutionFromPda(InstitutionMapperCustom.toInstitution(institutionRequest, null), institutionRequest.getInjectionInstitutionType());
+        Institution saved = institutionService.createInstitutionFromPda(institutionResourceMapper.toInstitution(institutionRequest), institutionRequest.getInjectionInstitutionType());
         return ResponseEntity.status(HttpStatus.CREATED).body(institutionResourceMapper.toInstitutionResponse(saved));
     }
 
@@ -203,7 +203,7 @@ public class InstitutionController {
     public ResponseEntity<InstitutionResponse> createInstitutionFromInfocamere(@RequestBody @Valid InstitutionRequest institutionRequest) {
         CustomExceptionMessage.setCustomMessage(GenericError.CREATE_INSTITUTION_ERROR);
 
-        Institution saved = institutionService.createInstitutionFromInfocamere(InstitutionMapperCustom.toInstitution(institutionRequest, null));
+        Institution saved = institutionService.createInstitutionFromInfocamere(institutionResourceMapper.toInstitution(institutionRequest));
         return ResponseEntity.status(HttpStatus.CREATED).body(institutionResourceMapper.toInstitutionResponse(saved));
     }
 
@@ -243,7 +243,7 @@ public class InstitutionController {
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<InstitutionResponse> createInstitution(@RequestBody @Valid InstitutionRequest institution) {
         CustomExceptionMessage.setCustomMessage(GenericError.CREATE_INSTITUTION_ERROR);
-        Institution saved = institutionService.createInstitution(InstitutionMapperCustom.toInstitution(institution, null));
+        Institution saved = institutionService.createInstitution(institutionResourceMapper.toInstitution(institution));
         return ResponseEntity.status(HttpStatus.CREATED).body(institutionResourceMapper.toInstitutionResponse(saved));
     }
 
@@ -265,7 +265,7 @@ public class InstitutionController {
                                                                     @PathVariable("externalId") String externalId,
                                                                     @RequestBody @Valid InstitutionRequest institution) {
         CustomExceptionMessage.setCustomMessage(GenericError.CREATE_INSTITUTION_ERROR);
-        Institution saved = institutionService.createInstitution(InstitutionMapperCustom.toInstitution(institution, null));
+        Institution saved = institutionService.createInstitution(institutionResourceMapper.toInstitution(institution));
         return ResponseEntity.ok(institutionResourceMapper.toInstitutionResponse(saved));
     }
 
@@ -333,7 +333,7 @@ public class InstitutionController {
 
         CustomExceptionMessage.setCustomMessage(GenericError.PUT_INSTITUTION_ERROR);
         SelfCareUser selfCareUser = (SelfCareUser) authentication.getPrincipal();
-        Institution saved = institutionService.updateInstitution(institutionId, InstitutionMapperCustom.toInstitutionUpdate(institutionPut), selfCareUser.getId());
+        Institution saved = institutionService.updateInstitution(institutionId, institutionResourceMapper.toInstitutionUpdate(institutionPut), selfCareUser.getId());
         return ResponseEntity.ok().body(institutionResourceMapper.toInstitutionResponse(saved));
     }
 

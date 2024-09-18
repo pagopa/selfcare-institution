@@ -46,4 +46,6 @@ public interface OnboardingResourceMapper {
                 .map(ld -> ld.atZone(ZoneOffset.systemDefault()).toOffsetDateTime())
                 .orElse(null);
     }
+    @Mapping(target = "contract", source = "contract.path")
+    Onboarding toOnboarding(OnboardingRequest onboardingRequest);
 }
