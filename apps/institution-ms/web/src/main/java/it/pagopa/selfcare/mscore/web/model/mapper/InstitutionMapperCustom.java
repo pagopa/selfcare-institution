@@ -536,7 +536,7 @@ public class InstitutionMapperCustom {
         bulkInstitution.setOrigin(inst.getOrigin());
         bulkInstitution.setOriginId(inst.getOriginId());
         bulkInstitution.setDescription(inst.getDescription());
-        bulkInstitution.setInstitutionType(inst.getInstitutionType());
+        bulkInstitution.setInstitutionType(Optional.ofNullable(inst.getInstitutionType()).map(InstitutionType::name).orElse(null));
         bulkInstitution.setDigitalAddress(inst.getDigitalAddress());
         bulkInstitution.setAddress(inst.getAddress());
         bulkInstitution.setZipCode(inst.getZipCode());

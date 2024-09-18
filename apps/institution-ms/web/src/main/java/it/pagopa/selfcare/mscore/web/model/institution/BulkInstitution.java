@@ -1,7 +1,6 @@
 package it.pagopa.selfcare.mscore.web.model.institution;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
@@ -27,7 +26,7 @@ public class BulkInstitution {
     @NotNull
     private String description;
 
-    private InstitutionType institutionType;
+    private String institutionType;
 
     @NotNull
     private String digitalAddress;
