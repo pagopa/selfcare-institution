@@ -8,6 +8,7 @@ import it.pagopa.selfcare.mscore.model.user.ProductManagerInfo;
 import it.pagopa.selfcare.mscore.web.model.institution.*;
 import it.pagopa.selfcare.mscore.web.model.onboarding.OnboardedProducts;
 import it.pagopa.selfcare.mscore.web.model.onboarding.ProductInfo;
+import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
