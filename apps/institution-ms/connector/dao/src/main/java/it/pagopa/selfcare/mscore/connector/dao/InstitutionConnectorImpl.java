@@ -1,21 +1,21 @@
 package it.pagopa.selfcare.mscore.connector.dao;
 
-import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import it.pagopa.selfcare.mscore.api.InstitutionConnector;
 import it.pagopa.selfcare.mscore.connector.dao.model.InstitutionEntity;
 import it.pagopa.selfcare.mscore.connector.dao.model.inner.GeoTaxonomyEntity;
 import it.pagopa.selfcare.mscore.connector.dao.model.inner.OnboardingEntity;
 import it.pagopa.selfcare.mscore.connector.dao.model.mapper.InstitutionEntityMapper;
 import it.pagopa.selfcare.mscore.connector.dao.model.mapper.InstitutionMapperHelper;
-import it.pagopa.selfcare.mscore.constant.GenericError;
 import it.pagopa.selfcare.mscore.constant.RelationshipState;
 import it.pagopa.selfcare.mscore.constant.SearchMode;
 import it.pagopa.selfcare.mscore.exception.InvalidRequestException;
 import it.pagopa.selfcare.mscore.exception.ResourceNotFoundException;
 import it.pagopa.selfcare.mscore.model.institution.*;
 import it.pagopa.selfcare.mscore.model.onboarding.VerifyOnboardingFilters;
+import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import it.pagopa.selfcare.product.entity.ProductStatus;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -56,7 +56,15 @@ public class InstitutionConnectorImpl implements InstitutionConnector {
     @Override
     public Institution save(Institution institution) {
         final InstitutionEntity entity = institutionMapper.convertToInstitutionEntity(institution);
-        return institutionMapper.convertToInstitution(repository.save(entity));
+        try {
+            return institutionMapper.convertToInstitution(repository.save(entity));
+        } catch (DuplicateKeyException e) {
+            // the chance of generating two identical UUIDs is astronomically small
+            // but sometimes happens, we catch this error in order to retry saving object
+            log.warn(String.format("_id: %s, message: %s", entity.getId(), e.getMessage()));
+            entity.setId(UUID.randomUUID().toString());
+            return institutionMapper.convertToInstitution(repository.save(entity));
+        }
     }
 
     @Override
