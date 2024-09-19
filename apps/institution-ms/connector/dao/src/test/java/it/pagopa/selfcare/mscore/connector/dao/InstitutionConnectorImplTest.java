@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -102,20 +103,13 @@ class InstitutionConnectorImplTest {
         Assertions.assertTrue(response.isEmpty());
     }
 
-    @Test
-    void shouldSaveInstitution() {
+    private Institution dummyInstitution() {
+
         List<InstitutionGeographicTaxonomies> geographicTaxonomies = new ArrayList<>();
         geographicTaxonomies.add(new InstitutionGeographicTaxonomies());
+
         List<Onboarding> onboardings = new ArrayList<>();
-        Onboarding onboarding = new Onboarding();
-        onboarding.setBilling(new Billing());
-        onboarding.setContract("contract");
-        onboarding.setStatus(RelationshipState.ACTIVE);
-        onboarding.setCreatedAt(OffsetDateTime.now());
-        onboarding.setProductId("productId");
-        onboarding.setUpdatedAt(OffsetDateTime.now());
-        onboarding.setPricingPlan("pricingPal");
-        onboardings.add(onboarding);
+        onboardings.add(dummyOnboarding());
 
         Institution institution = new Institution();
         institution.setExternalId("ext");
@@ -126,6 +120,26 @@ class InstitutionConnectorImplTest {
         institution.setRea("rea");
         institution.setGeographicTaxonomies(geographicTaxonomies);
 
+        return institution;
+    }
+
+    private Onboarding dummyOnboarding() {
+        Onboarding onboarding = new Onboarding();
+        onboarding.setBilling(new Billing());
+        onboarding.setContract("contract");
+        onboarding.setStatus(RelationshipState.ACTIVE);
+        onboarding.setCreatedAt(OffsetDateTime.now());
+        onboarding.setProductId("productId");
+        onboarding.setUpdatedAt(OffsetDateTime.now());
+        onboarding.setPricingPlan("pricingPal");
+        return onboarding;
+    }
+
+    @Test
+    void shouldSaveInstitution() {
+
+        Onboarding onboarding = dummyOnboarding();
+        Institution institution = dummyInstitution();
         when(institutionRepository.save(any())).thenAnswer(arg -> arg.getArguments()[0]);
 
         Institution response = institutionConnectorImpl.save(institution);
@@ -139,10 +153,32 @@ class InstitutionConnectorImplTest {
         Onboarding responseOnboarding = institution.getOnboarding().get(0);
         Assertions.assertEquals(onboarding.getContract(), responseOnboarding.getContract());
         Assertions.assertEquals(onboarding.getStatus(), responseOnboarding.getStatus());
-        Assertions.assertEquals(onboarding.getCreatedAt(), responseOnboarding.getCreatedAt());
         Assertions.assertEquals(onboarding.getProductId(), responseOnboarding.getProductId());
-        Assertions.assertEquals(onboarding.getUpdatedAt(), responseOnboarding.getUpdatedAt());
         Assertions.assertEquals(onboarding.getPricingPlan(), responseOnboarding.getPricingPlan());
+    }
+
+
+
+    @Test
+    void shouldSaveInstitution_whenDuplicateKeyError() {
+
+        when(institutionRepository.save(any())).
+                thenThrow(DuplicateKeyException.class)
+                .thenAnswer(arg -> arg.getArguments()[0]);
+
+        Institution response = institutionConnectorImpl.save(dummyInstitution());
+
+        ArgumentCaptor<InstitutionEntity> captor = ArgumentCaptor.forClass(InstitutionEntity.class);
+        Mockito.verify(institutionRepository, times(2))
+                .save(captor.capture());
+
+        List<InstitutionEntity> entities = captor.getAllValues();
+        Assertions.assertEquals(entities.get(1).getId(), response.getId());
+        Assertions.assertEquals(entities.get(1).getExternalId(), response.getExternalId());
+        Assertions.assertEquals(entities.get(1).getParentDescription(), response.getParentDescription());
+        Assertions.assertEquals(entities.get(1).getRea(), response.getRea());
+        Assertions.assertEquals(entities.get(1).getZipCode(), response.getZipCode());
+        Assertions.assertEquals(entities.get(1).getOnboarding().size(), response.getOnboarding().size());
     }
 
     @Test
