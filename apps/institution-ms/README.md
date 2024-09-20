@@ -11,7 +11,6 @@ This Spring Boot-based microservice is designed to handle several key functional
 ## Prerequisites
 Before running the microservice, ensure you have installed:
 
-
 - Java JDK 17 or higher
 - Maven 3.6 or higher
 - Connection to VPN selc-d-vnet
