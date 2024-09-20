@@ -8,6 +8,7 @@ This Spring Boot-based microservice is designed to handle several key functional
 - User creation.
 - Associating users with products and institutions.
 
+
 ## Prerequisites
 Before running the microservice, ensure you have installed:
 
