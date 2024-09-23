@@ -1936,7 +1936,7 @@
         } ]
       }
     },
-    "/institutions/{institutionId}/createdAt" : {
+    "/institutions/{institutionId}/created-at" : {
       "put" : {
         "tags" : [ "Institution", "internal-v1" ],
         "summary" : "The service updates the createdAt field for the institution-product pair",
