@@ -1215,7 +1215,7 @@ class InstitutionControllerTest {
         createdAtRequest.setCreatedAt(createdAtMock);
         createdAtRequest.setProductId(productIdMock);
         // When
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(BASE_URL + "/{institutionId}/createdAt", institutionIdMock)
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put(BASE_URL + "/{institutionId}/created-at", institutionIdMock)
                 .content(new ObjectMapper().findAndRegisterModules().writeValueAsString(createdAtRequest))
                 .contentType(APPLICATION_JSON_VALUE)
                 .accept(APPLICATION_JSON_VALUE);
@@ -1333,7 +1333,7 @@ class InstitutionControllerTest {
         createdAtRequest.setCreatedAt(createdAtMock);
         // When
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
-                        .put(BASE_URL + "/{institutionId}/createdAt", institutionIdMock)
+                        .put(BASE_URL + "/{institutionId}/created-at", institutionIdMock)
                         .content(objectMapper.writeValueAsString(createdAtRequest))
                         .contentType(APPLICATION_JSON_VALUE)
                         .accept(APPLICATION_JSON_VALUE);
