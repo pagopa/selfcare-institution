@@ -32,6 +32,9 @@
     "name" : "infocamere",
     "description" : "Info Camere Controller"
   }, {
+    "name" : "infocamere PDND",
+    "description" : "PDND Info Camere Controller"
+  }, {
     "name" : "institution",
     "description" : "Institution operations"
   }, {
@@ -497,7 +500,7 @@
         "parameters" : [ {
           "name" : "geotaxId",
           "in" : "path",
-          "description" : "Geographic taxonomy unique identifier ",
+          "description" : "Geographic taxonomy unique identifier",
           "required" : true,
           "style" : "simple",
           "schema" : {
@@ -563,7 +566,7 @@
     },
     "/info-camere/institutions" : {
       "post" : {
-        "tags" : [ "infocamere" ],
+        "tags" : [ "infocamere", "support-pnpg" ],
         "summary" : "Get institutions by legal tax id",
         "description" : "Get the list of companies represented by the tax code of the person (physical or juridical) passed as a parameter",
         "operationId" : "institutionsByLegalTaxIdUsingPOST",
@@ -729,7 +732,7 @@
       "get" : {
         "tags" : [ "institution" ],
         "summary" : "Find institution by ID",
-        "description" : "Returns a single institution. If 'origin' param is filled, the ID to find is treated as 'originId' ($ref: '#/components/schemas/Institution'); otherwise is treated as 'id' ($ref: '#/components/schemas/Institution') ",
+        "description" : "Returns a single institution. If 'origin' param is filled, the ID to find is treated as 'originId' ($ref: '#/components/schemas/Institution'); otherwise is treated as 'id' ($ref: '#/components/schemas/Institution')",
         "operationId" : "findInstitutionUsingGET",
         "parameters" : [ {
           "name" : "id",
@@ -910,10 +913,10 @@
         } ]
       }
     },
-    "/insurance-companies/origin/{originId}" : {
+    "/insurance-companies/{originId}" : {
       "get" : {
         "tags" : [ "insurance-companies" ],
-        "summary" : "Search insurance company by its taxCode",
+        "summary" : "Search insurance company by its IVASS code",
         "description" : "Returns only one insurance company.",
         "operationId" : "searchByOriginIdUsingGET",
         "parameters" : [ {
@@ -983,82 +986,9 @@
         } ]
       }
     },
-    "/insurance-companies/{taxId}" : {
-      "get" : {
-        "tags" : [ "insurance-companies" ],
-        "summary" : "Search insurance company by its taxCode",
-        "description" : "Returns only one insurance company.",
-        "operationId" : "searchByTaxCodeUsingGET",
-        "parameters" : [ {
-          "name" : "taxId",
-          "in" : "path",
-          "description" : "taxCode of insurance company",
-          "required" : true,
-          "style" : "simple",
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/InsuranceCompanyResource"
-                }
-              }
-            }
-          },
-          "400" : {
-            "description" : "Bad Request",
-            "content" : {
-              "application/problem+json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
-          "401" : {
-            "description" : "Unauthorized",
-            "content" : {
-              "application/problem+json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
-          "404" : {
-            "description" : "Not Found",
-            "content" : {
-              "application/problem+json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
-          "500" : {
-            "description" : "Internal Server Error",
-            "content" : {
-              "application/problem+json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Problem"
-                }
-              }
-            }
-          }
-        },
-        "security" : [ {
-          "bearerAuth" : [ "global" ]
-        } ]
-      }
-    },
     "/national-registries/legal-address" : {
       "get" : {
-        "tags" : [ "nationalRegistries" ],
+        "tags" : [ "national-registries", "support-pnpg" ],
         "summary" : "Retrieve data from AdE and InfoCamere",
         "description" : "Get the legal address of the business",
         "operationId" : "legalAddressUsingGET",
@@ -1211,6 +1141,155 @@
         } ]
       }
     },
+    "/infocamere-pdnd/institution/{taxCode}" : {
+      "get" : {
+        "tags" : [ "infocamere PDND" ],
+        "summary" : "Get institution by institution taxCode",
+        "description" : "Get the company represented by taxCode of the institution passed as a parameter",
+        "operationId" : "institutionPdndByTaxCodeUsingGET",
+        "parameters" : [ {
+          "name" : "taxCode",
+          "in" : "path",
+          "description" : "Institution fiscal code",
+          "required" : true,
+          "style" : "simple",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PDNDBusinessResource"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
+    "/infocamere-pdnd/institutions" : {
+      "get" : {
+        "tags" : [ "infocamere PDND" ],
+        "summary" : "Get institutions by institution description",
+        "description" : "Get the list of companies represented by description of the institutions passed as a parameter",
+        "operationId" : "institutionsPdndByDescriptionUsingGET",
+        "parameters" : [ {
+          "name" : "description",
+          "in" : "query",
+          "description" : "Institution description",
+          "required" : true,
+          "style" : "form",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PDNDBusinessResource"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
     "/stations" : {
       "get" : {
         "tags" : [ "stations" ],
@@ -1309,7 +1388,7 @@
         "tags" : [ "stations" ],
         "summary" : "Search station by its taxCode",
         "description" : "Returns only one station.",
-        "operationId" : "searchByTaxCodeUsingGET_1",
+        "operationId" : "searchByTaxCodeUsingGET",
         "parameters" : [ {
           "name" : "taxId",
           "in" : "path",
@@ -1384,6 +1463,16 @@
         "description" : "Returns the UO list",
         "operationId" : "findAllUsingGET_1",
         "parameters" : [ {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Maximum number of items per page. It is optional, and the default value is 10 when not specified",
+          "required" : false,
+          "style" : "form",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
           "name" : "page",
           "in" : "query",
           "description" : "Desired page number for result pagination. It is optional, and the default value is 1 when not specified",
@@ -1394,14 +1483,13 @@
             "format" : "int32"
           }
         }, {
-          "name" : "limit",
+          "name" : "taxCodeInvoicing",
           "in" : "query",
-          "description" : "Maximum number of items per page. It is optional, and the default value is 10 when not specified",
+          "description" : "UO fiscal code for billing",
           "required" : false,
           "style" : "form",
           "schema" : {
-            "type" : "integer",
-            "format" : "int32"
+            "type" : "string"
           }
         } ],
         "responses" : {
@@ -1461,14 +1549,14 @@
         } ]
       }
     },
-    "/uo/{codiceUniAoo}" : {
+    "/uo/{codiceUniUo}" : {
       "get" : {
         "tags" : [ "uo" ],
         "summary" : "Retrieve a UO given its code",
         "description" : "Returns a UO",
         "operationId" : "findByUnicodeUsingGET_1",
         "parameters" : [ {
-          "name" : "codiceUniAoo",
+          "name" : "codiceUniUo",
           "in" : "path",
           "description" : "UO unique identifier, the same of Id",
           "required" : true,
@@ -1736,7 +1824,7 @@
         "properties" : {
           "code" : {
             "type" : "string",
-            "description" : "Geographic taxonomy unique identifier "
+            "description" : "Geographic taxonomy unique identifier"
           },
           "country" : {
             "type" : "string",
@@ -1971,6 +2059,48 @@
           }
         }
       },
+      "PDNDBusinessResource" : {
+        "title" : "PDNDBusinessResource",
+        "type" : "object",
+        "properties" : {
+          "address" : {
+            "type" : "string"
+          },
+          "businessName" : {
+            "type" : "string"
+          },
+          "businessStatus" : {
+            "type" : "string"
+          },
+          "businessTaxId" : {
+            "type" : "string"
+          },
+          "cciaa" : {
+            "type" : "string"
+          },
+          "city" : {
+            "type" : "string"
+          },
+          "county" : {
+            "type" : "string"
+          },
+          "digitalAddress" : {
+            "type" : "string"
+          },
+          "legalNature" : {
+            "type" : "string"
+          },
+          "legalNatureDescription" : {
+            "type" : "string"
+          },
+          "nrea" : {
+            "type" : "string"
+          },
+          "zipCode" : {
+            "type" : "string"
+          }
+        }
+      },
       "Problem" : {
         "title" : "Problem",
         "required" : [ "status", "title" ],
@@ -2086,6 +2216,10 @@
           "codiceFiscaleEnte" : {
             "type" : "string",
             "description" : "UO fiscal code"
+          },
+          "codiceFiscaleSfe" : {
+            "type" : "string",
+            "description" : "UO fiscal code for billing"
           },
           "codiceIpa" : {
             "type" : "string",
