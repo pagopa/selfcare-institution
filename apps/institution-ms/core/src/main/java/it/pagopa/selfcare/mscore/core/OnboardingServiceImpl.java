@@ -12,6 +12,7 @@ import it.pagopa.selfcare.mscore.model.institution.Institution;
 import it.pagopa.selfcare.mscore.model.institution.Onboarding;
 import it.pagopa.selfcare.mscore.model.onboarding.VerifyOnboardingFilters;
 import it.pagopa.selfcare.mscore.model.pecnotification.PecNotification;
+import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.http.HttpStatus;
@@ -109,8 +110,9 @@ public class OnboardingServiceImpl implements OnboardingService {
             productId, Onboarding onboarding, StringBuilder httpStatus) {
 
         Institution institution = persistAndGetInstitution(institutionId, productId, onboarding, httpStatus);
-        insertPecNotification(institutionId, productId, institution.getDigitalAddress(), onboarding.getCreatedAt());
-
+        if (!InstitutionType.PT.equals(institution.getInstitutionType())) {
+            insertPecNotification(institutionId, productId, institution.getDigitalAddress(), onboarding.getCreatedAt());
+        }
         return institution;
     }
 

@@ -6,7 +6,6 @@ import it.pagopa.selfcare.mscore.api.ProductConnector;
 import it.pagopa.selfcare.mscore.config.InstitutionSendMailConfig;
 import it.pagopa.selfcare.mscore.constant.RelationshipState;
 import it.pagopa.selfcare.mscore.core.mapper.TokenMapper;
-import it.pagopa.selfcare.mscore.core.mapper.TokenMapperImpl;
 import it.pagopa.selfcare.mscore.core.util.UtilEnumList;
 import it.pagopa.selfcare.mscore.exception.InvalidRequestException;
 import it.pagopa.selfcare.mscore.exception.ResourceNotFoundException;
@@ -16,6 +15,7 @@ import it.pagopa.selfcare.mscore.model.institution.Onboarding;
 import it.pagopa.selfcare.mscore.model.onboarding.Token;
 import it.pagopa.selfcare.mscore.model.onboarding.VerifyOnboardingFilters;
 import it.pagopa.selfcare.mscore.model.pecnotification.PecNotification;
+import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -65,7 +65,7 @@ class OnboardingServiceImplTest {
     private PecNotificationConnector pecNotificationConnector;
 
     @Spy
-    private TokenMapper tokenMapper = new TokenMapperImpl();
+    private TokenMapper tokenMapper;
 
     @Mock
     private InstitutionSendMailConfig institutionSendMailConfig;
@@ -147,6 +147,7 @@ class OnboardingServiceImplTest {
         Institution institution = new Institution();
         institution.setId("institutionId");
         institution.setOnboarding(List.of(onboarding, dummyOnboarding()));
+        institution.setInstitutionType(InstitutionType.PA);
 
         when(pecNotificationConnector.insertPecNotification(any(PecNotification.class))).thenReturn(true);
         when(institutionConnector.findById(institution.getId())).thenReturn(institution);
@@ -168,6 +169,29 @@ class OnboardingServiceImplTest {
     }
 
     @Test
+    void persistOnboarding_whenInstitutionTypeIsPT() {
+
+        Onboarding onboarding = dummyOnboarding();
+        onboarding.setStatus(UtilEnumList.VALID_RELATIONSHIP_STATES.get(0));
+        Institution institution = new Institution();
+        institution.setId("institutionId");
+        institution.setInstitutionType(InstitutionType.PT);
+        institution.setOnboarding(List.of(onboarding, dummyOnboarding()));
+
+        when(institutionConnector.findById(institution.getId())).thenReturn(institution);
+
+        String institutionId = institution.getId();
+        String productId = onboarding.getProductId();
+        Onboarding onb = new Onboarding();
+        StringBuilder statusCode = new StringBuilder();
+
+        onboardingServiceImpl.persistOnboarding(institutionId, productId, onb, statusCode);
+
+        verify(pecNotificationConnector, never()).insertPecNotification(any(PecNotification.class));
+        assertEquals(HttpStatus.OK.value(), Integer.parseInt(statusCode.toString()));
+    }
+
+    @Test
     void persistOnboarding_whenPecNotificationIsDisabled() {
 
         Onboarding onboarding = dummyOnboarding();
@@ -175,6 +199,7 @@ class OnboardingServiceImplTest {
         Institution institution = new Institution();
         institution.setId("institutionId");
         institution.setOnboarding(List.of(onboarding, dummyOnboarding()));
+        institution.setInstitutionType(InstitutionType.PG);
 
         when(institutionConnector.findById(institution.getId())).thenReturn(institution);
         when(institutionSendMailConfig.getPecNotificationDisabled()).thenReturn(true);
@@ -254,6 +279,7 @@ class OnboardingServiceImplTest {
         institution.setId("institutionId");
         institution.setOnboarding(List.of(onboarding));
         institution.setDigitalAddress("test@junit.pagopa");
+        institution.setInstitutionType(InstitutionType.PG);
 
         Token token = new Token();
         token.setId(onboarding.getTokenId());
