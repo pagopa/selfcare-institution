@@ -29,6 +29,28 @@ def get_institutions(page, size):
         *paging(page, size)
     ]
 
+def count_pt_institutions():
+    return [
+        {
+            '$match': {
+               'institutionType': 'PT'
+            }
+        },
+        {
+            '$count': 'count'
+        }
+    ]
+
+def get_pt_institutions(page, size):
+    return [
+        {
+            '$match': {
+                'institutionType': 'PT'
+            }
+        },
+        *paging(page, size)
+    ]
+
 
 def get_delegations(page, size):
     return [
