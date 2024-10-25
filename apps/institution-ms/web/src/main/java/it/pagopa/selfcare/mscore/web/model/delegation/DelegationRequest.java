@@ -22,4 +22,6 @@ public class DelegationRequest {
     @NotNull
     private DelegationType type;
 
+    private String institutionFromRootName;
+
 }

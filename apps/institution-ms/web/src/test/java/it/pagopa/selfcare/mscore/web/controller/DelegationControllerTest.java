@@ -95,6 +95,44 @@ class DelegationControllerTest {
         assertEquals(delegation.getId(), response.getId());
     }
 
+    @Test
+    void testCreateDelegationWithParent() throws Exception {
+
+        Delegation delegation = new Delegation();
+        delegation.setId("id");
+        delegation.setFrom("from");
+        when(delegationService.createDelegation(any())).thenReturn(delegation);
+
+        DelegationRequest delegationRequest = new DelegationRequest();
+        delegationRequest.setFrom("111111");
+        delegationRequest.setTo("2222222");
+        delegationRequest.setInstitutionFromName("Test name");
+        delegationRequest.setInstitutionToName("Test to name");
+        delegationRequest.setProductId("productId");
+        delegationRequest.setType(DelegationType.PT);
+        delegationRequest.setInstitutionFromRootName("parent description");
+        String content = (new ObjectMapper()).writeValueAsString(delegationRequest);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/delegations")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content);
+        MvcResult result =  MockMvcBuilders.standaloneSetup(delegationController)
+                .build()
+                .perform(requestBuilder)
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+                .andReturn();
+
+        DelegationResponse response = objectMapper.readValue(
+                result.getResponse().getContentAsString(),
+                new TypeReference<>() {
+                });
+
+        assertNotNull(response);
+        assertNotNull(response.getId());
+        assertEquals(delegation.getId(), response.getId());
+    }
+
     /**
      * Method under test: {@link DelegationController#createDelegation(DelegationRequest)}
      */
