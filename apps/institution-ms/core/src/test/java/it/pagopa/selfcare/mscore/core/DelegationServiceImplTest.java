@@ -98,6 +98,34 @@ class DelegationServiceImplTest {
         assertEquals(institutionFrom.getInstitutionType(), response.getInstitutionType());
     }
 
+    @Test
+    void testCreateDelegationWithParent() {
+        Institution institutionTo = new Institution();
+        institutionTo.setId("idTo");
+        institutionTo.setTaxCode("taxCodeTo");
+        institutionTo.setInstitutionType(InstitutionType.PA);
+        Institution institutionFrom = new Institution();
+        institutionTo.setId("idFrom");
+        institutionTo.setTaxCode("taxCodeFrom");
+        institutionTo.setInstitutionType(InstitutionType.PT);
+        dummyDelegationProdIo.setInstitutionFromRootName("test parent");
+        when(delegationConnector.save(dummyDelegationProdIo)).thenAnswer(arg ->arg.getArguments()[0]);
+        when(institutionService.retrieveInstitutionById(dummyDelegationProdIo.getFrom())).thenReturn(institutionFrom);
+        when(institutionService.retrieveInstitutionById(dummyDelegationProdIo.getTo())).thenReturn(institutionTo);
+        doNothing().when(mailNotificationService).sendMailForDelegation(any(), any(), any());
+        doNothing().when(institutionService).updateInstitutionDelegation(any(),anyBoolean());
+        Delegation response = delegationServiceImpl.createDelegation(dummyDelegationProdIo);
+        verify(delegationConnector).save(dummyDelegationProdIo);
+        assertNotNull(response);
+        assertNotNull(response.getId());
+        assertEquals(dummyDelegationProdIo.getId(), response.getId());
+        assertEquals(institutionTo.getTaxCode(), response.getToTaxCode());
+        assertEquals(institutionFrom.getTaxCode(), response.getFromTaxCode());
+        assertEquals(institutionTo.getInstitutionType(), response.getBrokerType());
+        assertEquals(institutionFrom.getInstitutionType(), response.getInstitutionType());
+        assertEquals("test parent", response.getInstitutionFromRootName());
+    }
+
     /**
      * Method under test: {@link DelegationServiceImpl#createDelegation(Delegation)}
      */
