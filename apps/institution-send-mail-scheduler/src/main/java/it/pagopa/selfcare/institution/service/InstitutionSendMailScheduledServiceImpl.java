@@ -122,7 +122,7 @@ public class InstitutionSendMailScheduledServiceImpl implements InstitutionSendM
             return Uni.createFrom().voidItem();
         }
         if(Objects.isNull(pecNotification.getDigitalAddress())) {
-            log.warn(String.format("Mail sent for institution %s and product %s", pecNotification.getInstitutionId(), pecNotification.getProductId()));
+            log.warn(String.format("Mail did not send for institution %s and product %s because digitalAddress is empty!", pecNotification.getInstitutionId(), pecNotification.getProductId()));
             return Uni.createFrom().voidItem();
         }
 

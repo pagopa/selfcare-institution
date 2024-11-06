@@ -149,7 +149,7 @@ class OnboardingServiceImplTest {
         institution.setOnboarding(List.of(onboarding, dummyOnboarding()));
         institution.setInstitutionType(InstitutionType.PA);
 
-        when(pecNotificationConnector.insertPecNotification(any(PecNotification.class))).thenReturn(true);
+        doNothing().when(pecNotificationConnector).insertPecNotification(any(PecNotification.class));
         when(institutionConnector.findById(institution.getId())).thenReturn(institution);
         when(institutionSendMailConfig.getPecNotificationDisabled()).thenReturn(false);
         when(institutionSendMailConfig.getProducts()).thenReturn(Map.of(onboarding.getProductId(),30));
@@ -290,7 +290,7 @@ class OnboardingServiceImplTest {
         token.setStatus(onboarding.getStatus());
         token.setContractSigned(onboarding.getContract());
 
-        when(pecNotificationConnector.insertPecNotification(any(PecNotification.class))).thenReturn(true);
+        doNothing().when(pecNotificationConnector).insertPecNotification(any(PecNotification.class));
         when(institutionConnector.findById(institution.getId())).thenReturn(institution);
         when(institutionConnector.findAndUpdate(any(), any(), any(), any())).thenReturn(institution);
         when(institutionSendMailConfig.getPecNotificationDisabled()).thenReturn(false);
@@ -381,7 +381,7 @@ class OnboardingServiceImplTest {
         when(institutionSendMailConfig.getPecNotificationDisabled()).thenReturn(false);
         when(institutionSendMailConfig.getProducts()).thenReturn(products);
         when(institutionSendMailConfig.getEpochDatePecNotification()).thenReturn("2024-01-01");
-        when(pecNotificationConnector.insertPecNotification(any())).thenReturn(true);
+        doNothing().when(pecNotificationConnector).insertPecNotification(any(PecNotification.class));
 
         // Act
         onboardingServiceImpl.insertPecNotification(institutionId, productId, digitalAddress, createdAtOnboarding);

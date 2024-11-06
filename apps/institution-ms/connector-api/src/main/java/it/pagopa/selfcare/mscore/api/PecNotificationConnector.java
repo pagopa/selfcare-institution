@@ -6,5 +6,5 @@ public interface PecNotificationConnector {
 
     boolean findAndDeletePecNotification(String institutionId, String productId);
 
-    boolean insertPecNotification(PecNotification pecNotification);
+    void insertPecNotification(PecNotification pecNotification);
 }

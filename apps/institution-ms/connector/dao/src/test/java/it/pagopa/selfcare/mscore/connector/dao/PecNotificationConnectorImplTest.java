@@ -45,7 +45,7 @@ class PecNotificationConnectorImplTest {
         pecNotificationEntity = new PecNotificationEntity();
         pecNotificationEntity.setInstitutionId(institutionId);
         pecNotificationEntity.setProductId(productId);
-        pecNotificationEntity.setDigitalAddress("digitalAddress");
+        pecNotificationEntity.setDigitalAddress("digitalAddress@test.com");
         pecNotificationEntity.setModuleDayOfTheEpoch(1);
         pecNotification = new PecNotification();
     }
@@ -89,9 +89,8 @@ class PecNotificationConnectorImplTest {
         when(pecNotificationMapper.convertToPecNotificationEntity(pecNotification)).thenReturn(pecNotificationEntity);
         when(repository.existsByInstitutionIdAndProductId(any(), any())).thenReturn(false);
 
-        boolean result = pecNotificationConnector.insertPecNotification(pecNotification);
+        pecNotificationConnector.insertPecNotification(pecNotification);
 
-        assertTrue(result);
         verify(repository, times(1)).insert(pecNotificationEntity);
     }
 
@@ -100,9 +99,8 @@ class PecNotificationConnectorImplTest {
         when(pecNotificationMapper.convertToPecNotificationEntity(pecNotification)).thenReturn(pecNotificationEntity);
         when(repository.existsByInstitutionIdAndProductId(any(), any())).thenReturn(true);
 
-        boolean result = pecNotificationConnector.insertPecNotification(pecNotification);
+        pecNotificationConnector.insertPecNotification(pecNotification);
 
-        assertTrue(result);
         verify(repository, never()).insert(pecNotificationEntity);
     }
 
@@ -112,9 +110,8 @@ class PecNotificationConnectorImplTest {
         when(pecNotificationMapper.convertToPecNotificationEntity(pecNotification)).thenReturn(new PecNotificationEntity());
         when(repository.existsByInstitutionIdAndProductId(any(), any())).thenReturn(false);
 
-        boolean result = pecNotificationConnector.insertPecNotification(pecNotification);
+        pecNotificationConnector.insertPecNotification(pecNotification);
 
-        assertTrue(result);
         verify(repository, never()).insert(pecNotificationEntity);
     }
 	

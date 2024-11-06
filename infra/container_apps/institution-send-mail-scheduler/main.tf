@@ -23,7 +23,7 @@ resource "azurerm_container_app_job" "container_app_job_institution_send_mail_sc
   workload_profile_name        = var.workload_profile_name
 
   replica_timeout_in_seconds = 7200
-  replica_retry_limit        = 0
+  replica_retry_limit        = 0 #we avoid to run more times causing multiple send mails
 
   dynamic "schedule_trigger_config" {
     for_each = var.schedule_trigger_config

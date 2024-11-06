@@ -8,6 +8,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Sharded;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
 
@@ -27,6 +28,7 @@ public class PecNotificationEntity {
     @NotNull
     private Integer moduleDayOfTheEpoch;
     @NotNull
+    @Email
     private String digitalAddress;
 
     private Instant createdAt;

@@ -92,9 +92,7 @@ public class OnboardingServiceImpl implements OnboardingService {
                     createdAtOnboarding, institutionSendMailConfig.getProducts().get(productId)));
             pecNotification.setDigitalAddress(digitalAddress);
 
-            if (!pecNotificationConnector.insertPecNotification(pecNotification)) {
-                throw new InvalidRequestException(INVALID_INSERT_PEC_NOTIFICATION_ERROR.getMessage(), INVALID_INSERT_PEC_NOTIFICATION_ERROR.getCode());
-            }
+            pecNotificationConnector.insertPecNotification(pecNotification);
         }
 
     }
