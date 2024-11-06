@@ -45,6 +45,8 @@ class PecNotificationConnectorImplTest {
         pecNotificationEntity = new PecNotificationEntity();
         pecNotificationEntity.setInstitutionId(institutionId);
         pecNotificationEntity.setProductId(productId);
+        pecNotificationEntity.setDigitalAddress("digitalAddress");
+        pecNotificationEntity.setModuleDayOfTheEpoch(1);
         pecNotification = new PecNotification();
     }
 
