@@ -9,8 +9,13 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.ValidatorFactory;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -58,6 +63,16 @@ public class PecNotificationConnectorImpl implements PecNotificationConnector {
         	log.trace("Cannot insert the PecNotification: {}, as it already exists in the collection", pecNotification.toString());
             return true;
         }
+
+        try(ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
+            Set<ConstraintViolation<PecNotificationEntity>> validations = factory.getValidator().validate(pecNotificationEntity);
+            if (!validations.isEmpty()){
+                log.warn("Cannot insert the PecNotification: {}, ", validations.stream()
+                        .map(v -> String.format("%s %s", v.getPropertyPath().toString(), v.getMessage()))
+                        .collect(Collectors.joining(",")));
+                return true;
+            }
+        } catch (Exception ignored) { }
 
         repository.insert(pecNotificationEntity);
         log.trace("Inserted PecNotification: {}", pecNotification.toString());

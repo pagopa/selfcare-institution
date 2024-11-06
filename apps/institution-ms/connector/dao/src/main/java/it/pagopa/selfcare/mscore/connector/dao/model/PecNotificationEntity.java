@@ -5,12 +5,11 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.types.ObjectId;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Sharded;
 
+import javax.validation.constraints.NotNull;
 import java.time.Instant;
-import java.time.OffsetDateTime;
 
 @Data
 @NoArgsConstructor
@@ -21,9 +20,13 @@ public class PecNotificationEntity {
 
     @BsonId
     private ObjectId id;
+    @NotNull
     private String institutionId;
+    @NotNull
     private String productId;
+    @NotNull
     private Integer moduleDayOfTheEpoch;
+    @NotNull
     private String digitalAddress;
 
     private Instant createdAt;
