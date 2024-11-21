@@ -1,8 +1,10 @@
 package it.pagopa.selfcare.mscore.connector.dao;
 
-import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import it.pagopa.selfcare.mscore.connector.dao.model.InstitutionEntity;
-import it.pagopa.selfcare.mscore.connector.dao.model.inner.*;
+import it.pagopa.selfcare.mscore.connector.dao.model.inner.BillingEntity;
+import it.pagopa.selfcare.mscore.connector.dao.model.inner.DataProtectionOfficerEntity;
+import it.pagopa.selfcare.mscore.connector.dao.model.inner.OnboardingEntity;
+import it.pagopa.selfcare.mscore.connector.dao.model.inner.PaymentServiceProviderEntity;
 import it.pagopa.selfcare.mscore.connector.dao.model.mapper.InstitutionEntityMapper;
 import it.pagopa.selfcare.mscore.connector.dao.model.mapper.InstitutionEntityMapperImpl;
 import it.pagopa.selfcare.mscore.connector.dao.utils.TestUtils;
@@ -13,6 +15,7 @@ import it.pagopa.selfcare.mscore.exception.InvalidRequestException;
 import it.pagopa.selfcare.mscore.exception.ResourceNotFoundException;
 import it.pagopa.selfcare.mscore.model.institution.*;
 import it.pagopa.selfcare.mscore.model.onboarding.VerifyOnboardingFilters;
+import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -508,11 +511,11 @@ class InstitutionConnectorImplTest {
     void shouldFindByTaxCodeAndSubunitCode() {
         InstitutionEntity institutionEntity = new InstitutionEntity();
 
-        when(institutionRepository.find(any(), any()))
+        when(institutionRepository.find(any(), eq(InstitutionEntity.class)))
                 .thenReturn(List.of(institutionEntity));
 
         List<Institution> onboardings = institutionConnectorImpl
-                .findByTaxCodeAndSubunitCode("example", "example");
+                .findByTaxCodeAndSubunitCode("example", "example", "example");
 
         assertFalse(onboardings.isEmpty());
     }
@@ -683,7 +686,7 @@ class InstitutionConnectorImplTest {
                 .thenReturn(List.of(institutionEntity));
 
         List<Institution> onboardings = institutionConnectorImpl
-                .findByOriginAndOriginId("example", "example");
+                .findByOriginAndOriginId("example", "example", "example");
 
         assertFalse(onboardings.isEmpty());
     }

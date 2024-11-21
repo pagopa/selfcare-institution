@@ -3,7 +3,10 @@ package it.pagopa.selfcare.mscore.core.strategy;
 import it.pagopa.selfcare.mscore.api.InstitutionConnector;
 import it.pagopa.selfcare.mscore.core.strategy.input.CreateInstitutionStrategyInput;
 import it.pagopa.selfcare.mscore.model.institution.Institution;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -34,7 +37,7 @@ class CreateInstitutionStrategyRawTest {
     void createInstitutionStrategyRawWithPassedOriginAndOriginId() {
         institution.setOrigin("CUSTOM");
         institution.setOriginId("CUSTOM_taxCode");
-        when(institutionConnector.findByTaxCodeAndSubunitCode("taxCode", null)).thenReturn(Collections.emptyList());
+        when(institutionConnector.findByTaxCodeAndSubunitCode("taxCode", null, null)).thenReturn(Collections.emptyList());
         when(institutionConnector.save(institution)).thenReturn(institution);
         Institution response = strategy.createInstitution(CreateInstitutionStrategyInput.builder().taxCode("taxCode").build());
         Assertions.assertEquals("CUSTOM", response.getOrigin());
@@ -43,7 +46,7 @@ class CreateInstitutionStrategyRawTest {
 
     @Test
     void createInstitutionStrategyRawWithDefaultOriginAndOriginId() {
-        when(institutionConnector.findByTaxCodeAndSubunitCode("taxCode", null)).thenReturn(Collections.emptyList());
+        when(institutionConnector.findByTaxCodeAndSubunitCode("taxCode", null, null)).thenReturn(Collections.emptyList());
         when(institutionConnector.save(institution)).thenReturn(institution);
         Institution response = strategy.createInstitution(CreateInstitutionStrategyInput.builder().taxCode("taxCode").build());
         Assertions.assertEquals("SELC", response.getOrigin());

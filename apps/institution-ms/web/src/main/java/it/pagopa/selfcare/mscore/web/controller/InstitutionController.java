@@ -4,7 +4,6 @@ import io.swagger.annotations.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
 import it.pagopa.selfcare.commons.base.security.SelfCareUser;
-import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import it.pagopa.selfcare.mscore.constant.GenericError;
 import it.pagopa.selfcare.mscore.constant.RelationshipState;
 import it.pagopa.selfcare.mscore.core.InstitutionService;
@@ -17,6 +16,7 @@ import it.pagopa.selfcare.mscore.web.model.mapper.InstitutionResourceMapper;
 import it.pagopa.selfcare.mscore.web.model.mapper.OnboardingResourceMapper;
 import it.pagopa.selfcare.mscore.web.model.onboarding.OnboardedProducts;
 import it.pagopa.selfcare.mscore.web.util.CustomExceptionMessage;
+import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -80,7 +80,8 @@ public class InstitutionController {
                                                                 @ApiParam("${swagger.mscore.institutions.model.subunitCode}")
                                                                 @RequestParam(value = "subunitCode", required = false) String subunitCode,
                                                                 @RequestParam(value = "origin", required = false) String origin,
-                                                                @RequestParam(value = "originId", required = false) String originId) {
+                                                                @RequestParam(value = "originId", required = false) String originId,
+                                                                @RequestParam(value = "productId", required = false) String productId) {
 
 
         if (!StringUtils.hasText(taxCode) && !StringUtils.hasText(originId) && !StringUtils.hasText(origin)) {
@@ -91,7 +92,7 @@ public class InstitutionController {
 
         CustomExceptionMessage.setCustomMessage(GenericError.GET_INSTITUTION_BY_ID_ERROR);
 
-        List<Institution> institutions = institutionService.getInstitutions(taxCode, subunitCode, origin, originId);
+        List<Institution> institutions = institutionService.getInstitutions(taxCode, subunitCode, origin, originId, productId);
         InstitutionsResponse institutionsResponse = new InstitutionsResponse();
         institutionsResponse.setInstitutions(institutions.stream()
                 .map(institutionResourceMapper::toInstitutionResponse)

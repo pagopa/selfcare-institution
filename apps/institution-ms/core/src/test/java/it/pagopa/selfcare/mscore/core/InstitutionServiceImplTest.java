@@ -2,7 +2,6 @@ package it.pagopa.selfcare.mscore.core;
 
 import it.pagopa.selfcare.commons.base.security.PartyRole;
 import it.pagopa.selfcare.commons.base.security.SelfCareUser;
-import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import it.pagopa.selfcare.mscore.api.DelegationConnector;
 import it.pagopa.selfcare.mscore.api.InstitutionConnector;
 import it.pagopa.selfcare.mscore.api.PartyRegistryProxyConnector;
@@ -23,6 +22,7 @@ import it.pagopa.selfcare.mscore.exception.ResourceConflictException;
 import it.pagopa.selfcare.mscore.exception.ResourceNotFoundException;
 import it.pagopa.selfcare.mscore.model.institution.*;
 import it.pagopa.selfcare.mscore.model.onboarding.TokenUser;
+import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -287,28 +287,28 @@ class InstitutionServiceImplTest {
     @Test
     void testGetInstitutionsWithTaxCodeSubunitCode() {
         List<Institution> institutionList = new ArrayList<>();
-        when(institutionConnector.findByTaxCodeAndSubunitCode(any(), any())).thenReturn(institutionList);
-        List<Institution> institutions = institutionServiceImpl.getInstitutions("id", "id", null, null);
+        when(institutionConnector.findByTaxCodeAndSubunitCode(any(), any(), any())).thenReturn(institutionList);
+        List<Institution> institutions = institutionServiceImpl.getInstitutions("id", "id", null, null, null);
         assertTrue(institutions.isEmpty());
-        Mockito.verify(institutionConnector).findByTaxCodeAndSubunitCode(any(), any());
+        Mockito.verify(institutionConnector).findByTaxCodeAndSubunitCode(any(), any(), any());
     }
 
     @Test
     void testGetInstitutionsWithOriginOriginId() {
         List<Institution> institutionList = new ArrayList<>();
-        when(institutionConnector.findByOriginAndOriginId(any(), any())).thenReturn(institutionList);
-        List<Institution> institutions = institutionServiceImpl.getInstitutions(null, null, "id", "id");
+        when(institutionConnector.findByOriginAndOriginId(any(), any(), any())).thenReturn(institutionList);
+        List<Institution> institutions = institutionServiceImpl.getInstitutions(null, null, "id", "id", null);
         assertTrue(institutions.isEmpty());
-        Mockito.verify(institutionConnector).findByOriginAndOriginId(any(), any());
+        Mockito.verify(institutionConnector).findByOriginAndOriginId(any(), any(), any());
     }
 
     @Test
     void testGetInstitutionsFails() {
-        assertThrows(InvalidRequestException.class, () -> institutionServiceImpl.getInstitutions("id", "id", "id", "id"));
+        assertThrows(InvalidRequestException.class, () -> institutionServiceImpl.getInstitutions("id", "id", "id", "id", "id"));
     }
 
     /**
-     * Method under test: {@link InstitutionServiceImpl#createInstitutionFromIpa(String, InstitutionPaSubunitType, String, List, InstitutionType)}
+     * Method under test: {@link InstitutionServiceImpl#createInstitutionFromIpa(String, InstitutionPaSubunitType, String, List, InstitutionType, String, String)} 
      */
     @Test
     void testCreateInstitutionFromIpa() {
@@ -1088,13 +1088,13 @@ class InstitutionServiceImplTest {
 
         Institution institution = new Institution();
         institution.setId("id");
-        when(institutionConnector.findByTaxCodeAndSubunitCode(any(), any())).thenReturn(List.of(institution));
+        when(institutionConnector.findByTaxCodeAndSubunitCode(any(), any(), eq(null))).thenReturn(List.of(institution));
         List<Institution> institutions = institutionServiceImpl.getInstitutions("1111111", null);
         assertNotNull(institutions);
         assertFalse(institutions.isEmpty());
         assertNotNull(institutions.get(0));
         assertEquals(institutions.get(0).getId(), institution.getId());
-        verify(institutionConnector).findByTaxCodeAndSubunitCode(any(), any());
+        verify(institutionConnector).findByTaxCodeAndSubunitCode(any(), any(), eq(null));
 
     }
 

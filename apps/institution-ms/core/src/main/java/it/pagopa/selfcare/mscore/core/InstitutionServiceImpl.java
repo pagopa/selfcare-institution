@@ -1,7 +1,6 @@
 package it.pagopa.selfcare.mscore.core;
 
 import it.pagopa.selfcare.commons.base.security.SelfCareUser;
-import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import it.pagopa.selfcare.mscore.api.DelegationConnector;
 import it.pagopa.selfcare.mscore.api.InstitutionConnector;
 import it.pagopa.selfcare.mscore.api.PartyRegistryProxyConnector;
@@ -18,6 +17,7 @@ import it.pagopa.selfcare.mscore.exception.MsCoreException;
 import it.pagopa.selfcare.mscore.exception.ResourceConflictException;
 import it.pagopa.selfcare.mscore.exception.ResourceNotFoundException;
 import it.pagopa.selfcare.mscore.model.institution.*;
+import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import lombok.extern.slf4j.Slf4j;
 import org.owasp.encoder.Encode;
 import org.springframework.stereotype.Service;
@@ -91,15 +91,15 @@ public class InstitutionServiceImpl implements InstitutionService {
     }
 
     @Override
-    public List<Institution> getInstitutions(String taxCode, String subunitCode, String origin, String originId) {
+    public List<Institution> getInstitutions(String taxCode, String subunitCode, String origin, String originId, String productId) {
         if (StringUtils.hasText(taxCode) && (StringUtils.hasText(origin) || StringUtils.hasText(originId))) {
             throw new InvalidRequestException(GenericError.GET_INSTITUTIONS_REQUEST_ERROR.getMessage(), GenericError.GET_INSTITUTIONS_REQUEST_ERROR.getCode());
         }
 
         if (StringUtils.hasText(taxCode)) {
-            return institutionConnector.findByTaxCodeAndSubunitCode(taxCode, subunitCode);
+            return institutionConnector.findByTaxCodeAndSubunitCode(taxCode, subunitCode, productId);
         } else {
-            return institutionConnector.findByOriginAndOriginId(origin, originId);
+            return institutionConnector.findByOriginAndOriginId(origin, originId, productId);
         }
 
     }
@@ -120,7 +120,7 @@ public class InstitutionServiceImpl implements InstitutionService {
 
     @Override
     public List<Institution> getInstitutions(String taxCode, String subunitCode) {
-        return institutionConnector.findByTaxCodeAndSubunitCode(taxCode, subunitCode);
+        return institutionConnector.findByTaxCodeAndSubunitCode(taxCode, subunitCode, null);
     }
 
     @Override

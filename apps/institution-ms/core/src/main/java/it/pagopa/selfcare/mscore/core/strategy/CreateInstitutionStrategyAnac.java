@@ -31,7 +31,7 @@ public class CreateInstitutionStrategyAnac extends CreateInstitutionStrategyComm
     @Override
     public Institution createInstitution(CreateInstitutionStrategyInput strategyInput) {
 
-        List<Institution> institutions = institutionConnector.findByTaxCodeAndSubunitCode(strategyInput.getTaxCode(), strategyInput.getSubunitCode());
+        List<Institution> institutions = institutionConnector.findByTaxCodeAndSubunitCode(strategyInput.getTaxCode(), strategyInput.getSubunitCode(), null);
 
         if (institutions.isEmpty()) {
 

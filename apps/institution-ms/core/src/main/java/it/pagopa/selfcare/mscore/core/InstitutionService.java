@@ -1,11 +1,11 @@
 package it.pagopa.selfcare.mscore.core;
 
 import it.pagopa.selfcare.commons.base.security.SelfCareUser;
-import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import it.pagopa.selfcare.mscore.constant.RelationshipState;
 import it.pagopa.selfcare.mscore.constant.SearchMode;
 import it.pagopa.selfcare.mscore.core.util.InstitutionPaSubunitType;
 import it.pagopa.selfcare.mscore.model.institution.*;
+import it.pagopa.selfcare.onboarding.common.InstitutionType;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -19,7 +19,7 @@ public interface InstitutionService {
 
     Institution retrieveInstitutionByExternalId(String institutionExternalId);
 
-    List<Institution> getInstitutions(String taxCode, String subunitCode, String origin, String originId);
+    List<Institution> getInstitutions(String taxCode, String subunitCode, String origin, String originId, String productId);
 
     List<Institution> getInstitutions(String taxCode, String subunitCode);
 
