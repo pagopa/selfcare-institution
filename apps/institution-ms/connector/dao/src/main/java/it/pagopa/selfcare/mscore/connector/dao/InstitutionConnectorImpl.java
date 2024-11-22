@@ -301,24 +301,46 @@ public class InstitutionConnectorImpl implements InstitutionConnector {
     }
 
     @Override
-    public List<Institution> findByTaxCodeAndSubunitCode(String taxCode, String subunitCode) {
-        return repository.find(Query.query(Criteria.where(InstitutionEntity.Fields.taxCode.name()).is(taxCode)
-                                .and(InstitutionEntity.Fields.subunitCode.name()).is(subunitCode)
-                        ),
-                        InstitutionEntity.class).stream()
-                .map(institutionMapper::convertToInstitution)
-                .collect(Collectors.toList());
+    public List<Institution> findByTaxCodeAndSubunitCode(String taxCode, String subunitCode, String productId) {
+        Criteria criteria = Criteria.where(InstitutionEntity.Fields.taxCode.name()).is(taxCode)
+                .and(InstitutionEntity.Fields.subunitCode.name()).is(subunitCode);
+
+        if (productId != null && !productId.isEmpty()) {
+            criteria = criteria.and("onboarding.productId").is(productId);
+        }
+
+        List<InstitutionEntity> institutionEntities = repository.find(Query.query(criteria), InstitutionEntity.class);
+
+        return getInstitutionsWithProductFilter(productId, institutionEntities);
     }
 
     @Override
-    public List<Institution> findByOriginAndOriginId(String origin, String originId) {
-        return repository.find(Query.query(CriteriaBuilder.builder()
-                                .isIfNotNull(InstitutionEntity.Fields.origin.name(), origin)
-                                .isIfNotNull(InstitutionEntity.Fields.originId.name(), originId)
-                                .build()
-                        ),
-                        InstitutionEntity.class).stream()
-                .map(institutionMapper::convertToInstitution)
+    public List<Institution> findByOriginAndOriginId(String origin, String originId, String productId) {
+
+        CriteriaBuilder criteriaBuilder = CriteriaBuilder.builder()
+                .isIfNotNull(InstitutionEntity.Fields.origin.name(), origin)
+                .isIfNotNull(InstitutionEntity.Fields.originId.name(), originId)
+                .isIfNotNull("onboarding.productId", productId);
+
+        List<InstitutionEntity> institutionEntities = repository.find(Query.query(criteriaBuilder.build()), InstitutionEntity.class);
+
+        return getInstitutionsWithProductFilter(productId, institutionEntities);
+    }
+
+    private List<Institution> getInstitutionsWithProductFilter(String productId, List<InstitutionEntity> institutionEntities) {
+
+        return institutionEntities.stream()
+                .map(entity -> {
+                    List<OnboardingEntity> filteredOnboarding = Optional.ofNullable(entity.getOnboarding())
+                            .orElse(Collections.emptyList())
+                            .stream()
+                            .filter(onboarding -> productId == null || productId.equals(onboarding.getProductId()))
+                            .collect(Collectors.toList());
+
+                    entity.setOnboarding(filteredOnboarding);
+
+                    return institutionMapper.convertToInstitution(entity);
+                })
                 .collect(Collectors.toList());
     }
 

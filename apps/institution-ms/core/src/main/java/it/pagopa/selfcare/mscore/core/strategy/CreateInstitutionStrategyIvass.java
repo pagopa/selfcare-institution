@@ -31,7 +31,7 @@ public class CreateInstitutionStrategyIvass extends CreateInstitutionStrategyCom
     @Override
     public Institution createInstitution(CreateInstitutionStrategyInput strategyInput) {
 
-        List<Institution> institutions = institutionConnector.findByOriginAndOriginId(Origin.IVASS.name(), strategyInput.getIvassCode());
+        List<Institution> institutions = institutionConnector.findByOriginAndOriginId(Origin.IVASS.name(), strategyInput.getIvassCode(), null);
 
         if (institutions.isEmpty()) {
 

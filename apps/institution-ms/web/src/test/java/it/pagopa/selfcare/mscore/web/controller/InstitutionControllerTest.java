@@ -3,7 +3,6 @@ package it.pagopa.selfcare.mscore.web.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pagopa.selfcare.commons.base.security.SelfCareUser;
-import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import it.pagopa.selfcare.mscore.constant.RelationshipState;
 import it.pagopa.selfcare.mscore.core.DelegationService;
 import it.pagopa.selfcare.mscore.core.InstitutionService;
@@ -13,6 +12,7 @@ import it.pagopa.selfcare.mscore.model.institution.*;
 import it.pagopa.selfcare.mscore.web.TestUtils;
 import it.pagopa.selfcare.mscore.web.model.institution.*;
 import it.pagopa.selfcare.mscore.web.model.mapper.*;
+import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -119,7 +119,7 @@ class InstitutionControllerTest {
 
         Institution institution = TestUtils.createSimpleInstitutionPA();
 
-        when(institutionService.getInstitutions(any(), any(), any(), any()))
+        when(institutionService.getInstitutions(any(), any(), any(), any(), any()))
                 .thenReturn(List.of(institution));
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/institutions/?taxCode={taxCode}", "TaxCode");
@@ -143,7 +143,7 @@ class InstitutionControllerTest {
         institution.setParentDescription("parentDescription");
         institution.setRootParentId("rootParentId");
 
-        when(institutionService.getInstitutions(any(), any(), any(), any()))
+        when(institutionService.getInstitutions(any(), any(), any(), any(), any()))
                 .thenReturn(List.of(institution));
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/institutions/?taxCode={taxCode}&subunitCode={subunitCode}", "TaxCode", "SubunitCode");
@@ -167,7 +167,7 @@ class InstitutionControllerTest {
         institution.setParentDescription("parentDescription");
         institution.setRootParentId("rootParentId");
 
-        when(institutionService.getInstitutions(any(), any(), any(), any()))
+        when(institutionService.getInstitutions(any(), any(), any(), any(), any()))
                 .thenReturn(List.of(institution));
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/institutions/?origin={origin}&originId={originId}", "origin", "originId");
@@ -191,7 +191,7 @@ class InstitutionControllerTest {
         institution.setParentDescription("parentDescription");
         institution.setRootParentId("rootParentId");
 
-        when(institutionService.getInstitutions(any(), any(), any(), any()))
+        when(institutionService.getInstitutions(any(), any(), any(), any(), any()))
                 .thenReturn(List.of(institution));
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/institutions/?origin={origin}", "origin");
@@ -215,7 +215,7 @@ class InstitutionControllerTest {
         institution.setParentDescription("parentDescription");
         institution.setRootParentId("rootParentId");
 
-        when(institutionService.getInstitutions(any(), any(), any(), any()))
+        when(institutionService.getInstitutions(any(), any(), any(), any(), any()))
                 .thenReturn(List.of(institution));
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/institutions/?originId={originId}", "originId");
@@ -233,14 +233,14 @@ class InstitutionControllerTest {
     @Test
     void shouldGetInstitutionsBySubunitCodeWithoutParam(){
         Assertions.assertThrows(ValidationException.class,
-                () -> institutionController.getInstitutions(null, null, null, null),
+                () -> institutionController.getInstitutions(null, null, null, null, null),
                 "At least one of taxCode, origin or originId must be present");
     }
 
     @Test
     void shouldGetInstitutionsBySubunitCodeWithoutTaxCode() {
         Assertions.assertThrows(ValidationException.class,
-                () -> institutionController.getInstitutions(null, "subunitCode", "origin", null),
+                () -> institutionController.getInstitutions(null, "subunitCode", "origin", null, null),
                 "TaxCode is required if subunitCode is present");
     }
 

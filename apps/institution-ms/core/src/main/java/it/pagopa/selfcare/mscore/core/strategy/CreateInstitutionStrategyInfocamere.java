@@ -38,7 +38,7 @@ public class CreateInstitutionStrategyInfocamere extends CreateInstitutionStrate
     @Override
     public Institution createInstitution(CreateInstitutionStrategyInput strategyInput) {
         Institution toSavedOrUpdate;
-        List<Institution> institutions = institutionConnector.findByTaxCodeAndSubunitCode(strategyInput.getTaxCode(), null);
+        List<Institution> institutions = institutionConnector.findByTaxCodeAndSubunitCode(strategyInput.getTaxCode(), null, null);
         if (institutions.isEmpty()) {
             //Institution does not exist, it will be created
             try {

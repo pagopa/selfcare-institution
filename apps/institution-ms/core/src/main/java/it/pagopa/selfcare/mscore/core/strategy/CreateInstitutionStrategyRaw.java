@@ -25,7 +25,7 @@ public class CreateInstitutionStrategyRaw extends CreateInstitutionStrategyCommo
     @Override
     public Institution createInstitution(CreateInstitutionStrategyInput strategyInput) {
 
-        List<Institution> institutions = institutionConnector.findByTaxCodeAndSubunitCode(strategyInput.getTaxCode(), strategyInput.getSubunitCode());
+        List<Institution> institutions = institutionConnector.findByTaxCodeAndSubunitCode(strategyInput.getTaxCode(), strategyInput.getSubunitCode(), null);
 
         if (institutions.isEmpty()) {
             institution.setExternalId(getExternalId(strategyInput));

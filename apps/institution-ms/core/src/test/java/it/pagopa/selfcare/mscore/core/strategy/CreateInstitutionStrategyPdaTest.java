@@ -27,6 +27,7 @@ import java.util.List;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -86,7 +87,7 @@ public class CreateInstitutionStrategyPdaTest {
         institutionToReturn.setDescription("test");
 
         //Given
-        when(institutionConnector.findByTaxCodeAndSubunitCode(any(), any()))
+        when(institutionConnector.findByTaxCodeAndSubunitCode(any(), any(), eq(null)))
                 .thenReturn(List.of(new Institution()));
 
 
@@ -96,7 +97,7 @@ public class CreateInstitutionStrategyPdaTest {
                         .taxCode("test")
                         .build()));
 
-        verify(institutionConnector).findByTaxCodeAndSubunitCode(any(), any());
+        verify(institutionConnector).findByTaxCodeAndSubunitCode(any(), any(), eq(null));
     }
 
     /**
@@ -110,7 +111,7 @@ public class CreateInstitutionStrategyPdaTest {
         institutionToReturn.setDescription("test");
 
         //Given
-        when(institutionConnector.findByTaxCodeAndSubunitCode(any(), any()))
+        when(institutionConnector.findByTaxCodeAndSubunitCode(any(), any(), eq(null)))
                 .thenReturn(List.of());
 
         when(partyRegistryProxyConnector.getCategory(any(), any())).thenReturn(dummyCategoryProxyInfo);
@@ -126,7 +127,7 @@ public class CreateInstitutionStrategyPdaTest {
         assertThat(actual.getId()).isEqualTo(institutionToReturn.getId());
         assertThat(actual.getDescription()).isEqualTo(institutionToReturn.getDescription());
 
-        verify(institutionConnector).findByTaxCodeAndSubunitCode(any(), any());
+        verify(institutionConnector).findByTaxCodeAndSubunitCode(any(), any(), eq(null));
         verify(partyRegistryProxyConnector).getCategory(any(), any());
         verify(partyRegistryProxyConnector).getInstitutionById(any());
     }
@@ -146,7 +147,7 @@ public class CreateInstitutionStrategyPdaTest {
         nationalRegistriesProfessionalAddress.setAddress("test");
 
         //Given
-        when(institutionConnector.findByTaxCodeAndSubunitCode(any(), any()))
+        when(institutionConnector.findByTaxCodeAndSubunitCode(any(), any(), eq(null)))
                 .thenReturn(List.of());
 
         when(partyRegistryProxyConnector.getInstitutionById(any())).thenThrow(new MsCoreException("NOT_FOUND", "404"));
@@ -162,7 +163,7 @@ public class CreateInstitutionStrategyPdaTest {
         assertThat(actual.getId()).isEqualTo(institutionToReturn.getId());
         assertThat(actual.getDescription()).isEqualTo(institutionToReturn.getDescription());
 
-        verify(institutionConnector).findByTaxCodeAndSubunitCode(any(), any());
+        verify(institutionConnector).findByTaxCodeAndSubunitCode(any(), any(), eq(null));
         verify(partyRegistryProxyConnector).getInstitutionById(any());
         verify(partyRegistryProxyConnector).getLegalAddress(any());
     }
@@ -182,7 +183,7 @@ public class CreateInstitutionStrategyPdaTest {
         nationalRegistriesProfessionalAddress.setAddress("test");
 
         //Given
-        when(institutionConnector.findByTaxCodeAndSubunitCode(any(), any()))
+        when(institutionConnector.findByTaxCodeAndSubunitCode(any(), any(), eq(null)))
                 .thenReturn(List.of());
 
         when(partyRegistryProxyConnector.getInstitutionById(any())).thenThrow(new ResourceNotFoundException("NOT_FOUND", "404"));
@@ -198,7 +199,7 @@ public class CreateInstitutionStrategyPdaTest {
         assertThat(actual.getId()).isEqualTo(institutionToReturn.getId());
         assertThat(actual.getDescription()).isEqualTo(institutionToReturn.getDescription());
 
-        verify(institutionConnector).findByTaxCodeAndSubunitCode(any(), any());
+        verify(institutionConnector).findByTaxCodeAndSubunitCode(any(), any(), eq(null));
         verify(partyRegistryProxyConnector).getInstitutionById(any());
         verify(partyRegistryProxyConnector).getLegalAddress(any());
     }
@@ -218,7 +219,7 @@ public class CreateInstitutionStrategyPdaTest {
         nationalRegistriesProfessionalAddress.setAddress("test");
 
         //Given
-        when(institutionConnector.findByTaxCodeAndSubunitCode(any(), any()))
+        when(institutionConnector.findByTaxCodeAndSubunitCode(any(), any(), eq(null)))
                 .thenReturn(List.of());
 
         when(partyRegistryProxyConnector.getInstitutionById(any())).thenThrow(new MsCoreException("NOT_FOUND", "404"));
@@ -229,7 +230,7 @@ public class CreateInstitutionStrategyPdaTest {
                 .createInstitution(CreateInstitutionStrategyInput.builder()
                         .taxCode("test")
                         .build()));
-        verify(institutionConnector).findByTaxCodeAndSubunitCode(any(), any());
+        verify(institutionConnector).findByTaxCodeAndSubunitCode(any(), any(), eq(null));
         verify(partyRegistryProxyConnector).getInstitutionById(any());
         verify(partyRegistryProxyConnector).getLegalAddress(any());
     }
