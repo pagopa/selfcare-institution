@@ -26,6 +26,33 @@ The [`.github/`] sub folder contains a self-contained ci-stack for building the 
 
 ## Usage
 
+### Prerequisites
+
+    Java version: 17
+    Maven version: 3.9.*
+
+### Setup GitHub Credentials for selfcare-onboarding-sdk
+
+To use the selfcare-onboarding-sdk, you need to configure your Maven settings to include GitHub credentials. This allows Maven to authenticate and download the required dependencies.
+
+1. Open or create the ~/.m2/settings.xml file on your local machine.
+2. Add the following <server> configuration to the <servers> section:
+
+
+
+```xml script
+<servers>
+    <server>
+        <id>selfcare-onboarding</id>
+        <username>**github_username**</username>
+        <password>**ghp_token**</password>
+    </server>
+</servers>
+
+```
+
+## Running the application
+
 ```shell script
 mvn clean package install
 ```
