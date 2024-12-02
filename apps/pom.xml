@@ -14,6 +14,7 @@
     <modules>
         <module>institution-send-mail-scheduler</module>
         <module>institution-ms</module>
+        <module>institution-ms-quarkus</module>
     </modules>
 
     <profiles>
