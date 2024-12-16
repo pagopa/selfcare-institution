@@ -1,11 +1,11 @@
 package it.pagopa.selfcare.mscore.web.controller;
 
-import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import it.pagopa.selfcare.mscore.constant.RelationshipState;
 import it.pagopa.selfcare.mscore.core.ExternalService;
 import it.pagopa.selfcare.mscore.model.institution.*;
 import it.pagopa.selfcare.mscore.web.model.mapper.InstitutionResourceMapper;
 import it.pagopa.selfcare.mscore.web.model.mapper.InstitutionResourceMapperImpl;
+import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -233,7 +233,7 @@ class ExternalControllerTest {
         institution.setExternalId("42");
         institution.setGeographicTaxonomies(new ArrayList<>());
         institution.setId("42");
-        institution.setInstitutionType(InstitutionType.PA);
+        institution.setInstitutionType(InstitutionType.PA.name());
         institution.setOnboarding(new ArrayList<>());
         institution.setOriginId("42");
         institution.setPaymentServiceProvider(paymentServiceProvider);
@@ -291,7 +291,7 @@ class ExternalControllerTest {
         institution.setExternalId("42");
         institution.setGeographicTaxonomies(new ArrayList<>());
         institution.setId("42");
-        institution.setInstitutionType(InstitutionType.PA);
+        institution.setInstitutionType(InstitutionType.PA.name());
         institution.setOnboarding(new ArrayList<>());
         institution.setOriginId("42");
         institution.setPaymentServiceProvider(paymentServiceProvider);
@@ -349,7 +349,7 @@ class ExternalControllerTest {
         institution.setExternalId("42");
         institution.setGeographicTaxonomies(geographicTaxonomiesList);
         institution.setId("42");
-        institution.setInstitutionType(InstitutionType.PA);
+        institution.setInstitutionType(InstitutionType.PA.name());
         institution.setOnboarding(new ArrayList<>());
         institution.setOriginId("42");
         institution.setPaymentServiceProvider(paymentServiceProvider);

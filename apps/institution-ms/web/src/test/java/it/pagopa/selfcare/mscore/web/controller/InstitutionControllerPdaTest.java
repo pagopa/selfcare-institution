@@ -1,7 +1,6 @@
 package it.pagopa.selfcare.mscore.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import it.pagopa.selfcare.mscore.constant.Origin;
 import it.pagopa.selfcare.mscore.core.InstitutionService;
 import it.pagopa.selfcare.mscore.model.institution.Billing;
@@ -9,6 +8,7 @@ import it.pagopa.selfcare.mscore.model.institution.Institution;
 import it.pagopa.selfcare.mscore.web.model.institution.PdaInstitutionRequest;
 import it.pagopa.selfcare.mscore.web.model.mapper.InstitutionResourceMapper;
 import it.pagopa.selfcare.mscore.web.model.mapper.InstitutionResourceMapperImpl;
+import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -78,7 +78,7 @@ public class InstitutionControllerPdaTest {
         institution.setDescription("The characteristics of someone or something");
         institution.setExternalId("42");
         institution.setId("42");
-        institution.setInstitutionType(InstitutionType.PA);
+        institution.setInstitutionType(InstitutionType.PA.name());
         institution.setOriginId("Ipa Code");
         institution.setOrigin(Origin.MOCK.name());
 

@@ -1,12 +1,12 @@
 package it.pagopa.selfcare.mscore.web;
 
-import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import it.pagopa.selfcare.mscore.constant.Origin;
 import it.pagopa.selfcare.mscore.model.institution.Billing;
 import it.pagopa.selfcare.mscore.model.institution.DataProtectionOfficer;
 import it.pagopa.selfcare.mscore.model.institution.Institution;
 import it.pagopa.selfcare.mscore.model.institution.PaymentServiceProvider;
 import it.pagopa.selfcare.mscore.web.model.institution.InstitutionRequest;
+import it.pagopa.selfcare.onboarding.common.InstitutionType;
 
 import java.util.ArrayList;
 
@@ -54,7 +54,7 @@ public class TestUtils {
         institution.setExternalId("42");
         institution.setGeographicTaxonomies(new ArrayList<>());
         institution.setId("42");
-        institution.setInstitutionType(InstitutionType.PA);
+        institution.setInstitutionType(InstitutionType.PA.name());
         institution.setOriginId("Ipa Code");
         institution.setOrigin(Origin.MOCK.name());
         institution.setOnboarding(new ArrayList<>());
@@ -80,7 +80,7 @@ public class TestUtils {
         institution.setExternalId("42");
         institution.setGeographicTaxonomies(new ArrayList<>());
         institution.setId("42");
-        institution.setInstitutionType(InstitutionType.SA);
+        institution.setInstitutionType(InstitutionType.SA.name());
         institution.setOriginId("ANAC Code");
         institution.setOrigin(Origin.ANAC.name());
         institution.setOnboarding(new ArrayList<>());
@@ -106,7 +106,7 @@ public class TestUtils {
         institution.setExternalId("42");
         institution.setGeographicTaxonomies(new ArrayList<>());
         institution.setId("42");
-        institution.setInstitutionType(InstitutionType.AS);
+        institution.setInstitutionType(InstitutionType.AS.name());
         institution.setOriginId("IVASS Code");
         institution.setOrigin(Origin.IVASS.name());
         institution.setOnboarding(new ArrayList<>());
