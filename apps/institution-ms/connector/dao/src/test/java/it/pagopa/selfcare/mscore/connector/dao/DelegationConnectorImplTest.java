@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.mscore.connector.dao;
 
+import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import it.pagopa.selfcare.mscore.connector.dao.model.DelegationEntity;
 import it.pagopa.selfcare.mscore.connector.dao.model.mapper.DelegationEntityMapper;
 import it.pagopa.selfcare.mscore.connector.dao.model.mapper.DelegationEntityMapperImpl;
@@ -11,7 +12,6 @@ import it.pagopa.selfcare.mscore.constant.Order;
 import it.pagopa.selfcare.mscore.exception.MsCoreException;
 import it.pagopa.selfcare.mscore.model.delegation.*;
 import it.pagopa.selfcare.mscore.model.institution.Institution;
-import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -51,7 +51,7 @@ class DelegationConnectorImplTest {
     static {
         dummyInstitution = new Institution();
         dummyInstitution.setTaxCode("taxCode");
-        dummyInstitution.setInstitutionType(InstitutionType.PT.name());
+        dummyInstitution.setInstitutionType(InstitutionType.PT);
         dummyDelegationEntity = new DelegationInstitution();
         dummyDelegationEntity.setId("id");
         dummyDelegationEntity.setProductId("productId");
@@ -232,7 +232,7 @@ class DelegationConnectorImplTest {
     private DelegationInstitution createAggregation(String pattern, String from, String to) {
         Institution institution = new Institution();
         institution.setTaxCode("taxCode_" + pattern);
-        institution.setInstitutionType(InstitutionType.PT.name());
+        institution.setInstitutionType(InstitutionType.PT);
         DelegationInstitution delegationEntity = new DelegationInstitution();
         delegationEntity.setId("id_" + pattern);
         delegationEntity.setProductId("productId");

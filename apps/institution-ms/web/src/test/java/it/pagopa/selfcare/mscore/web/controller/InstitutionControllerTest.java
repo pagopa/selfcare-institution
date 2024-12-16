@@ -106,7 +106,7 @@ class InstitutionControllerTest {
 
         staticInstitution = new Institution();
         staticInstitution.setId("42");
-        staticInstitution.setInstitutionType(InstitutionType.PG.name());
+        staticInstitution.setInstitutionType(InstitutionType.PG);
         staticInstitution.setDescription("description");
         staticInstitution.setOnboarding(List.of(onboarding));
         staticInstitution.setAttributes(List.of(attribute));
@@ -511,7 +511,7 @@ class InstitutionControllerTest {
         institution.setExternalId("42");
         institution.setGeographicTaxonomies(new ArrayList<>());
         institution.setId("42");
-        institution.setInstitutionType(InstitutionType.PA.name());
+        institution.setInstitutionType(InstitutionType.PA);
         institution.setOriginId("Ipa Code");
         institution.setOnboarding(new ArrayList<>());
         institution.setPaymentServiceProvider(paymentServiceProvider);
@@ -670,7 +670,7 @@ class InstitutionControllerTest {
         institution.setExternalId("42");
         institution.setGeographicTaxonomies(new ArrayList<>());
         institution.setId("42");
-        institution.setInstitutionType(InstitutionType.PA.name());
+        institution.setInstitutionType(InstitutionType.PA);
         institution.setOriginId("Ipa Code");
         institution.setOnboarding(new ArrayList<>());
         institution.setPaymentServiceProvider(paymentServiceProvider);
@@ -752,7 +752,7 @@ class InstitutionControllerTest {
         institution.setExternalId("42");
         institution.setGeographicTaxonomies(new ArrayList<>());
         institution.setId("42");
-        institution.setInstitutionType(InstitutionType.PA.name());
+        institution.setInstitutionType(InstitutionType.PA);
         institution.setOriginId("Ipa Code");
         institution.setOnboarding(new ArrayList<>());
         institution.setPaymentServiceProvider(paymentServiceProvider);

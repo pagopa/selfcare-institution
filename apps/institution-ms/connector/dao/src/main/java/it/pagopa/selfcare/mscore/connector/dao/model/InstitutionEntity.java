@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.mscore.connector.dao.model;
 
+import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import it.pagopa.selfcare.mscore.connector.dao.model.inner.*;
 import it.pagopa.selfcare.mscore.constant.Origin;
 import lombok.Data;
@@ -27,7 +28,7 @@ public class InstitutionEntity {
     private Origin origin;
     private String originId;
     private String description;
-    private String institutionType;
+    private InstitutionType institutionType;
     private String digitalAddress;
     private String address;
     private String zipCode;

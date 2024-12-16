@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.mscore.connector.dao.utils;
 
+import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import it.pagopa.selfcare.mscore.connector.dao.model.InstitutionEntity;
 import it.pagopa.selfcare.mscore.connector.dao.model.inner.BillingEntity;
 import it.pagopa.selfcare.mscore.connector.dao.model.inner.DataProtectionOfficerEntity;
@@ -9,7 +10,6 @@ import it.pagopa.selfcare.mscore.constant.RelationshipState;
 import it.pagopa.selfcare.mscore.constant.TokenType;
 import it.pagopa.selfcare.mscore.model.institution.*;
 import it.pagopa.selfcare.mscore.model.onboarding.Token;
-import it.pagopa.selfcare.onboarding.common.InstitutionType;
 
 import java.util.ArrayList;
 
@@ -97,7 +97,7 @@ public class TestUtils {
         institutionEntity.setGeographicTaxonomies(new ArrayList<>());
         institutionEntity.setId("42");
         institutionEntity.setImported(true);
-        institutionEntity.setInstitutionType(InstitutionType.PA.name());
+        institutionEntity.setInstitutionType(InstitutionType.PA);
         institutionEntity.setOnboarding(new ArrayList<>());
         institutionEntity.setOrigin(Origin.MOCK);
         institutionEntity.setOriginId("42");

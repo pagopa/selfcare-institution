@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.mscore.connector.dao.model.mapper;
 
+import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import it.pagopa.selfcare.mscore.model.delegation.Delegation;
 import it.pagopa.selfcare.mscore.model.delegation.DelegationInstitution;
 import it.pagopa.selfcare.mscore.model.institution.Institution;
@@ -26,7 +27,7 @@ public interface DelegationInstitutionMapper {
     }
 
     @Named("setInstitutionType")
-    default String setInstitutionType(List<Institution> institutionList) {
+    default InstitutionType setInstitutionType(List<Institution> institutionList) {
         return !institutionList.isEmpty()? institutionList.get(0).getInstitutionType() : null;
     }
 
