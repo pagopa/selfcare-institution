@@ -1,6 +1,5 @@
 package it.pagopa.selfcare.mscore.core.strategy;
 
-import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import it.pagopa.selfcare.mscore.api.InstitutionConnector;
 import it.pagopa.selfcare.mscore.api.PartyRegistryProxyConnector;
 import it.pagopa.selfcare.mscore.constant.CustomError;
@@ -11,6 +10,7 @@ import it.pagopa.selfcare.mscore.exception.MsCoreException;
 import it.pagopa.selfcare.mscore.exception.ResourceNotFoundException;
 import it.pagopa.selfcare.mscore.model.institution.*;
 import it.pagopa.selfcare.mscore.utils.MaskDataUtils;
+import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -101,9 +101,9 @@ public class CreateInstitutionStrategyPda extends CreateInstitutionStrategyCommo
         newInstitution.setExternalId(taxCode);
         newInstitution.setOrigin(Origin.INFOCAMERE.getValue());
         if(injectionInstitutionType.equalsIgnoreCase(InstitutionType.PT.name())) {
-            newInstitution.setInstitutionType(InstitutionType.PT);
+            newInstitution.setInstitutionType(InstitutionType.PT.name());
         }else{
-            newInstitution.setInstitutionType(InstitutionType.PG);
+            newInstitution.setInstitutionType(InstitutionType.PG.name());
         }
         newInstitution.setOriginId(taxCode);
         newInstitution.setCreatedAt(OffsetDateTime.now());
@@ -119,7 +119,7 @@ public class CreateInstitutionStrategyPda extends CreateInstitutionStrategyCommo
         newInstitution.setOrigin(Origin.IPA.getValue());
         newInstitution.setCreatedAt(OffsetDateTime.now());
         newInstitution.setImported(true);
-        newInstitution.setInstitutionType(InstitutionType.PA);
+        newInstitution.setInstitutionType(InstitutionType.PA.name());
 
         Attributes attributes = new Attributes();
         attributes.setOrigin(categoryProxyInfo.getOrigin());

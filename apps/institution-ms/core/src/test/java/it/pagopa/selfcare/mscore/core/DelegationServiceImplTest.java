@@ -1,6 +1,5 @@
 package it.pagopa.selfcare.mscore.core;
 
-import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import it.pagopa.selfcare.mscore.api.DelegationConnector;
 import it.pagopa.selfcare.mscore.constant.DelegationState;
 import it.pagopa.selfcare.mscore.constant.DelegationType;
@@ -13,6 +12,7 @@ import it.pagopa.selfcare.mscore.model.delegation.DelegationWithPagination;
 import it.pagopa.selfcare.mscore.model.delegation.GetDelegationParameters;
 import it.pagopa.selfcare.mscore.model.delegation.PageInfo;
 import it.pagopa.selfcare.mscore.model.institution.Institution;
+import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
@@ -77,11 +77,11 @@ class DelegationServiceImplTest {
         Institution institutionTo = new Institution();
         institutionTo.setId("idTo");
         institutionTo.setTaxCode("taxCodeTo");
-        institutionTo.setInstitutionType(InstitutionType.PA);
+        institutionTo.setInstitutionType(InstitutionType.PA.name());
         Institution institutionFrom = new Institution();
         institutionTo.setId("idFrom");
         institutionTo.setTaxCode("taxCodeFrom");
-        institutionTo.setInstitutionType(InstitutionType.PT);
+        institutionTo.setInstitutionType(InstitutionType.PT.name());
         when(delegationConnector.save(dummyDelegationProdIo)).thenAnswer(arg ->arg.getArguments()[0]);
         when(institutionService.retrieveInstitutionById(dummyDelegationProdIo.getFrom())).thenReturn(institutionFrom);
         when(institutionService.retrieveInstitutionById(dummyDelegationProdIo.getTo())).thenReturn(institutionTo);
@@ -103,11 +103,11 @@ class DelegationServiceImplTest {
         Institution institutionTo = new Institution();
         institutionTo.setId("idTo");
         institutionTo.setTaxCode("taxCodeTo");
-        institutionTo.setInstitutionType(InstitutionType.PA);
+        institutionTo.setInstitutionType(InstitutionType.PA.name());
         Institution institutionFrom = new Institution();
         institutionTo.setId("idFrom");
         institutionTo.setTaxCode("taxCodeFrom");
-        institutionTo.setInstitutionType(InstitutionType.PT);
+        institutionTo.setInstitutionType(InstitutionType.PT.name());
         dummyDelegationProdIo.setInstitutionFromRootName("test parent");
         when(delegationConnector.save(dummyDelegationProdIo)).thenAnswer(arg ->arg.getArguments()[0]);
         when(institutionService.retrieveInstitutionById(dummyDelegationProdIo.getFrom())).thenReturn(institutionFrom);
@@ -134,11 +134,11 @@ class DelegationServiceImplTest {
         Institution institutionTo = new Institution();
         institutionTo.setId("idTo");
         institutionTo.setTaxCode("taxCodeTo");
-        institutionTo.setInstitutionType(InstitutionType.PA);
+        institutionTo.setInstitutionType(InstitutionType.PA.name());
         Institution institutionFrom = new Institution();
         institutionTo.setId("idFrom");
         institutionTo.setTaxCode("taxCodeFrom");
-        institutionTo.setInstitutionType(InstitutionType.PT);
+        institutionTo.setInstitutionType(InstitutionType.PT.name());
         when(delegationConnector.save(dummyDelegationProdPagopa)).thenAnswer(arg ->arg.getArguments()[0]);
         when(institutionService.retrieveInstitutionById(dummyDelegationProdPagopa.getFrom())).thenReturn(institutionFrom);
         when(institutionService.retrieveInstitutionById(dummyDelegationProdPagopa.getTo())).thenReturn(institutionTo);

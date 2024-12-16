@@ -2972,8 +2972,7 @@
             }
           },
           "institutionType" : {
-            "type" : "string",
-            "enum" : [ "AS", "CON", "GSP", "PA", "PG", "PRV", "PSP", "PT", "REC", "SA", "SCP" ]
+            "type" : "string"
           },
           "subunitCode" : {
             "type" : "string"

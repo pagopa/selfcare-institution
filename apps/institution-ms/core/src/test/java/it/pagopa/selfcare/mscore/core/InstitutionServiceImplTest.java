@@ -314,7 +314,7 @@ class InstitutionServiceImplTest {
     void testCreateInstitutionFromIpa() {
         when(createInstitutionStrategyFactory.createInstitutionStrategyIpa()).thenReturn(createInstitutionStrategy);
         when(createInstitutionStrategy.createInstitution(any())).thenReturn(new Institution());
-        Institution institution = institutionServiceImpl.createInstitutionFromIpa("id", InstitutionPaSubunitType.AOO,"id", List.of(), InstitutionType.PA, "email", "phone");
+        Institution institution = institutionServiceImpl.createInstitutionFromIpa("id", InstitutionPaSubunitType.AOO,"id", List.of(), InstitutionType.PA.name(), "email", "phone");
         assertNotNull(institution);
     }
 
@@ -977,7 +977,7 @@ class InstitutionServiceImplTest {
         updatedInstitutionMock.setId("123e4567-e89b-12d3-a456-426614174000");
         updatedInstitutionMock.setExternalId("00099991238");
         updatedInstitutionMock.setDigitalAddress("DigitalAddress@example.com");
-        updatedInstitutionMock.setInstitutionType(InstitutionType.PA);
+        updatedInstitutionMock.setInstitutionType(InstitutionType.PA.name());
         updatedInstitutionMock.setTaxCode(updatedInstitutionMock.getExternalId());
         updatedInstitutionMock.setOnboarding(List.of(onboardingMock1, onboardingMock2, onboardingMock3));
         updatedInstitutionMock.setGeographicTaxonomies(Collections.emptyList());

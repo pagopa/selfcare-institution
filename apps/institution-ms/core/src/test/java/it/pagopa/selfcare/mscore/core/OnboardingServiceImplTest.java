@@ -147,7 +147,7 @@ class OnboardingServiceImplTest {
         Institution institution = new Institution();
         institution.setId("institutionId");
         institution.setOnboarding(List.of(onboarding, dummyOnboarding()));
-        institution.setInstitutionType(InstitutionType.PA);
+        institution.setInstitutionType(InstitutionType.PA.name());
 
         doNothing().when(pecNotificationConnector).insertPecNotification(any(PecNotification.class));
         when(institutionConnector.findById(institution.getId())).thenReturn(institution);
@@ -175,7 +175,7 @@ class OnboardingServiceImplTest {
         onboarding.setStatus(UtilEnumList.VALID_RELATIONSHIP_STATES.get(0));
         Institution institution = new Institution();
         institution.setId("institutionId");
-        institution.setInstitutionType(InstitutionType.PT);
+        institution.setInstitutionType(InstitutionType.PT.name());
         institution.setOnboarding(List.of(onboarding, dummyOnboarding()));
 
         when(institutionConnector.findById(institution.getId())).thenReturn(institution);
@@ -199,7 +199,7 @@ class OnboardingServiceImplTest {
         Institution institution = new Institution();
         institution.setId("institutionId");
         institution.setOnboarding(List.of(onboarding, dummyOnboarding()));
-        institution.setInstitutionType(InstitutionType.PG);
+        institution.setInstitutionType(InstitutionType.PG.name());
 
         when(institutionConnector.findById(institution.getId())).thenReturn(institution);
         when(institutionSendMailConfig.getPecNotificationDisabled()).thenReturn(true);
@@ -279,7 +279,7 @@ class OnboardingServiceImplTest {
         institution.setId("institutionId");
         institution.setOnboarding(List.of(onboarding));
         institution.setDigitalAddress("test@junit.pagopa");
-        institution.setInstitutionType(InstitutionType.PG);
+        institution.setInstitutionType(InstitutionType.PG.name());
 
         Token token = new Token();
         token.setId(onboarding.getTokenId());
