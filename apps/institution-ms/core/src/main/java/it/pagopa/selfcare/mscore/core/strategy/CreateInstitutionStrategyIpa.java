@@ -83,7 +83,7 @@ public class CreateInstitutionStrategyIpa extends CreateInstitutionStrategyCommo
         try {
             Optional<Institution> opt = institutionConnector.findByExternalId(strategyInput.getTaxCode());
             if (opt.isEmpty()) {
-                Institution institutionEC = getInstitutionEC(strategyInput.getTaxCode(), institutionProxyInfo, categoryProxyInfo, InstitutionType.PA.name());
+                Institution institutionEC = getInstitutionEC(strategyInput.getTaxCode(), institutionProxyInfo, categoryProxyInfo, InstitutionType.PA);
                 return institutionConnector.save(institutionEC);
             } else {
                 return opt.get();
@@ -93,13 +93,13 @@ public class CreateInstitutionStrategyIpa extends CreateInstitutionStrategyCommo
         }
     }
 
-    private Institution getInstitutionEC(String taxCode, InstitutionProxyInfo institutionProxyInfo, CategoryProxyInfo categoryProxyInfo, String institutionType) {
+    private Institution getInstitutionEC(String taxCode, InstitutionProxyInfo institutionProxyInfo, CategoryProxyInfo categoryProxyInfo, InstitutionType institutionType) {
 
         Institution newInstitution = institutionMapper.fromInstitutionProxyInfo(institutionProxyInfo);
         GeographicTaxonomies geotax = partyRegistryProxyConnector.getExtByCode(institutionProxyInfo.getIstatCode());
 
         newInstitution.setExternalId(taxCode);
-        newInstitution.setInstitutionType(Objects.requireNonNullElse(institutionType, InstitutionType.PA.name()));
+        newInstitution.setInstitutionType(Objects.requireNonNullElse(institutionType, InstitutionType.PA));
         newInstitution.setOrigin(Origin.IPA.getValue());
         newInstitution.setCreatedAt(OffsetDateTime.now());
         newInstitution.setCity(Optional.ofNullable(geotax.getDescription())
@@ -126,7 +126,7 @@ public class CreateInstitutionStrategyIpa extends CreateInstitutionStrategyCommo
         AreaOrganizzativaOmogenea areaOrganizzativaOmogenea = partyRegistryProxyConnector.getAooById(strategyInput.getSubunitCode());
         GeographicTaxonomies geotax = partyRegistryProxyConnector.getExtByCode(areaOrganizzativaOmogenea.getCodiceComuneISTAT());
         Institution newInstitution = new Institution();
-        newInstitution.setInstitutionType(InstitutionType.PA.name());
+        newInstitution.setInstitutionType(InstitutionType.PA);
         newInstitution.setOriginId(areaOrganizzativaOmogenea.getId());
         newInstitution.setDescription(areaOrganizzativaOmogenea.getDenominazioneAoo());
         newInstitution.setDigitalAddress(TYPE_MAIL_PEC.equals(areaOrganizzativaOmogenea.getTipoMail1())
@@ -166,7 +166,7 @@ public class CreateInstitutionStrategyIpa extends CreateInstitutionStrategyCommo
         UnitaOrganizzativa unitaOrganizzativa = partyRegistryProxyConnector.getUoById(strategyInput.getSubunitCode());
         GeographicTaxonomies geotax = partyRegistryProxyConnector.getExtByCode(unitaOrganizzativa.getCodiceComuneISTAT());
         Institution newInstitution = new Institution();
-        newInstitution.setInstitutionType(InstitutionType.PA.name());
+        newInstitution.setInstitutionType(InstitutionType.PA);
         newInstitution.setOriginId(unitaOrganizzativa.getId());
         newInstitution.setDescription(unitaOrganizzativa.getDescrizioneUo());
         newInstitution.setDigitalAddress(TYPE_MAIL_PEC.equals(unitaOrganizzativa.getTipoMail1())

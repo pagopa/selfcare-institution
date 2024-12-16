@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.mscore.core;
 
 import it.pagopa.selfcare.commons.base.security.PartyRole;
+import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import it.pagopa.selfcare.mscore.constant.Env;
 import it.pagopa.selfcare.mscore.constant.RelationshipState;
 import it.pagopa.selfcare.mscore.constant.TokenType;
@@ -10,7 +11,6 @@ import it.pagopa.selfcare.mscore.model.onboarding.*;
 import it.pagopa.selfcare.mscore.model.user.User;
 import it.pagopa.selfcare.mscore.model.user.UserBinding;
 import it.pagopa.selfcare.mscore.model.user.UserToOnboard;
-import it.pagopa.selfcare.onboarding.common.InstitutionType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -212,7 +212,7 @@ public class TestUtils {
         institution.setDigitalAddress("42 Main St");
         institution.setGeographicTaxonomies(new ArrayList<>());
         institution.setImported(true);
-        institution.setInstitutionType(InstitutionType.PA.name());
+        institution.setInstitutionType(InstitutionType.PA);
         institution
                 .setPaymentServiceProvider(new PaymentServiceProvider("Abi Code", "42", "Legal Register Name", "42", true));
         institution.setRea("Rea");
