@@ -1,0 +1,185 @@
+{
+  "openapi" : "3.0.3",
+  "info" : {
+    "title" : "Institution API",
+    "version" : "1.0.0"
+  },
+  "servers" : [ {
+    "url" : "http://localhost:8080",
+    "description" : "Auto generated value"
+  }, {
+    "url" : "http://0.0.0.0:8080",
+    "description" : "Auto generated value"
+  } ],
+  "paths" : {
+    "/bulk/institutions" : {
+      "post" : {
+        "tags" : [ "Management Controller" ],
+        "operationId" : "retrieveInstitutionByIds",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/BulkPartiesSeed"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/BulkInstitutions"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "AttributesResponse" : {
+        "type" : "object",
+        "properties" : {
+          "origin" : {
+            "type" : "string"
+          },
+          "code" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          }
+        }
+      },
+      "BillingResponse" : {
+        "type" : "object",
+        "properties" : {
+          "vatNumber" : {
+            "type" : "string"
+          },
+          "taxCodeInvoicing" : {
+            "type" : "string"
+          },
+          "recipientCode" : {
+            "type" : "string"
+          },
+          "publicServices" : {
+            "type" : "boolean"
+          }
+        }
+      },
+      "BulkInstitution" : {
+        "required" : [ "id", "externalId", "origin", "originId", "description", "digitalAddress", "address", "zipCode", "taxCode", "products" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "externalId" : {
+            "type" : "string"
+          },
+          "origin" : {
+            "type" : "string"
+          },
+          "originId" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "institutionType" : {
+            "type" : "string"
+          },
+          "digitalAddress" : {
+            "type" : "string"
+          },
+          "address" : {
+            "type" : "string"
+          },
+          "zipCode" : {
+            "type" : "string"
+          },
+          "taxCode" : {
+            "type" : "string"
+          },
+          "attributes" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/AttributesResponse"
+            }
+          },
+          "products" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/BulkProduct"
+            }
+          }
+        }
+      },
+      "BulkInstitutions" : {
+        "type" : "object",
+        "properties" : {
+          "found" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/BulkInstitution"
+            }
+          },
+          "notFound" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
+      },
+      "BulkPartiesSeed" : {
+        "required" : [ "partyIdentifiers" ],
+        "type" : "object",
+        "properties" : {
+          "partyIdentifiers" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
+      },
+      "BulkProduct" : {
+        "required" : [ "product", "billing" ],
+        "type" : "object",
+        "properties" : {
+          "product" : {
+            "type" : "string"
+          },
+          "billing" : {
+            "$ref" : "#/components/schemas/BillingResponse"
+          },
+          "pricingPlan" : {
+            "type" : "string"
+          },
+          "status" : {
+            "$ref" : "#/components/schemas/RelationshipState"
+          }
+        }
+      },
+      "RelationshipState" : {
+        "enum" : [ "ACTIVE", "PENDING", "TOBEVALIDATED", "SUSPENDED", "DELETED", "REJECTED" ],
+        "type" : "string"
+      }
+    },
+    "securitySchemes" : {
+      "SecurityScheme" : {
+        "type" : "http",
+        "description" : "Authentication",
+        "scheme" : "bearer",
+        "bearerFormat" : "JWT"
+      }
+    }
+  }
+}
