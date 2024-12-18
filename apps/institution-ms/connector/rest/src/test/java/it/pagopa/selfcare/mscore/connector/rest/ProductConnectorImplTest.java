@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.mscore.connector.rest;
 
+import it.pagopa.selfcare.product.entity.ContractTemplate;
 import it.pagopa.selfcare.product.entity.Product;
 import it.pagopa.selfcare.product.entity.ProductStatus;
 import it.pagopa.selfcare.product.service.ProductService;
@@ -9,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.*;
@@ -43,8 +47,12 @@ class ProductConnectorImplTest {
 
     private Product dummyProduct(){
         Product product = new Product();
-        product.setContractTemplatePath("Contract Template Path");
-        product.setContractTemplateVersion("1.0.2");
+        Map<String, ContractTemplate> institutionContractMappings = new HashMap<>();
+        ContractTemplate contractTemplate = new ContractTemplate();
+        contractTemplate.setContractTemplatePath("Contract Template Path");
+        contractTemplate.setContractTemplateVersion("1.0.2");
+        institutionContractMappings.put("default", contractTemplate);
+        product.setInstitutionContractMappings(institutionContractMappings);
         product.setId("42");
         product.setParentId("42");
         product.setRoleMappings(null);
