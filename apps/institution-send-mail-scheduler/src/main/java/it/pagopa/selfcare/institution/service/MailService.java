@@ -7,5 +7,6 @@ import java.util.Map;
 
 public interface MailService {
 
-    Uni<Void> sendMail(List<String> destinationMail, String templateName, Map<String, String> mailParameters);
+    Uni<Void> sendMail(List<String> destinationMail, String templateName, Map<String, String> mailParameters, String prefixSubject);
+
 }

@@ -81,7 +81,7 @@ class InstitutionSendMailScheduledServiceImplTest {
         UniAssertSubscriber<Void> subscriber = result.subscribe().withSubscriber(UniAssertSubscriber.create());
         subscriber.assertNotTerminated();
         Mockito.verify(mailService, Mockito.atLeast(4))
-                .sendMail(Mockito.anyList(), Mockito.anyString(), Mockito.anyMap());
+                .sendMail(Mockito.anyList(), Mockito.anyString(), Mockito.anyMap(), Mockito.any());
     }
 
 
@@ -108,7 +108,7 @@ class InstitutionSendMailScheduledServiceImplTest {
         UniAssertSubscriber<Void> subscriber = result.subscribe().withSubscriber(UniAssertSubscriber.create());
         subscriber.assertCompleted();
         Mockito.verify(mailService, Mockito.times(0))
-                .sendMail(Mockito.anyList(), Mockito.anyString(), Mockito.anyMap());
+                .sendMail(Mockito.anyList(), Mockito.anyString(), Mockito.anyMap(), Mockito.anyString());
     }
 
     @Test
@@ -132,7 +132,7 @@ class InstitutionSendMailScheduledServiceImplTest {
         Product product = new Product();
         product.setTitle("prod-io");
         when(productService.getProduct("product-id")).thenReturn(product);
-        Mockito.doThrow(new RuntimeException("Mail send failed")).when(mailService).sendMail(Mockito.anyList(), Mockito.anyString(), Mockito.anyMap());
+        Mockito.doThrow(new RuntimeException("Mail send failed")).when(mailService).sendMail(Mockito.anyList(), Mockito.anyString(), Mockito.anyMap(), Mockito.anyString());
 
         // Execute
         Uni<Boolean> result = service.runQueryAndSendNotification(moduleDayOfTheEpoch, page, "productId");
@@ -158,7 +158,7 @@ class InstitutionSendMailScheduledServiceImplTest {
         UniAssertSubscriber<Boolean> subscriber = result.subscribe().withSubscriber(UniAssertSubscriber.create());
 
         // Verify
-        Mockito.verify(mailService, Mockito.never()).sendMail(Mockito.anyList(), Mockito.anyString(), Mockito.anyMap());
+        Mockito.verify(mailService, Mockito.never()).sendMail(Mockito.anyList(), Mockito.anyString(), Mockito.anyMap(), Mockito.anyString());
         subscriber.assertCompleted();
     }
 
