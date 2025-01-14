@@ -7,6 +7,7 @@ import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.helpers.test.UniAssertSubscriber;
+import it.pagopa.selfcare.institution.config.ProductConfig;
 import it.pagopa.selfcare.institution.entity.PecNotification;
 import it.pagopa.selfcare.product.entity.Product;
 import it.pagopa.selfcare.product.service.ProductService;
@@ -36,6 +37,9 @@ class InstitutionSendMailScheduledServiceImplTest {
     ProductService productService;
 
     @Inject
+    ProductConfig productConfig;
+
+    @Inject
     InstitutionSendMailScheduledServiceImpl service;
 
     @RestClient
@@ -44,6 +48,12 @@ class InstitutionSendMailScheduledServiceImplTest {
 
     @ConfigProperty(name = "institution-send-mail.notification-query-size")
     Integer querySize;
+
+    @ConfigProperty(name = "institution-send-mail.first-notification-path")
+    String templateMailFirstNotification;
+
+    @ConfigProperty(name = "institution-send-mail.notification-path")
+    String templateMail;
 
     @Test
     void sendMailToAllPecNotificationsForCurrentModuleDay() {
@@ -160,6 +170,45 @@ class InstitutionSendMailScheduledServiceImplTest {
         // Verify
         Mockito.verify(mailService, Mockito.never()).sendMail(Mockito.anyList(), Mockito.anyString(), Mockito.anyMap(), Mockito.anyString());
         subscriber.assertCompleted();
+    }
+
+    @Test
+    void sendFirstMailTemplate() {
+        String institutionId = "institution-id";
+        String productId = "prod-io";
+
+        PecNotification pecNotification = new PecNotification();
+        pecNotification.setProductId(productId);
+        pecNotification.setInstitutionId(institutionId);
+        pecNotification.setDigitalAddress("test@test1.it");
+        pecNotification.setCreatedAt(Instant.now().minus(productConfig.products().get(productId), ChronoUnit.DAYS));
+        pecNotification.setModuleDayOfTheEpoch(1);
+
+        PanacheMock.mock(PecNotification.class);
+        ReactivePanacheQuery<ReactivePanacheMongoEntityBase> query = Mockito.mock(ReactivePanacheQuery.class);
+        when(PecNotification.find(any(), any(Object.class))).thenReturn(query);
+        when(query.page(0, querySize)).thenReturn(query);
+        when(query.hasNextPage()).thenReturn(Uni.createFrom().item(true));
+        when(query.firstResult()).thenReturn(Uni.createFrom().item(pecNotification));
+
+        Product product = new Product();
+        product.setTitle("prod-io");
+        when(productService.getProduct("prod-io")).thenReturn(product);
+
+        when(institutionApi.institutionsInstitutionIdUserInstitutionsGet(institutionId,
+                null,
+                List.of(productId),
+                null,
+                null,
+                null)).thenReturn(Uni.createFrom().item(getUserInstitutionResponse(institutionId, productId)));
+
+        Uni<Void> result = service.retrieveInstitutionFromPecNotificationAndSendMail();
+        UniAssertSubscriber<Void> subscriber = result.subscribe().withSubscriber(UniAssertSubscriber.create());
+        subscriber.assertNotTerminated();
+        Mockito.verify(mailService, Mockito.atLeast(1))
+                .sendMail(Mockito.anyList(), Mockito.eq(templateMailFirstNotification), Mockito.anyMap(), Mockito.any());
+        Mockito.verify(mailService, Mockito.never())
+                .sendMail(Mockito.anyList(), Mockito.eq(templateMail), Mockito.anyMap(), Mockito.any());
     }
 
     private List<UserInstitutionResponse> getUserInstitutionResponse(String institutionId, String productId) {
