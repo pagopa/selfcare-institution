@@ -16,7 +16,10 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.openapi.quarkus.selfcare_user_json.api.InstitutionApi;
 import org.openapi.quarkus.selfcare_user_json.model.UserInstitutionResponse;
 
-import java.time.*;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -128,16 +131,18 @@ public class InstitutionSendMailScheduledServiceImpl implements InstitutionSendM
 
         if (sendFirstMail(dayDifference, pecNotification.getProductId())) {
             Product product = productService.getProduct(pecNotification.getProductId());
+            String productTitle = Optional.ofNullable(product).map(Product::getTitle).orElse(null);
             Map<String, String> mailParameters = getMailParameters(pecNotification.getInstitutionId(), product, null);
-            return mailService.sendMail(List.of(pecNotification.getDigitalAddress()), templateMailFirstNotification, mailParameters)
+            return mailService.sendMail(List.of(pecNotification.getDigitalAddress()), templateMailFirstNotification, mailParameters, productTitle)
                     .onItem().invoke(() -> log.info(String.format("Mail sent for institution %s and product %s", pecNotification.getInstitutionId(), pecNotification.getProductId())))
                     .onFailure().recoverWithNull();
         } else {
             return countNewUsers(pecNotification.getInstitutionId(), pecNotification.getProductId())
                     .onItem().transformToUni(usersCount -> {
                         Product product = productService.getProduct(pecNotification.getProductId());
+                        String productTitle = Optional.ofNullable(product).map(Product::getTitle).orElse(null);
                         Map<String, String> mailParameters = getMailParameters(pecNotification.getInstitutionId(), product, usersCount);
-                        return mailService.sendMail(List.of(pecNotification.getDigitalAddress()), templateMail, mailParameters)
+                        return mailService.sendMail(List.of(pecNotification.getDigitalAddress()), templateMail, mailParameters, productTitle)
                                 .onItem().invoke(() -> log.info(String.format("Mail sent for institution %s and product %s", pecNotification.getInstitutionId(), pecNotification.getProductId())))
                                 .onFailure().recoverWithNull();
                     });

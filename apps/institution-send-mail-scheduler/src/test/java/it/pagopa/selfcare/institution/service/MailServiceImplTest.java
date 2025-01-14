@@ -56,7 +56,7 @@ class MailServiceImplTest {
         Mockito.when(objectMapper.readValue(Mockito.anyString(), Mockito.eq(MailTemplate.class)))
                 .thenReturn(mailTemplate);
         // When
-        mailService.sendMail(destinationMails, "templateName", mailParameters);
+        mailService.sendMail(destinationMails, "templateName", mailParameters, null);
 
         // Then
         ArgumentCaptor<Mail> mailCaptor = ArgumentCaptor.forClass(Mail.class);
@@ -72,7 +72,7 @@ class MailServiceImplTest {
         // Then
         assertThrows(GenericException.class, () -> {
             // When
-            mailService.sendMail(Collections.singletonList("recipient@example.com"), "templateName", Collections.singletonMap("name", "John Doe"));
+            mailService.sendMail(Collections.singletonList("recipient@example.com"), "templateName", Collections.singletonMap("name", "John Doe"), null);
         });
     }
 }
