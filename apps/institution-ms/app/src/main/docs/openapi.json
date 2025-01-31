@@ -3528,6 +3528,9 @@
             "type" : "string",
             "enum" : [ "ACTIVE", "DELETED", "PENDING", "REJECTED", "SUSPENDED", "TOBEVALIDATED" ]
           },
+          "tokenId" : {
+            "type" : "string"
+          },
           "updatedAt" : {
             "type" : "string",
             "format" : "date-time"

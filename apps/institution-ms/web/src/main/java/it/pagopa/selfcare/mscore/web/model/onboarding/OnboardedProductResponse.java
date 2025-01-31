@@ -13,6 +13,7 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor
 public class OnboardedProductResponse {
     private String productId;
+    private String tokenId;
     private RelationshipState status;
     private BillingResponse billing;
     private OffsetDateTime createdAt;
