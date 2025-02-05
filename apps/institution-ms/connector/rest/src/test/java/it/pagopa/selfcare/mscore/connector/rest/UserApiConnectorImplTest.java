@@ -45,13 +45,13 @@ class UserApiConnectorImplTest {
         final String productId  = "productId";
         ResponseEntity<List<String>> emails = new ResponseEntity<>(List.of("email"), HttpStatus.OK);
 
-        when(userApiRestClient._usersEmailsGet(anyString(), anyString())).thenReturn(emails);
+        when(userApiRestClient._getUsersEmailByInstitutionAndProduct(anyString(), anyString())).thenReturn(emails);
 
         //when
         List<String> userEmails = userApiConnector.getUserEmails(institutionId, productId);
         //then
         assertFalse(userEmails.isEmpty());
-        verify(userApiRestClient, times(1))._usersEmailsGet(institutionId, productId);
+        verify(userApiRestClient, times(1))._getUsersEmailByInstitutionAndProduct(institutionId, productId);
 
     }
 
@@ -77,7 +77,7 @@ class UserApiConnectorImplTest {
 
         //then
         Assertions.assertDoesNotThrow(executable);
-        verify(userInstitutionApiRestClient)._institutionsInstitutionIdPut(institutionId, descriptionDto);
+        verify(userInstitutionApiRestClient)._updateInstitutionDescription(institutionId, descriptionDto);
     }
 
 
