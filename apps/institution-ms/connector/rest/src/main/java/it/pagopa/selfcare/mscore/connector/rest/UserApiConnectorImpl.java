@@ -29,13 +29,13 @@ public class UserApiConnectorImpl implements UserApiConnector {
 
     @Override
     public List<String> getUserEmails(String institutionId, String productId){
-        ResponseEntity<List<String>> userEmails = userApiRestClient._getUsersEmailByInstitutionAndProduct(institutionId, productId);
+        ResponseEntity<List<String>> userEmails = userApiRestClient._usersEmailsGet(institutionId, productId);
         return userEmails.getBody();
     }
 
     @Override
     public void updateUserInstitution(String institutionId, InstitutionUpdate institutionUpdate){
-       userInstitutionApiRestClient._updateInstitutionDescription(institutionId, userMapper.toUpdateDescriptionDto(institutionUpdate));
+       userInstitutionApiRestClient._institutionsInstitutionIdPut(institutionId, userMapper.toUpdateDescriptionDto(institutionUpdate));
     }
 
 }
