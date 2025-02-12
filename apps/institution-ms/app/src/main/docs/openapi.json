@@ -797,6 +797,15 @@
           "schema" : {
             "type" : "string"
           }
+        }, {
+          "name" : "subunits",
+          "in" : "query",
+          "description" : "subunits",
+          "required" : false,
+          "style" : "form",
+          "schema" : {
+            "type" : "boolean"
+          }
         } ],
         "responses" : {
           "200" : {

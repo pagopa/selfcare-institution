@@ -315,6 +315,19 @@ public class InstitutionConnectorImpl implements InstitutionConnector {
     }
 
     @Override
+    public List<Institution> findByTaxCodeWithSubunits(String taxCode, String productId) {
+        Criteria criteria = Criteria.where(InstitutionEntity.Fields.taxCode.name()).is(taxCode);
+
+        if (productId != null && !productId.isEmpty()) {
+            criteria = criteria.and("onboarding.productId").is(productId);
+        }
+
+        List<InstitutionEntity> institutionEntities = repository.find(Query.query(criteria), InstitutionEntity.class);
+
+        return getInstitutionsWithProductFilter(productId, institutionEntities);
+    }
+
+    @Override
     public List<Institution> findByOriginAndOriginId(String origin, String originId, String productId) {
 
         CriteriaBuilder criteriaBuilder = CriteriaBuilder.builder()
