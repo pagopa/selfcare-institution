@@ -91,13 +91,13 @@ public class InstitutionServiceImpl implements InstitutionService {
     }
 
     @Override
-    public List<Institution> getInstitutions(String taxCode, String subunitCode, String origin, String originId, String productId, Boolean subunits) {
+    public List<Institution> getInstitutions(String taxCode, String subunitCode, String origin, String originId, String productId, Boolean enableSubunits) {
         if (StringUtils.hasText(taxCode) && (StringUtils.hasText(origin) || StringUtils.hasText(originId))) {
             throw new InvalidRequestException(GenericError.GET_INSTITUTIONS_REQUEST_ERROR.getMessage(), GenericError.GET_INSTITUTIONS_REQUEST_ERROR.getCode());
         }
 
         if (StringUtils.hasText(taxCode)) {
-            return Boolean.TRUE.equals(subunits) ?
+            return Boolean.TRUE.equals(enableSubunits) ?
                     institutionConnector.findByTaxCodeWithSubunits(taxCode, productId)
                     :
                     institutionConnector.findByTaxCodeAndSubunitCode(taxCode, subunitCode, productId);

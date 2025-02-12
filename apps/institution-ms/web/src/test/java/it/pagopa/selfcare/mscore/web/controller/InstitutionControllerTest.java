@@ -245,14 +245,14 @@ class InstitutionControllerTest {
     }
 
     @Test
-    void shouldGetInstitutionsWithSubunitsTrueWithoutTaxCode() {
+    void shouldGetInstitutionsWithEnableSubunitsTrueWithoutTaxCode() {
         Assertions.assertThrows(ValidationException.class,
                 () -> institutionController.getInstitutions(null, null, null, null, null, true),
                 "TaxCode is required when subunits is true");
     }
 
     @Test
-    void shouldGetInstitutionsWithSubunitsTrueAndWithSubunitCode() {
+    void shouldGetInstitutionsWithEnableSubunitsTrueAndWithSubunitCode() {
         Assertions.assertThrows(ValidationException.class,
                 () -> institutionController.getInstitutions(null, "subunitCode", null, null, null, true),
                 "Only taxCode can be provided when subunits is true");

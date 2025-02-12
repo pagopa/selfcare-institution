@@ -303,7 +303,7 @@ class InstitutionServiceImplTest {
     }
 
     @Test
-    void testGetInstitutionsWithTaxCodeAndSubunitsTrue() {
+    void testGetInstitutionsWithTaxCodeAndEnableSubunitsTrue() {
         List<Institution> institutionList = new ArrayList<>();
         when(institutionConnector.findByTaxCodeWithSubunits(any(), any())).thenReturn(institutionList);
         List<Institution> institutions = institutionServiceImpl.getInstitutions("taxcode", null, null, null, null, true);
@@ -312,7 +312,7 @@ class InstitutionServiceImplTest {
     }
 
     @Test
-    void testGetInstitutionsWithTaxCodeAndSubunitsFalse() {
+    void testGetInstitutionsWithTaxCodeAndEnableSubunitsFalse() {
         List<Institution> institutionList = new ArrayList<>();
         when(institutionConnector.findByTaxCodeAndSubunitCode(any(), any(), any())).thenReturn(institutionList);
         List<Institution> institutions = institutionServiceImpl.getInstitutions("taxcode", null, null, null, null, false);
@@ -321,7 +321,7 @@ class InstitutionServiceImplTest {
     }
 
     @Test
-    void testGetInstitutionsWithTaxCodeAndSubunitsNull() {
+    void testGetInstitutionsWithTaxCodeAndEnableSubunitsNull() {
         List<Institution> institutionList = new ArrayList<>();
         when(institutionConnector.findByTaxCodeAndSubunitCode(any(), any(), any())).thenReturn(institutionList);
         List<Institution> institutions = institutionServiceImpl.getInstitutions("taxcode", null, null, null, null, null);
