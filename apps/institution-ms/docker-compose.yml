@@ -1,0 +1,21 @@
+version: '3.8'
+services:
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - '27017:27017'
+    networks:
+      - develop-network
+
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    container_name: azurite
+    ports:
+      - "10000:10000"  # Expose blob service
+    volumes:
+      - ./app/src/test/resources/blobStorage:/data
+
+networks:
+  develop-network:
+    name: selfcare-develop-network
