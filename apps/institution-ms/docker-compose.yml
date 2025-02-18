@@ -5,6 +5,8 @@ services:
     image: mongo:latest
     ports:
       - '27017:27017'
+    volumes:
+      - "./app/src/test/resources/db:/docker-entrypoint-initdb.d"
     networks:
       - develop-network
 
@@ -15,6 +17,8 @@ services:
       - "10000:10000"  # Expose blob service
     volumes:
       - ./app/src/test/resources/blobStorage:/data
+    networks:
+      - develop-network
 
 networks:
   develop-network:
