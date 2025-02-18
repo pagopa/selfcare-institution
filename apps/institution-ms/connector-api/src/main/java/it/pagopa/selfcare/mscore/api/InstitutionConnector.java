@@ -56,6 +56,8 @@ public interface InstitutionConnector {
 
     List<Institution> findByTaxCodeAndSubunitCode(String taxCode, String subunitCode, String productId);
 
+    List<Institution> findByTaxCodeWithSubunits(String taxCode, String productId);
+
     List<Institution> findByOriginAndOriginId(String origin, String originId, String productId);
 
     Boolean existsOnboardingByFilters(VerifyOnboardingFilters filters);

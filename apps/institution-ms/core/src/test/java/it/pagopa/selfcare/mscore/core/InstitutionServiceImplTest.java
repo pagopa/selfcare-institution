@@ -288,7 +288,7 @@ class InstitutionServiceImplTest {
     void testGetInstitutionsWithTaxCodeSubunitCode() {
         List<Institution> institutionList = new ArrayList<>();
         when(institutionConnector.findByTaxCodeAndSubunitCode(any(), any(), any())).thenReturn(institutionList);
-        List<Institution> institutions = institutionServiceImpl.getInstitutions("id", "id", null, null, null);
+        List<Institution> institutions = institutionServiceImpl.getInstitutions("id", "id", null, null, null, null);
         assertTrue(institutions.isEmpty());
         Mockito.verify(institutionConnector).findByTaxCodeAndSubunitCode(any(), any(), any());
     }
@@ -297,14 +297,41 @@ class InstitutionServiceImplTest {
     void testGetInstitutionsWithOriginOriginId() {
         List<Institution> institutionList = new ArrayList<>();
         when(institutionConnector.findByOriginAndOriginId(any(), any(), any())).thenReturn(institutionList);
-        List<Institution> institutions = institutionServiceImpl.getInstitutions(null, null, "id", "id", null);
+        List<Institution> institutions = institutionServiceImpl.getInstitutions(null, null, "id", "id", null, null);
         assertTrue(institutions.isEmpty());
         Mockito.verify(institutionConnector).findByOriginAndOriginId(any(), any(), any());
     }
 
     @Test
+    void testGetInstitutionsWithTaxCodeAndEnableSubunitsTrue() {
+        List<Institution> institutionList = new ArrayList<>();
+        when(institutionConnector.findByTaxCodeWithSubunits(any(), any())).thenReturn(institutionList);
+        List<Institution> institutions = institutionServiceImpl.getInstitutions("taxcode", null, null, null, null, true);
+        assertTrue(institutions.isEmpty());
+        Mockito.verify(institutionConnector).findByTaxCodeWithSubunits(any(), any());
+    }
+
+    @Test
+    void testGetInstitutionsWithTaxCodeAndEnableSubunitsFalse() {
+        List<Institution> institutionList = new ArrayList<>();
+        when(institutionConnector.findByTaxCodeAndSubunitCode(any(), any(), any())).thenReturn(institutionList);
+        List<Institution> institutions = institutionServiceImpl.getInstitutions("taxcode", null, null, null, null, false);
+        assertTrue(institutions.isEmpty());
+        Mockito.verify(institutionConnector).findByTaxCodeAndSubunitCode(any(), any(), any());
+    }
+
+    @Test
+    void testGetInstitutionsWithTaxCodeAndEnableSubunitsNull() {
+        List<Institution> institutionList = new ArrayList<>();
+        when(institutionConnector.findByTaxCodeAndSubunitCode(any(), any(), any())).thenReturn(institutionList);
+        List<Institution> institutions = institutionServiceImpl.getInstitutions("taxcode", null, null, null, null, null);
+        assertTrue(institutions.isEmpty());
+        Mockito.verify(institutionConnector).findByTaxCodeAndSubunitCode(any(), any(), any());
+    }
+
+    @Test
     void testGetInstitutionsFails() {
-        assertThrows(InvalidRequestException.class, () -> institutionServiceImpl.getInstitutions("id", "id", "id", "id", "id"));
+        assertThrows(InvalidRequestException.class, () -> institutionServiceImpl.getInstitutions("id", "id", "id", "id", "id", true));
     }
 
     /**

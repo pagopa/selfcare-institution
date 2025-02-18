@@ -19,7 +19,7 @@ public interface InstitutionService {
 
     Institution retrieveInstitutionByExternalId(String institutionExternalId);
 
-    List<Institution> getInstitutions(String taxCode, String subunitCode, String origin, String originId, String productId);
+    List<Institution> getInstitutions(String taxCode, String subunitCode, String origin, String originId, String productId, Boolean enableSubunits);
 
     List<Institution> getInstitutions(String taxCode, String subunitCode);
 
