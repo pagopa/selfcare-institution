@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.mscore.integration_test.steps;
 
+import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -13,6 +14,10 @@ import it.pagopa.selfcare.mscore.integration_test.utils.TestJwtGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
+
 @Slf4j
 public class CommonSteps {
 
@@ -24,6 +29,12 @@ public class CommonSteps {
         this.sharedStepData = sharedStepData;
         this.testDataProvider = testDataProvider;
         this.testJwtGenerator = testJwtGenerator;
+    }
+
+    @Before
+    public void clearSharedStepData() {
+        log.info("Clearing sharedStepData");
+        sharedStepData.clear();
     }
 
     @Given("User login with username {string} and password {string}")
@@ -45,6 +56,16 @@ public class CommonSteps {
         sharedStepData.setRequestBody(requestBody);
     }
 
+    @And("The following path params:")
+    public void setPathParams(Map<String, String> pathParams) {
+        sharedStepData.setPathParams(pathParams);
+    }
+
+    @And("The following query params:")
+    public void setQueryParams(Map<String, String> queryParams) {
+        sharedStepData.setQueryParams(queryParams);
+    }
+
     @When("I send a POST request to {string}")
     public void sendPostRequest(String url) {
         final String token = sharedStepData.getToken();
@@ -52,12 +73,29 @@ public class CommonSteps {
                 .given()
                     .contentType(ContentType.JSON)
                     .header("Authorization", "Bearer " + token)
-                .when()
+                    .pathParams(Optional.ofNullable(sharedStepData.getPathParams()).orElse(Collections.emptyMap()))
+                    .queryParams(Optional.ofNullable(sharedStepData.getQueryParams()).orElse(Collections.emptyMap()))
                     .body(sharedStepData.getRequestBody())
+                .when()
                     .post(url)
                 .then()
                     .extract()
         );
+    }
+
+    @When("I send a HEAD request to {string}")
+    public void sendHeadRequest(String url) {
+        final String token = sharedStepData.getToken();
+        sharedStepData.setResponse(RestAssured
+                .given()
+                    .contentType(ContentType.JSON)
+                    .header("Authorization", "Bearer " + token)
+                    .pathParams(Optional.ofNullable(sharedStepData.getPathParams()).orElse(Collections.emptyMap()))
+                    .queryParams(Optional.ofNullable(sharedStepData.getQueryParams()).orElse(Collections.emptyMap()))
+                .when()
+                    .head(url)
+                .then()
+                    .extract());
     }
 
     @Then("The status code is {int}")
