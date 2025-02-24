@@ -1,0 +1,56 @@
+[
+  {
+    "httpRequest": {
+      "method": "GET",
+      "path": "/party-registry-mock/stations/{taxId}",
+      "pathParameters": {
+        "taxId": [
+          "06068501219"
+        ]
+      }
+    },
+    "httpResponse": {
+      "statusCode": 200,
+      "body": "{\n      \"id\": \"06068501219\",\n      \"taxCode\": \"06068501219\",\n      \"description\": \"Trecento Software s.r.l.\",\n      \"digitalAddress\": \"trecentosoftware@pec.it\",\n      \"anacEngaged\": false,\n      \"anacEnabled\": false,\n      \"origin\": \"ANAC\"\n    }",
+      "headers": {
+        "Content-Type": "application/json"
+      }
+    }
+  },
+  {
+    "httpRequest": {
+      "method": "GET",
+      "path": "/party-registry-mock/insurance-companies/{id}",
+      "pathParameters": {
+        "id": [
+          "A044S"
+        ]
+      }
+    },
+    "httpResponse": {
+      "statusCode": 200,
+      "body": "{\"id\": \"A044S\", \"originId\": \"A044S\", \"taxCode\": \"00409920584\", \"description\": \"GENERALI ITALIA S.P.A.\", \"digitalAddress\": \"GENERALIITALIA@PEC.GENERALIGROUP.COM\", \"registerType\": \"Sezione I - imprese di assicurazione con sede legale in Italia\", \"address\": \"VIA MAROCCHESA, 14  31021 MOGLIANO VENETO\", \"origin\": \"IVASS\"}",
+      "headers": {
+        "Content-Type": "application/json"
+      }
+    }
+  },
+  {
+    "httpRequest": {
+      "method": "GET",
+      "path": "/party-registry-mock/national-registries/legal-address",
+      "queryStringParameters": {
+        "taxId": [
+          "01501320442"
+        ]
+      }
+    },
+    "httpResponse": {
+      "statusCode": 200,
+      "body": "{\"address\": \"Roma Via del Campo 101, Roma (RM)\", \"zipCode\": \"00121\"}",
+      "headers": {
+        "Content-Type": "application/json"
+      }
+    }
+  }
+]

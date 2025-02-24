@@ -103,4 +103,24 @@ public class CommonSteps {
         Assertions.assertEquals(expectedStatusCode, sharedStepData.getResponse().statusCode());
     }
 
+    @And("The response body contains:")
+    public void checkResponseBody(Map<String, String> expectedKeyValues) {
+        expectedKeyValues.forEach((expectedKey, expectedValue) -> {
+            final String currentValue = sharedStepData.getResponse().body().jsonPath().getString(expectedKey);
+            Assertions.assertEquals(expectedValue, currentValue, String.format("The field %s does not contain the expected value", expectedKey));
+        });
+    }
+
+    @And("The response body contains field {string}")
+    public void checkResponseBodyKey(String expectedJsonPath) {
+        final String currentValue = sharedStepData.getResponse().body().jsonPath().getString(expectedJsonPath);
+        Assertions.assertNotNull(currentValue);
+    }
+
+    @And("The response body doesn't contain field {string}")
+    public void checkResponseBodyMissingKey(String expectedJsonPath) {
+        final String currentValue = sharedStepData.getResponse().body().jsonPath().getString(expectedJsonPath);
+        Assertions.assertNull(currentValue);
+    }
+
 }

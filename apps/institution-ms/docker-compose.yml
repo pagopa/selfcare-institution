@@ -16,7 +16,20 @@ services:
     ports:
       - "10000:10000"  # Expose blob service
     volumes:
-      - ./app/src/test/resources/blobStorage:/data
+      - "./app/src/test/resources/blobStorage:/data"
+    networks:
+      - develop-network
+
+  mockserver:
+    image: mockserver/mockserver
+    ports:
+      - '1080:1080'
+    environment:
+      - MOCKSERVER_INITIALIZATION_JSON_PATH=/config/*.json
+      - MOCKSERVER_ENABLE_CORS_FOR_API="true"
+      - MOCKSERVER_ENABLE_CORS_FOR_ALL_RESPONSES="true"
+    volumes:
+      - "./app/src/test/resources/mock:/config"
     networks:
       - develop-network
 
