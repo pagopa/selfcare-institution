@@ -66,6 +66,22 @@ public class CommonSteps {
         sharedStepData.setQueryParams(queryParams);
     }
 
+    @When("I send a GET request to {string}")
+    public void sendGetRequest(String url) {
+        final String token = sharedStepData.getToken();
+        sharedStepData.setResponse(RestAssured
+                .given()
+                    .contentType(ContentType.JSON)
+                    .header("Authorization", "Bearer " + token)
+                    .pathParams(Optional.ofNullable(sharedStepData.getPathParams()).orElse(Collections.emptyMap()))
+                    .queryParams(Optional.ofNullable(sharedStepData.getQueryParams()).orElse(Collections.emptyMap()))
+                .when()
+                    .get(url)
+                .then()
+                    .extract()
+        );
+    }
+
     @When("I send a POST request to {string}")
     public void sendPostRequest(String url) {
         final String token = sharedStepData.getToken();
@@ -121,6 +137,12 @@ public class CommonSteps {
     public void checkResponseBodyMissingKey(String expectedJsonPath) {
         final String currentValue = sharedStepData.getResponse().body().jsonPath().getString(expectedJsonPath);
         Assertions.assertNull(currentValue);
+    }
+
+    @And("The response body contains the list {string} of size {int}")
+    public void checkResponseBodyListSize(String expectedJsonPath, int expectedSize) {
+        final int currentSize = sharedStepData.getResponse().body().jsonPath().getList(expectedJsonPath).size();
+        Assertions.assertEquals(expectedSize, currentSize);
     }
 
 }

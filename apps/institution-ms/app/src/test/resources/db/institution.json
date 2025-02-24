@@ -457,7 +457,11 @@
         "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding"
       }
     ],
-    "geographicTaxonomies": [],
+    "geographicTaxonomies": [
+      {
+        "code": "123"
+      }
+    ],
     "attributes": [
       {
         "origin": "IPA",

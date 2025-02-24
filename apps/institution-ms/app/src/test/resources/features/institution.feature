@@ -214,11 +214,127 @@ Feature: Institution
 
 # POST /institutions
 
+  @RemoveInstitutionIdAfterScenario
+  Scenario: Successfully create raw institution
+    Given User login with username "j.doe" and password "test"
+    And The following request body:
+      """
+      {
+        "taxCode": "123456789"
+      }
+      """
+    When I send a POST request to "/institutions"
+    Then The status code is 201
+    And The response body contains:
+      | taxCode  | 123456789      |
+      | origin   | SELC           |
+      | originId | SELC_123456789 |
+    And The response body contains field "id"
+
+  @RemoveInstitutionIdAfterScenario
+  Scenario: Successfully create and update raw institution
+    # CREATE
+    Given User login with username "j.doe" and password "test"
+    And The following request body:
+      """
+      {
+        "taxCode": "123456789"
+      }
+      """
+    When I send a POST request to "/institutions"
+    Then The status code is 201
+    And The response body contains:
+      | taxCode  | 123456789      |
+      | origin   | SELC           |
+      | originId | SELC_123456789 |
+    And The response body contains field "id"
+    And The response body doesn't contain field "supportEmail"
+    # UPDATE
+    Given User login with username "j.doe" and password "test"
+    And The following request body:
+      """
+      {
+        "taxCode": "123456789",
+        "supportEmail": "test@pec.it"
+      }
+      """
+    When I send a POST request to "/institutions"
+    Then The status code is 201
+    And The response body contains:
+      | taxCode      | 123456789      |
+      | origin       | SELC           |
+      | originId     | SELC_123456789 |
+      | supportEmail | test@pec.it    |
+    And The response body contains field "id"
+
 # POST /institutions/insert/{externalId} (deprecated)
 
 # POST /institutions/pg
 
 # GET /institutions/{id}/products
+
+  Scenario: Successfully get products related to an institution
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | id | f94c0589-b07e-4ee7-a509-fda5fe91faa2 |
+    When I send a GET request to "/institutions/{id}/products"
+    Then The status code is 200
+    And The response body contains the list "products" of size 4
+    And The response body contains:
+      | products[0].id    | prod-pn      |
+      | products[0].state | PENDING      |
+      | products[1].id    | prod-interop |
+      | products[1].state | PENDING      |
+      | products[2].id    | prod-idpay   |
+      | products[2].state | PENDING      |
+      | products[3].id    | prod-io      |
+      | products[3].state | ACTIVE       |
+
+  Scenario: Successfully get products related to an institution with states
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | id | f94c0589-b07e-4ee7-a509-fda5fe91faa2 |
+    And The following query params:
+      | states | PENDING,DELETED |
+    When I send a GET request to "/institutions/{id}/products"
+    Then The status code is 200
+    And The response body contains the list "products" of size 3
+    And The response body contains:
+      | products[0].id    | prod-pn      |
+      | products[0].state | PENDING      |
+      | products[1].id    | prod-interop |
+      | products[1].state | PENDING      |
+      | products[2].id    | prod-idpay   |
+      | products[2].state | PENDING      |
+
+  Scenario: Get products related to an institution not found
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | id | 123 |
+    When I send a GET request to "/institutions/{id}/products"
+    Then The status code is 404
+    And The response body contains:
+      | detail | Cannot find Institution using institutionId 123 and externalInstitutionId UNDEFINED |
+
+  Scenario: Get (not found) products related to an institution
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | id | f94c0589-b07e-4ee7-a509-fda5fe91faa2 |
+    And The following query params:
+      | states | DELETED |
+    When I send a GET request to "/institutions/{id}/products"
+    Then The status code is 404
+    And The response body contains:
+      | detail | Products not found for institution having internalId f94c0589-b07e-4ee7-a509-fda5fe91faa2 |
+
+  Scenario: Get products related to an institution with invalid state in request
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | id | f94c0589-b07e-4ee7-a509-fda5fe91faa2 |
+    And The following query params:
+      | states | ACTIVE,XXX,PENDING |
+    When I send a GET request to "/institutions/{id}/products"
+    Then The status code is 400
 
 # PUT /institutions/{id}
 
@@ -228,9 +344,105 @@ Feature: Institution
 
 # GET /institutions/{id}/geotaxonomies
 
+  Scenario: Successfully get geotaxonomies
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | id | c9a50656-f345-4c81-84be-5b2474470544 |
+    When I send a GET request to "/institutions/{id}/geotaxonomies"
+    Then The status code is 200
+    And The response body contains the list "" of size 1
+    And The response body contains:
+      | [0].code       | 058091 |
+      | [0].istat_code | 058091 |
+      | [0].enabled    | false  |
+
+  Scenario: Get geotaxonomies with non existent institution
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | id | 123 |
+    When I send a GET request to "/institutions/{id}/geotaxonomies"
+    Then The status code is 404
+    And The response body contains:
+      | detail | Cannot find Institution using institutionId 123 and externalInstitutionId UNDEFINED |
+
+  Scenario: Get geotaxonomies with institution without geotaxonomies
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | id | f94c0589-b07e-4ee7-a509-fda5fe91faa2 |
+    When I send a GET request to "/institutions/{id}/geotaxonomies"
+    Then The status code is 500
+    And The response body contains:
+      | detail | GeographicTaonomies for institution f94c0589-b07e-4ee7-a509-fda5fe91faa2 not found |
+
+  Scenario: Get geotaxonomies with institution with non existent geotax code
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | id | 067327d3-bdd6-408d-8655-87e8f1960046 |
+    When I send a GET request to "/institutions/{id}/geotaxonomies"
+    Then The status code is 500
+    And The response body contains:
+      | detail | Error on retrieve geographic taxonomy code: 123 |
+
 # GET /institutions/{id}
 
-# GET /institutions/onboardings
+  Scenario: Successfully get institution by id
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | id | c9a50656-f345-4c81-84be-5b2474470544 |
+    When I send a GET request to "/institutions/{id}"
+    Then The status code is 200
+    And The response body contains:
+      | id | c9a50656-f345-4c81-84be-5b2474470544 |
+      | logo | test-logo-url/c9a50656-f345-4c81-84be-5b2474470544/logo.png |
+
+  Scenario: Get institution by id not found
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | id | 123 |
+    When I send a GET request to "/institutions/{id}"
+    Then The status code is 404
+    And The response body contains:
+      | detail | Cannot find Institution using institutionId 123 and externalInstitutionId UNDEFINED |
+
+# GET /institutions/{institutionId}/onboardings
+
+  Scenario: Successfully get onboardings on institution
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | institutionId | 067327d3-bdd6-408d-8655-87e8f1960046 |
+    When I send a GET request to "/institutions/{institutionId}/onboardings"
+    Then The status code is 200
+
+  Scenario: Successfully get onboardings on institution with productId
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | institutionId | c9a50656-f345-4c81-84be-5b2474470544 |
+    And The following query params:
+      | productId | prod-pagopa |
+    When I send a GET request to "/institutions/{institutionId}/onboardings"
+    Then The status code is 200
+    And The response body contains the list "onboardings" of size 1
+    And The response body contains:
+      | onboardings[0].productId | prod-pagopa |
+      | onboardings[0].status    | ACTIVE      |
+
+  Scenario: Get onboardings on institution not found
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | institutionId | 123 |
+    When I send a GET request to "/institutions/{institutionId}/onboardings"
+    Then The status code is 200
+    And The response body contains the list "onboardings" of size 0
+
+  Scenario: Get onboardings on institution with productId not found
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | institutionId | c9a50656-f345-4c81-84be-5b2474470544 |
+    And The following query params:
+      | productId | xxx |
+    When I send a GET request to "/institutions/{institutionId}/onboardings"
+    Then The status code is 200
+    And The response body contains the list "onboardings" of size 0
 
 # POST /institutions/onboarded/{productId}
 
