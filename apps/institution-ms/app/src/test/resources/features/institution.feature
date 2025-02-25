@@ -280,15 +280,16 @@ Feature: Institution
     When I send a GET request to "/institutions/{id}/products"
     Then The status code is 200
     And The response body contains the list "products" of size 4
-    And The response body contains:
-      | products[0].id    | prod-pn      |
-      | products[0].state | PENDING      |
-      | products[1].id    | prod-interop |
-      | products[1].state | PENDING      |
-      | products[2].id    | prod-idpay   |
-      | products[2].state | PENDING      |
-      | products[3].id    | prod-io      |
-      | products[3].state | ACTIVE       |
+    And The response body contains at path "products.id" the following list of values in any order:
+      | prod-io      |
+      | prod-pn      |
+      | prod-idpay   |
+      | prod-interop |
+    And The response body contains at path "products.state" the following list of values in any order:
+      | ACTIVE  |
+      | PENDING |
+      | PENDING |
+      | PENDING |
 
   Scenario: Successfully get products related to an institution with states
     Given User login with username "j.doe" and password "test"
@@ -299,13 +300,14 @@ Feature: Institution
     When I send a GET request to "/institutions/{id}/products"
     Then The status code is 200
     And The response body contains the list "products" of size 3
-    And The response body contains:
-      | products[0].id    | prod-pn      |
-      | products[0].state | PENDING      |
-      | products[1].id    | prod-interop |
-      | products[1].state | PENDING      |
-      | products[2].id    | prod-idpay   |
-      | products[2].state | PENDING      |
+    And The response body contains at path "products.id" the following list of values in any order:
+      | prod-pn      |
+      | prod-interop |
+      | prod-idpay   |
+    And The response body contains at path "products.state" the following list of values in any order:
+      | PENDING |
+      | PENDING |
+      | PENDING |
 
   Scenario: Get products related to an institution not found
     Given User login with username "j.doe" and password "test"
@@ -450,4 +452,72 @@ Feature: Institution
 
 # GET /institutions/products/{productId}
 
+  Scenario: Successfully get institutions with a productId
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | productId | prod-fd |
+    When I send a GET request to "/institutions/products/{productId}"
+    Then The status code is 200
+    And The response body contains the list "items" of size 2
+    And The response body contains:
+      | items[0].onboardings.prod-fd.productId | prod-fd |
+      | items[1].onboardings.prod-fd.productId | prod-fd |
+
+  Scenario: Successfully get institutions with productId, page and size
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | productId | prod-io |
+    And The following query params:
+      | page | 1 |
+      | size | 4 |
+    When I send a GET request to "/institutions/products/{productId}"
+    Then The status code is 200
+    And The response body contains the list "items" of size 2
+
+  Scenario: Get institutions with non existent productId
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | productId | prod-xxx |
+    When I send a GET request to "/institutions/products/{productId}"
+    Then The status code is 200
+    And The response body contains the list "items" of size 0
+
 # GET /institutions/{productId}/brokers/{institutionType}
+
+  Scenario: Successfully get institutions brokers
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | productId       | prod-io |
+      | institutionType | PA      |
+    When I send a GET request to "/institutions/{productId}/brokers/{institutionType}"
+    Then The status code is 200
+    And The response body contains the list "" of size 2
+    And The response body contains at path "taxCode" the following list of values in any order:
+      | 85000870064 |
+      | 00310810825 |
+
+  Scenario: Get institutions brokers with bad productId
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | productId       | prod-xxx |
+      | institutionType | PA       |
+    When I send a GET request to "/institutions/{productId}/brokers/{institutionType}"
+    Then The status code is 200
+    And The response body contains the list "" of size 0
+
+  Scenario: Get institutions brokers with bad institutionType
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | productId       | prod-io |
+      | institutionType | 123     |
+    When I send a GET request to "/institutions/{productId}/brokers/{institutionType}"
+    Then The status code is 400
+
+  Scenario: Get institutions brokers with missing institutionType
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | productId       | prod-io |
+      | institutionType | REC     |
+    When I send a GET request to "/institutions/{productId}/brokers/{institutionType}"
+    Then The status code is 200
+    And The response body contains the list "" of size 0

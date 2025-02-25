@@ -14,9 +14,8 @@ import it.pagopa.selfcare.mscore.integration_test.utils.TestJwtGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class CommonSteps {
@@ -143,6 +142,18 @@ public class CommonSteps {
     public void checkResponseBodyListSize(String expectedJsonPath, int expectedSize) {
         final int currentSize = sharedStepData.getResponse().body().jsonPath().getList(expectedJsonPath).size();
         Assertions.assertEquals(expectedSize, currentSize);
+    }
+
+    @And("The response body contains at path {string} the following list of values in any order:")
+    public void checkResponseBodyList(String expectedJsonPath, List<String> expectedValues) {
+        final List<String> currentValues = sharedStepData.getResponse().body().jsonPath().getList(expectedJsonPath, String.class);
+        Assertions.assertEquals(expectedValues.size(), currentValues.size(), String.format("The lists have different sizes. Expected: %s, Current: %s", expectedValues, currentValues));
+        final Map<String, Long> expectedTimes = expectedValues.stream().collect(Collectors.groupingBy(s -> s, Collectors.counting()));
+        final Map<String, Long> currentTimes = currentValues.stream().collect(Collectors.groupingBy(s -> s, Collectors.counting()));
+        Assertions.assertTrue(
+                expectedTimes.entrySet().stream().allMatch(entry -> Objects.equals(entry.getValue(), currentTimes.getOrDefault(entry.getKey(), 0L))),
+                String.format("The lists differ (in any order). Expected: %s, Current %s", expectedValues, currentValues)
+        );
     }
 
 }
