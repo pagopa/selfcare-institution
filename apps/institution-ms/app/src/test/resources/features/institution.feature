@@ -4,6 +4,373 @@ Feature: Institution
 
 # POST /institutions/from-ipa
 
+  @RemoveInstitutionIdAfterScenario
+  Scenario: Successfully create and update simple institution from IPA
+    # CREATE
+    Given User login with username "j.doe" and password "test"
+    And The following request body:
+      """
+      {
+        "taxCode": "00297110389",
+        "description": "Test description",
+        "geographicTaxonomies": [
+          {
+            "code": "1",
+            "desc": "first geo"
+          },
+          {
+            "code": "2",
+            "desc": "second geo"
+          }
+        ],
+        "institutionType": "PA",
+        "supportEmail": "supportmail@test.com",
+        "supportPhone": "0000000000"
+      }
+      """
+    When I send a POST request to "/institutions/from-ipa"
+    Then The status code is 201
+    And The response body contains the list "geographicTaxonomies" of size 2
+    And The response body contains the list "attributes" of size 1
+    And The response body contains:
+      | externalId                   | 00297110389                           |
+      | taxCode                      | 00297110389                           |
+      | origin                       | IPA                                   |
+      | originId                     | c_d548                                |
+      | institutionType              | PA                                    |
+      | istatCode                    | 038008                                |
+      | digitalAddress               | comune.ferrara@cert.comune.fe.it      |
+      | zipCode                      | 44121                                 |
+      | city                         | FERRARA                               |
+      | county                       | FE                                    |
+      | country                      | IT                                    |
+      | supportEmail                 | supportmail@test.com                  |
+      | supportPhone                 | 0000000000                            |
+      | description                  | Comune di Ferrara                     |
+      | geographicTaxonomies[0].code | 1                                     |
+      | geographicTaxonomies[0].desc | first geo                             |
+      | geographicTaxonomies[1].code | 2                                     |
+      | geographicTaxonomies[1].desc | second geo                            |
+      | attributes[0].origin         | IPA                                   |
+      | attributes[0].code           | L6                                    |
+      | attributes[0].description    | Comuni e loro Consorzi e Associazioni |
+    And The response body contains field "id"
+    # UPDATE
+    Given User login with username "j.doe" and password "test"
+    And The following request body:
+      """
+      {
+        "taxCode": "00297110389",
+        "description": "Test description",
+        "geographicTaxonomies": [
+          {
+            "code": "2",
+            "desc": "second geo"
+          }
+        ],
+        "institutionType": "PA",
+        "supportEmail": "updatedsupportmail@test.com",
+        "supportPhone": "1111111111"
+      }
+      """
+    When I send a POST request to "/institutions/from-ipa"
+    Then The status code is 201
+    And The response body contains the list "geographicTaxonomies" of size 2
+    And The response body contains the list "attributes" of size 1
+    And The response body contains:
+      | externalId                   | 00297110389                           |
+      | taxCode                      | 00297110389                           |
+      | origin                       | IPA                                   |
+      | originId                     | c_d548                                |
+      | institutionType              | PA                                    |
+      | istatCode                    | 038008                                |
+      | digitalAddress               | comune.ferrara@cert.comune.fe.it      |
+      | zipCode                      | 44121                                 |
+      | city                         | FERRARA                               |
+      | county                       | FE                                    |
+      | country                      | IT                                    |
+      | supportEmail                 | updatedsupportmail@test.com           |
+      | supportPhone                 | 1111111111                            |
+      | description                  | Comune di Ferrara                     |
+      | geographicTaxonomies[0].code | 1                                     |
+      | geographicTaxonomies[0].desc | first geo                             |
+      | geographicTaxonomies[1].code | 2                                     |
+      | geographicTaxonomies[1].desc | second geo                            |
+      | attributes[0].origin         | IPA                                   |
+      | attributes[0].code           | L6                                    |
+      | attributes[0].description    | Comuni e loro Consorzi e Associazioni |
+    And The response body contains field "id"
+
+  @RemoveSubunitAndParentInstitutionAfterScenario
+  Scenario: Successfully create and update AOO institution from IPA
+    # CREATE
+    Given User login with username "j.doe" and password "test"
+    And The following request body:
+      """
+      {
+        "taxCode": "00297110389",
+        "description": "Test description",
+        "geographicTaxonomies": [
+          {
+            "code": "1",
+            "desc": "first geo"
+          },
+          {
+            "code": "2",
+            "desc": "second geo"
+          }
+        ],
+        "institutionType": "PA",
+        "subunitCode": "A46A529",
+        "subunitType": "AOO",
+        "supportEmail": "supportmail@test.com",
+        "supportPhone": "0000000000"
+      }
+      """
+    When I send a POST request to "/institutions/from-ipa"
+    Then The status code is 201
+    And The response body contains the list "geographicTaxonomies" of size 2
+    And The response body contains the list "attributes" of size 1
+    And The response body contains:
+      | externalId                   | 00297110389_A46A529                   |
+      | taxCode                      | 00297110389                           |
+      | origin                       | IPA                                   |
+      | originId                     | A46A529                               |
+      | institutionType              | PA                                    |
+      | istatCode                    | 038008                                |
+      | digitalAddress               | comune.ferrara@cert.comune.fe.it      |
+      | zipCode                      | 44121                                 |
+      | city                         | FERRARA                               |
+      | county                       | FE                                    |
+      | country                      | IT                                    |
+      | supportEmail                 | supportmail@test.com                  |
+      | supportPhone                 | 0000000000                            |
+      | description                  | PROTOCOLLO GENERALE                   |
+      | geographicTaxonomies[0].code | 1                                     |
+      | geographicTaxonomies[0].desc | first geo                             |
+      | geographicTaxonomies[1].code | 2                                     |
+      | geographicTaxonomies[1].desc | second geo                            |
+      | attributes[0].origin         | IPA                                   |
+      | attributes[0].code           | L6                                    |
+      | attributes[0].description    | Comuni e loro Consorzi e Associazioni |
+      | subunitCode                  | A46A529                               |
+      | subunitType                  | AOO                                   |
+      | rootParent.description       | Comune di Ferrara                     |
+    And The response body contains field "id"
+    And The response body contains field "rootParent.id"
+    # UPDATE
+    Given User login with username "j.doe" and password "test"
+    And The following request body:
+      """
+      {
+        "taxCode": "00297110389",
+        "description": "Test description",
+        "geographicTaxonomies": [
+          {
+            "code": "2",
+            "desc": "second geo"
+          }
+        ],
+        "institutionType": "PA",
+        "subunitCode": "A46A529",
+        "subunitType": "AOO",
+        "supportEmail": "updatedsupportmail@test.com",
+        "supportPhone": "1111111111"
+      }
+      """
+    When I send a POST request to "/institutions/from-ipa"
+    Then The status code is 201
+    And The response body contains the list "geographicTaxonomies" of size 2
+    And The response body contains the list "attributes" of size 1
+    And The response body contains:
+      | externalId                   | 00297110389_A46A529                   |
+      | taxCode                      | 00297110389                           |
+      | origin                       | IPA                                   |
+      | originId                     | A46A529                               |
+      | institutionType              | PA                                    |
+      | istatCode                    | 038008                                |
+      | digitalAddress               | comune.ferrara@cert.comune.fe.it      |
+      | zipCode                      | 44121                                 |
+      | city                         | FERRARA                               |
+      | county                       | FE                                    |
+      | country                      | IT                                    |
+      | supportEmail                 | updatedsupportmail@test.com           |
+      | supportPhone                 | 1111111111                            |
+      | description                  | PROTOCOLLO GENERALE                   |
+      | geographicTaxonomies[0].code | 1                                     |
+      | geographicTaxonomies[0].desc | first geo                             |
+      | geographicTaxonomies[1].code | 2                                     |
+      | geographicTaxonomies[1].desc | second geo                            |
+      | attributes[0].origin         | IPA                                   |
+      | attributes[0].code           | L6                                    |
+      | attributes[0].description    | Comuni e loro Consorzi e Associazioni |
+      | subunitCode                  | A46A529                               |
+      | subunitType                  | AOO                                   |
+      | rootParent.description       | Comune di Ferrara                     |
+    And The response body contains field "id"
+    And The response body contains field "rootParent.id"
+
+  @RemoveSubunitAndParentInstitutionAfterScenario
+  Scenario: Successfully create and update UO institution from IPA
+    # CREATE
+    Given User login with username "j.doe" and password "test"
+    And The following request body:
+      """
+      {
+        "taxCode": "00297110389",
+        "description": "Test description",
+        "geographicTaxonomies": [
+          {
+            "code": "1",
+            "desc": "first geo"
+          },
+          {
+            "code": "2",
+            "desc": "second geo"
+          }
+        ],
+        "institutionType": "PA",
+        "subunitCode": "3QOOYF",
+        "subunitType": "UO",
+        "supportEmail": "supportmail@test.com",
+        "supportPhone": "0000000000"
+      }
+      """
+    When I send a POST request to "/institutions/from-ipa"
+    Then The status code is 201
+    And The response body contains the list "geographicTaxonomies" of size 2
+    And The response body contains the list "attributes" of size 1
+    And The response body contains:
+      | externalId                   | 00297110389_3QOOYF                         |
+      | taxCode                      | 00297110389                                |
+      | origin                       | IPA                                        |
+      | originId                     | 3QOOYF                                     |
+      | institutionType              | PA                                         |
+      | istatCode                    | 038008                                     |
+      | digitalAddress               | personale@cert.comune.fe.it                |
+      | zipCode                      | 44121                                      |
+      | city                         | FERRARA                                    |
+      | county                       | FE                                         |
+      | country                      | IT                                         |
+      | supportEmail                 | supportmail@test.com                       |
+      | supportPhone                 | 0000000000                                 |
+      | description                  | SERVIZIO BILANCIO CONTABILITA' E PERSONALE |
+      | geographicTaxonomies[0].code | 1                                          |
+      | geographicTaxonomies[0].desc | first geo                                  |
+      | geographicTaxonomies[1].code | 2                                          |
+      | geographicTaxonomies[1].desc | second geo                                 |
+      | attributes[0].origin         | IPA                                        |
+      | attributes[0].code           | L6                                         |
+      | attributes[0].description    | Comuni e loro Consorzi e Associazioni      |
+      | subunitCode                  | 3QOOYF                                     |
+      | subunitType                  | UO                                         |
+      | rootParent.description       | Comune di Ferrara                          |
+    And The response body contains field "id"
+    And The response body contains field "rootParent.id"
+    # UPDATE
+    Given User login with username "j.doe" and password "test"
+    And The following request body:
+      """
+      {
+        "taxCode": "00297110389",
+        "description": "Test description",
+        "geographicTaxonomies": [
+          {
+            "code": "2",
+            "desc": "second geo"
+          }
+        ],
+        "institutionType": "PA",
+        "subunitCode": "3QOOYF",
+        "subunitType": "UO",
+        "supportEmail": "updatedsupportmail@test.com",
+        "supportPhone": "1111111111"
+      }
+      """
+    When I send a POST request to "/institutions/from-ipa"
+    Then The status code is 201
+    And The response body contains the list "geographicTaxonomies" of size 2
+    And The response body contains the list "attributes" of size 1
+    And The response body contains:
+      | externalId                   | 00297110389_3QOOYF                         |
+      | taxCode                      | 00297110389                                |
+      | origin                       | IPA                                        |
+      | originId                     | 3QOOYF                                     |
+      | institutionType              | PA                                         |
+      | istatCode                    | 038008                                     |
+      | digitalAddress               | personale@cert.comune.fe.it                |
+      | zipCode                      | 44121                                      |
+      | city                         | FERRARA                                    |
+      | county                       | FE                                         |
+      | country                      | IT                                         |
+      | supportEmail                 | updatedsupportmail@test.com                |
+      | supportPhone                 | 1111111111                                 |
+      | description                  | SERVIZIO BILANCIO CONTABILITA' E PERSONALE |
+      | geographicTaxonomies[0].code | 1                                          |
+      | geographicTaxonomies[0].desc | first geo                                  |
+      | geographicTaxonomies[1].code | 2                                          |
+      | geographicTaxonomies[1].desc | second geo                                 |
+      | attributes[0].origin         | IPA                                        |
+      | attributes[0].code           | L6                                         |
+      | attributes[0].description    | Comuni e loro Consorzi e Associazioni      |
+      | subunitCode                  | 3QOOYF                                     |
+      | subunitType                  | UO                                         |
+      | rootParent.description       | Comune di Ferrara                          |
+    And The response body contains field "id"
+    And The response body contains field "rootParent.id"
+
+  Scenario: Bad request with null taxCode creating institution from IPA
+    Given User login with username "j.doe" and password "test"
+    And The following request body:
+      """
+      {}
+      """
+    When I send a POST request to "/institutions/from-ipa"
+    Then The status code is 400
+
+  Scenario: Bad request with subunitCode and missing subunitType creating institution from IPA
+    Given User login with username "j.doe" and password "test"
+    And The following request body:
+      """
+      {
+        "taxCode": "123",
+        "subunitCode": "456"
+      }
+      """
+    When I send a POST request to "/institutions/from-ipa"
+    Then The status code is 400
+    And The response body contains:
+      | title  | Bad Request                                         |
+      | detail | subunitCode and subunitType must both be evaluated. |
+
+  Scenario: Not found institution by taxCode creating institution from IPA
+    Given User login with username "j.doe" and password "test"
+    And The following request body:
+      """
+      {
+        "taxCode": "123"
+      }
+      """
+    When I send a POST request to "/institutions/from-ipa"
+    Then The status code is 404
+    And The response body contains:
+      | title  | Not Found |
+      | detail | Not Found |
+
+  Scenario: Not found category creating institution from IPA
+    Given User login with username "j.doe" and password "test"
+    And The following request body:
+      """
+      {
+        "taxCode": "123456789"
+      }
+      """
+    When I send a POST request to "/institutions/from-ipa"
+    Then The status code is 404
+    And The response body contains:
+      | title  | Not Found |
+      | detail | Not Found |
+
 # POST /institutions/from-anac
 
   @RemoveInstitutionIdAfterScenario
@@ -270,6 +637,122 @@ Feature: Institution
 # POST /institutions/insert/{externalId} (deprecated)
 
 # POST /institutions/pg
+
+  @RemoveInstitutionIdAfterScenario
+  Scenario: Successfully create pg institution not in registry
+    Given User login with username "j.doe" and password "test"
+    And The following request body:
+      """
+        {
+          "taxId": "0987654321",
+          "description": "Test PG Institution",
+          "existsInRegistry": false
+        }
+      """
+    When I send a POST request to "/institutions/pg"
+    Then The status code is 201
+    And The response body contains:
+      | taxCode         | 0987654321          |
+      | origin          | ADE                 |
+      | originId        | 0987654321          |
+      | institutionType | PG                  |
+      | description     | Test PG Institution |
+    And The response body contains field "id"
+
+  @RemoveInstitutionIdAfterScenario
+  Scenario: Successfully create pg institution in registry
+    Given User login with username "j.doe" and password "test"
+    And The following request body:
+      """
+        {
+          "taxId": "01501320442",
+          "description": "Test PG Institution",
+          "existsInRegistry": true
+        }
+      """
+    When I send a POST request to "/institutions/pg"
+    Then The status code is 201
+    And The response body contains:
+      | taxCode         | 01501320442 |
+      | origin          | INFOCAMERE  |
+      | originId        | 01501320442 |
+      | institutionType | PG          |
+      | zipCode         | 00121       |
+      | description     | test0       |
+    And The response body contains field "id"
+
+  Scenario: Bad request creating pg institution with empty taxId
+    Given User login with username "j.doe" and password "test"
+    And The following request body:
+      """
+        {
+          "taxId": "",
+          "description": "Test PG Institution",
+          "existsInRegistry": true
+        }
+      """
+    When I send a POST request to "/institutions/pg"
+    Then The status code is 400
+
+  Scenario: Bad request creating pg institution with null taxId
+    Given User login with username "j.doe" and password "test"
+    And The following request body:
+      """
+        {
+          "description": "Test PG Institution",
+          "existsInRegistry": true
+        }
+      """
+    When I send a POST request to "/institutions/pg"
+    Then The status code is 400
+
+  Scenario: Returning existing institution (with pg institution)
+    Given User login with username "j.doe" and password "test"
+    And The following request body:
+      """
+        {
+          "taxId": "00310810825"
+        }
+      """
+    When I send a POST request to "/institutions/pg"
+    Then The status code is 201
+    And The response body contains:
+      | externalId      | 00310810825 |
+      | institutionType | PA          |
+      | origin          | IPA         |
+      | taxCode         | 00310810825 |
+
+  Scenario: Not found user taxCode creating pg institution
+    Given User login with username "r.balboa" and password "test"
+    And The following request body:
+      """
+        {
+          "taxId": "01501320442",
+          "description": "Not found",
+          "existsInRegistry": true
+        }
+      """
+    When I send a POST request to "/institutions/pg"
+    Then The status code is 404
+    And The response body contains:
+      | title  | Not Found |
+      | detail | Not Found |
+
+  Scenario: Bad request when institution is not related to user creating pg institution
+    Given User login with username "j.doe" and password "test"
+    And The following request body:
+      """
+        {
+          "taxId": "123",
+          "description": "Bad request",
+          "existsInRegistry": true
+        }
+      """
+    When I send a POST request to "/institutions/pg"
+    Then The status code is 400
+    And The response body contains:
+      | title  | Bad Request                                                       |
+      | detail | Institution with externalInstitutionId 123 is not related to user |
 
 # GET /institutions/{id}/products
 

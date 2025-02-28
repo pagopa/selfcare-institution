@@ -23,4 +23,12 @@ public class InstitutionSteps {
                 .ifPresent(institutionRepository::deleteById);
     }
 
+    @After("@RemoveSubunitAndParentInstitutionAfterScenario")
+    public void removeSubunitAndParentInstitutionAfterScenario(Scenario scenario) {
+        Optional.ofNullable(sharedStepData.getResponse().body().jsonPath().getString("rootParent.id"))
+                .ifPresent(institutionRepository::deleteById);
+        Optional.ofNullable(sharedStepData.getResponse().body().jsonPath().getString("id"))
+                .ifPresent(institutionRepository::deleteById);
+    }
+
 }
