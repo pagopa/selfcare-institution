@@ -823,9 +823,205 @@ Feature: Institution
 
 # PUT /institutions/{id}
 
+  @RemoveMockInstitutionAfterScenario
+  Scenario: Successfully update institution
+    Given User login with username "j.doe" and password "test"
+    And A mock institution with id "123"
+    And The following path params:
+      | id | 123 |
+    And The following request body:
+      """
+      {
+        "geographicTaxonomyCodes": ["058091"],
+        "digitalAddress": "updated.digital.address@test.com",
+        "description": "Updated institution description"
+      }
+      """
+    When I send a PUT request to "/institutions/{id}"
+    Then The status code is 200
+    And The response body contains:
+      | id                           | 123                                    |
+      | digitalAddress               | updated.digital.address@test.com       |
+      | description                  | Updated institution description        |
+      | delegation                   | false                                  |
+      | geographicTaxonomies[0].code | 058091                                 |
+      | geographicTaxonomies[0].desc | ROMA - COMUNE                          |
+
+  Scenario: Not found institutionId while updating institution
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | id | 123 |
+    And The following request body:
+      """
+      {}
+      """
+    When I send a PUT request to "/institutions/{id}"
+    Then The status code is 404
+    And The response body contains:
+      | status | 404                                                                                 |
+      | detail | Cannot find Institution using institutionId 123 and externalInstitutionId UNDEFINED |
+
 # POST /institutions/{id}/onboarding
 
+  @RemoveMockInstitutionAfterScenario
+  Scenario: Successfully persistOnboarding
+    Given User login with username "j.doe" and password "test"
+    And A mock institution with id "123"
+    And The following path params:
+      | id | 123 |
+    And The following request body:
+      """
+      {
+        "productId": "prod-io-premium",
+        "tokenId": "123456789",
+        "contractPath": "testContractPath",
+        "activatedAt": "2025-02-28T15:00:00Z",
+        "isAggregator": false
+      }
+      """
+    When I send a POST request to "/institutions/{id}/onboarding"
+    Then The status code is 201
+    And The response body contains at path "onboarding.productId" the following list of values in any order:
+      | prod-io         |
+      | prod-pagopa     |
+      | prod-idpay      |
+      | prod-pn         |
+      | prod-io-premium |
+    And The response body contains field "id"
+    And Onboardings of institution with id "123" have following states:
+      | prod-io         | ACTIVE    |
+      | prod-pagopa     | ACTIVE    |
+      | prod-idpay      | DELETED   |
+      | prod-pn         | SUSPENDED |
+      | prod-io-premium | ACTIVE    |
+    And Count of PecNotification with institutionId "123" is 3
+
+  @RemoveMockInstitutionAfterScenario
+  Scenario: Successfully persistOnboarding with existing productId
+    Given User login with username "j.doe" and password "test"
+    And A mock institution with id "123"
+    And The following path params:
+      | id | 123 |
+    And The following request body:
+      """
+      {
+        "productId": "prod-pn",
+        "tokenId": "123456789",
+        "contractPath": "testContractPath",
+        "activatedAt": "2025-02-28T15:00:00Z",
+        "isAggregator": false
+      }
+      """
+    When I send a POST request to "/institutions/{id}/onboarding"
+    Then The status code is 200
+    And The response body contains at path "onboarding.productId" the following list of values in any order:
+      | prod-io         |
+      | prod-pagopa     |
+      | prod-idpay      |
+      | prod-pn         |
+    And The response body contains field "id"
+    And Onboardings of institution with id "123" have following states:
+      | prod-io         | ACTIVE    |
+      | prod-pagopa     | ACTIVE    |
+      | prod-idpay      | DELETED   |
+      | prod-pn         | SUSPENDED |
+    And Count of PecNotification with institutionId "123" is 3
+
+  Scenario: Do not persist PecNotification with PT institution type
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | id | 067327d3-bdd6-408d-8655-87e8f1960046 |
+    And The following request body:
+      """
+      {
+        "productId": "prod-io"
+      }
+      """
+    When I send a POST request to "/institutions/{id}/onboarding"
+    Then The status code is 200
+    And The response body contains at path "onboarding.productId" the following list of values in any order:
+      | prod-io         |
+      | prod-pagopa     |
+      | prod-pagopa     |
+      | prod-interop    |
+    And The response body contains field "id"
+    And Count of PecNotification with institutionId "067327d3-bdd6-408d-8655-87e8f1960046" is 0
+
+  Scenario: Not found institution while persistOnboarding
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | id | 456 |
+    And The following request body:
+      """
+      {
+        "productId": "prod-io",
+        "tokenId": "123456789",
+        "contractPath": "testContractPath",
+        "activatedAt": "2025-02-28T15:00:00Z",
+        "isAggregator": false
+      }
+      """
+    When I send a POST request to "/institutions/{id}/onboarding"
+    Then The status code is 404
+    And The response body contains:
+      | status | 404                                                                                 |
+      | detail | Cannot find Institution using institutionId 456 and externalInstitutionId UNDEFINED |
+
+  Scenario: Bad request while persistOnboarding
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | id | 456 |
+    And The following request body:
+      """
+      {
+        "tokenId": "123456789",
+        "contractPath": "testContractPath",
+        "activatedAt": "2025-02-28T15:00:00Z",
+        "isAggregator": false
+      }
+      """
+    When I send a POST request to "/institutions/{id}/onboarding"
+    Then The status code is 400
+    And The response body contains:
+      | status | 400              |
+      | detail | INVALID ARGUMENT |
+
 # DELETE /institutions/{id}/products/{productId}
+
+  @RemoveMockInstitutionAfterScenario
+  Scenario: Successfully delete onboarding
+    Given User login with username "j.doe" and password "test"
+    And A mock institution with id "123"
+    And The following path params:
+      | id        | 123         |
+      | productId | prod-pagopa |
+    When I send a DELETE request to "/institutions/{id}/products/{productId}"
+    Then The status code is 204
+    And Onboardings of institution with id "123" have following states:
+      | prod-io     | ACTIVE    |
+      | prod-pagopa | DELETED   |
+      | prod-idpay  | DELETED   |
+      | prod-pn     | SUSPENDED |
+    And Count of PecNotification with institutionId "123" is 1
+
+  @RemoveMockInstitutionAfterScenario
+  Scenario: Invalid request deleting onboarding
+    Given User login with username "j.doe" and password "test"
+    And A mock institution with id "123"
+    And The following path params:
+      | id        | 123        |
+      | productId | prod-idpay |
+    When I send a DELETE request to "/institutions/{id}/products/{productId}"
+    Then The status code is 400
+    And Onboardings of institution with id "123" have following states:
+      | prod-io     | ACTIVE    |
+      | prod-pagopa | ACTIVE    |
+      | prod-idpay  | DELETED   |
+      | prod-pn     | SUSPENDED |
+    And Count of PecNotification with institutionId "123" is 2
+    And The response body contains:
+      | status | 400                                                                                                  |
+      | detail | PecNotificationEntity was not deleted because either it does not exist or there are multiple records |
 
 # GET /institutions/{id}/geotaxonomies
 
@@ -930,8 +1126,74 @@ Feature: Institution
     And The response body contains the list "onboardings" of size 0
 
 # POST /institutions/onboarded/{productId}
+# ==> This function doesn't work: InstitutionMapperCustom.toValidInstitutions(institutions) returns immutable list,
+# ==> while the service require a mutable list to remove entries!!
 
 # PUT /institutions/{institutionId}/created-at
+
+  @RemoveMockInstitutionAfterScenario
+  Scenario: Successfully update created-at
+    Given User login with username "j.doe" and password "test"
+    And A mock institution with id "123"
+    And The following path params:
+      | institutionId | 123 |
+    And The following request body:
+      """
+      {
+        "productId": "prod-pagopa",
+        "createdAt": "2025-02-28T14:30:00Z",
+        "activatedAt": "2025-02-28T15:00:00Z"
+      }
+      """
+    When I send a PUT request to "/institutions/{institutionId}/created-at"
+    Then The status code is 200
+    And Onboarding of institutionId "123" and productId "prod-pagopa" has createdAt "2025-02-28T14:30:00Z"
+
+  Scenario: Bad request update created-at with missing productId
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | institutionId | 123 |
+    And The following request body:
+      """
+      {
+        "createdAt": "2025-02-28T14:30:00Z",
+        "activatedAt": "2025-02-28T15:00:00Z"
+      }
+      """
+    When I send a PUT request to "/institutions/{institutionId}/created-at"
+    Then The status code is 400
+
+  Scenario: Bad request update created-at with missing createdAt
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | institutionId | 123 |
+    And The following request body:
+      """
+      {
+        "productId": "prod-pagopa",
+        "activatedAt": "2025-02-28T15:00:00Z"
+      }
+      """
+    When I send a PUT request to "/institutions/{institutionId}/created-at"
+    Then The status code is 400
+
+  Scenario: Bad request update created-at with activatedAt after createdAt
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | institutionId | 123 |
+    And The following request body:
+      """
+      {
+        "productId": "prod-pagopa",
+        "createdAt": "2200-02-28T14:30:00Z",
+        "activatedAt": "2025-02-28T15:00:00Z"
+      }
+      """
+    When I send a PUT request to "/institutions/{institutionId}/created-at"
+    Then The status code is 400
+    And The response body contains:
+      | status | 400                                                                           |
+      | detail | Invalid createdAt date: the createdAt date must be prior to the current date. |
 
 # GET /institutions/products/{productId}
 

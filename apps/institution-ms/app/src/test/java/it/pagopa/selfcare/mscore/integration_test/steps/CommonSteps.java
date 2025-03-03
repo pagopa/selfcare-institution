@@ -98,6 +98,23 @@ public class CommonSteps {
         );
     }
 
+    @When("I send a PUT request to {string}")
+    public void sendPutRequest(String url) {
+        final String token = sharedStepData.getToken();
+        sharedStepData.setResponse(RestAssured
+                .given()
+                    .contentType(ContentType.JSON)
+                    .header("Authorization", "Bearer " + token)
+                    .pathParams(Optional.ofNullable(sharedStepData.getPathParams()).orElse(Collections.emptyMap()))
+                    .queryParams(Optional.ofNullable(sharedStepData.getQueryParams()).orElse(Collections.emptyMap()))
+                    .body(sharedStepData.getRequestBody())
+                .when()
+                    .put(url)
+                .then()
+                    .extract()
+        );
+    }
+
     @When("I send a HEAD request to {string}")
     public void sendHeadRequest(String url) {
         final String token = sharedStepData.getToken();
@@ -111,6 +128,22 @@ public class CommonSteps {
                     .head(url)
                 .then()
                     .extract());
+    }
+
+    @When("I send a DELETE request to {string}")
+    public void sendDeleteRequest(String url) {
+        final String token = sharedStepData.getToken();
+        sharedStepData.setResponse(RestAssured
+                .given()
+                    .contentType(ContentType.JSON)
+                    .header("Authorization", "Bearer " + token)
+                    .pathParams(Optional.ofNullable(sharedStepData.getPathParams()).orElse(Collections.emptyMap()))
+                    .queryParams(Optional.ofNullable(sharedStepData.getQueryParams()).orElse(Collections.emptyMap()))
+                .when()
+                    .delete(url)
+                .then()
+                    .extract()
+        );
     }
 
     @Then("The status code is {int}")
