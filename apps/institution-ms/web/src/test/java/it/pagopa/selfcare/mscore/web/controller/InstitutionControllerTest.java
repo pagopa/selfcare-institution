@@ -119,7 +119,7 @@ class InstitutionControllerTest {
 
         Institution institution = TestUtils.createSimpleInstitutionPA();
 
-        when(institutionService.getInstitutions(any(), any(), any(), any(), any()))
+        when(institutionService.getInstitutions(any(), any(), any(), any(), any(), isNull()))
                 .thenReturn(List.of(institution));
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/institutions/?taxCode={taxCode}", "TaxCode");
@@ -143,7 +143,7 @@ class InstitutionControllerTest {
         institution.setParentDescription("parentDescription");
         institution.setRootParentId("rootParentId");
 
-        when(institutionService.getInstitutions(any(), any(), any(), any(), any()))
+        when(institutionService.getInstitutions(any(), any(), any(), any(), any(), isNull()))
                 .thenReturn(List.of(institution));
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/institutions/?taxCode={taxCode}&subunitCode={subunitCode}", "TaxCode", "SubunitCode");
@@ -167,7 +167,7 @@ class InstitutionControllerTest {
         institution.setParentDescription("parentDescription");
         institution.setRootParentId("rootParentId");
 
-        when(institutionService.getInstitutions(any(), any(), any(), any(), any()))
+        when(institutionService.getInstitutions(any(), any(), any(), any(), any(), isNull()))
                 .thenReturn(List.of(institution));
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/institutions/?origin={origin}&originId={originId}", "origin", "originId");
@@ -191,7 +191,7 @@ class InstitutionControllerTest {
         institution.setParentDescription("parentDescription");
         institution.setRootParentId("rootParentId");
 
-        when(institutionService.getInstitutions(any(), any(), any(), any(), any()))
+        when(institutionService.getInstitutions(any(), any(), any(), any(), any(), isNull()))
                 .thenReturn(List.of(institution));
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/institutions/?origin={origin}", "origin");
@@ -215,7 +215,7 @@ class InstitutionControllerTest {
         institution.setParentDescription("parentDescription");
         institution.setRootParentId("rootParentId");
 
-        when(institutionService.getInstitutions(any(), any(), any(), any(), any()))
+        when(institutionService.getInstitutions(any(), any(), any(), any(), any(), any()))
                 .thenReturn(List.of(institution));
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/institutions/?originId={originId}", "originId");
@@ -233,15 +233,29 @@ class InstitutionControllerTest {
     @Test
     void shouldGetInstitutionsBySubunitCodeWithoutParam(){
         Assertions.assertThrows(ValidationException.class,
-                () -> institutionController.getInstitutions(null, null, null, null, null),
+                () -> institutionController.getInstitutions(null, null, null, null, null, null),
                 "At least one of taxCode, origin or originId must be present");
     }
 
     @Test
     void shouldGetInstitutionsBySubunitCodeWithoutTaxCode() {
         Assertions.assertThrows(ValidationException.class,
-                () -> institutionController.getInstitutions(null, "subunitCode", "origin", null, null),
+                () -> institutionController.getInstitutions(null, "subunitCode", "origin", null, null, null),
                 "TaxCode is required if subunitCode is present");
+    }
+
+    @Test
+    void shouldGetInstitutionsWithEnableSubunitsTrueWithoutTaxCode() {
+        Assertions.assertThrows(ValidationException.class,
+                () -> institutionController.getInstitutions(null, null, null, null, null, true),
+                "TaxCode is required when subunits is true");
+    }
+
+    @Test
+    void shouldGetInstitutionsWithEnableSubunitsTrueAndWithSubunitCode() {
+        Assertions.assertThrows(ValidationException.class,
+                () -> institutionController.getInstitutions(null, "subunitCode", null, null, null, true),
+                "Only taxCode can be provided when subunits is true");
     }
 
     @Test

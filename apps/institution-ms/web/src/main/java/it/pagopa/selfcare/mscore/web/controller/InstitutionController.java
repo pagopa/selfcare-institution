@@ -81,8 +81,16 @@ public class InstitutionController {
                                                                 @RequestParam(value = "subunitCode", required = false) String subunitCode,
                                                                 @RequestParam(value = "origin", required = false) String origin,
                                                                 @RequestParam(value = "originId", required = false) String originId,
-                                                                @RequestParam(value = "productId", required = false) String productId) {
+                                                                @RequestParam(value = "productId", required = false) String productId,
+                                                                @RequestParam(value = "enableSubunits", required = false) Boolean enableSubunits) {
 
+
+        if (Boolean.TRUE.equals(enableSubunits)) {
+            if (!StringUtils.hasText(taxCode))
+                throw new ValidationException("TaxCode is required when subunits is true");
+            if (StringUtils.hasText(origin) || StringUtils.hasText(originId) || StringUtils.hasText(subunitCode))
+                throw new ValidationException("Only taxCode can be provided when subunits is true");
+        }
 
         if (!StringUtils.hasText(taxCode) && !StringUtils.hasText(originId) && !StringUtils.hasText(origin)) {
             throw new ValidationException("At least one of taxCode, origin or originId must be present");
@@ -92,7 +100,7 @@ public class InstitutionController {
 
         CustomExceptionMessage.setCustomMessage(GenericError.GET_INSTITUTION_BY_ID_ERROR);
 
-        List<Institution> institutions = institutionService.getInstitutions(taxCode, subunitCode, origin, originId, productId);
+        List<Institution> institutions = institutionService.getInstitutions(taxCode, subunitCode, origin, originId, productId, enableSubunits);
         InstitutionsResponse institutionsResponse = new InstitutionsResponse();
         institutionsResponse.setInstitutions(institutions.stream()
                 .map(institutionResourceMapper::toInstitutionResponse)
