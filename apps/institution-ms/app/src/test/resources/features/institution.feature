@@ -505,6 +505,78 @@ Feature: Institution
 
 # POST /institutions/from-pda (Search first on IPA and if not found search on INFOCAMERE)
 
+  @RemoveInstitutionIdAfterScenario
+  Scenario: Successfully create institution from pda (IPA)
+    Given User login with username "j.doe" and password "test"
+    And The following request body:
+      """
+        {
+          "injectionInstitutionType": "Test",
+          "taxCode": "123456789",
+          "description": "Test description"
+        }
+      """
+    When I send a POST request to "/institutions/from-pda"
+    Then The status code is 201
+    And The response body contains:
+      | taxCode         | 123456789 |
+      | origin          | IPA       |
+      | originId        | c_d548    |
+      | institutionType | PA        |
+    And The response body contains field "id"
+
+  @RemoveInstitutionIdAfterScenario
+  Scenario: Successfully create institution from pda (INFOCAMERE)
+    Given User login with username "j.doe" and password "test"
+    And The following request body:
+      """
+        {
+          "injectionInstitutionType": "Test",
+          "taxCode": "01501320442",
+          "description": "Test description"
+        }
+      """
+    When I send a POST request to "/institutions/from-pda"
+    Then The status code is 201
+    And The response body contains:
+      | taxCode         | 01501320442 |
+      | origin          | INFOCAMERE  |
+      | originId        | 01501320442 |
+      | institutionType | PG          |
+    And The response body contains field "id"
+
+  Scenario: Not found while creating institution from pda
+    Given User login with username "j.doe" and password "test"
+    And The following request body:
+      """
+        {
+          "injectionInstitutionType": "Test",
+          "taxCode": "123",
+          "description": "Test description"
+        }
+      """
+    When I send a POST request to "/institutions/from-pda"
+    Then The status code is 404
+    And The response body contains:
+      | status | 404       |
+      | detail | Not Found |
+
+  Scenario: Conflict while creating institution from pda
+    Given User login with username "j.doe" and password "test"
+    And The following request body:
+      """
+        {
+          "injectionInstitutionType": "Test",
+          "taxCode": "99000870064",
+          "description": "Test description"
+        }
+      """
+    When I send a POST request to "/institutions/from-pda"
+    Then The status code is 409
+    And The response body contains:
+      | status | 409                                                                        |
+      | detail | Institution having taxCode 99000870064 and subunitCode null already exists |
+
 # POST /institutions/from-infocamere
 
   @RemoveInstitutionIdAfterScenario
