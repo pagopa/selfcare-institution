@@ -2,6 +2,146 @@ Feature: Institution
 
 # GET /institutions
 
+  Scenario: Successfully getInstitutions with taxCode and all subunits
+    Given User login with username "j.doe" and password "test"
+    And The following query params:
+      | taxCode        | 94076720658 |
+      | enableSubunits | true        |
+      | productId      | prod-io     |
+    When I send a GET request to "/institutions"
+    Then The status code is 200
+    And The response body contains the list "institutions" of size 2
+    And The response body contains at path "institutions.id" the following list of values in any order:
+      | b4705659-3a01-430a-a19b-7bdb4e340223 |
+      | fc5466e5-df00-4800-9ad5-aa2e7d9344f9 |
+    And The response body contains at path "institutions.taxCode" the following list of values in any order:
+      | 94076720658 |
+      | 94076720658 |
+    And The response body contains at path "institutions.subunitCode" the following list of values in any order:
+      | UF5D7W |
+    And The response body contains the list "institutions[0].onboarding" of size 1
+    And The response body contains the list "institutions[1].onboarding" of size 1
+    And The response body contains:
+      | institutions[0].onboarding[0].productId | prod-io |
+      | institutions[1].onboarding[0].productId | prod-io |
+
+  Scenario: Validation error in getInstitutions with enableSubunits without taxCode
+    Given User login with username "j.doe" and password "test"
+    And The following query params:
+      | enableSubunits | true |
+    When I send a GET request to "/institutions"
+    Then The status code is 400
+    And The response body contains:
+      | status | 400                                       |
+      | detail | TaxCode is required when subunits is true |
+
+  Scenario: Validation error in getInstitutions with enableSubunits,taxCode and origin
+    Given User login with username "j.doe" and password "test"
+    And The following query params:
+      | taxCode        | 94076720658 |
+      | enableSubunits | true        |
+      | origin         | IPA         |
+    When I send a GET request to "/institutions"
+    Then The status code is 400
+    And The response body contains:
+      | status | 400                                                |
+      | detail | Only taxCode can be provided when subunits is true |
+
+  Scenario: Validation error in getInstitutions with enableSubunits,taxCode and originId
+    Given User login with username "j.doe" and password "test"
+    And The following query params:
+      | taxCode        | 94076720658 |
+      | enableSubunits | true        |
+      | originId       | 94076720658 |
+    When I send a GET request to "/institutions"
+    Then The status code is 400
+    And The response body contains:
+      | status | 400                                                |
+      | detail | Only taxCode can be provided when subunits is true |
+
+  Scenario: Validation error in getInstitutions with enableSubunits,taxCode and subunitCode
+    Given User login with username "j.doe" and password "test"
+    And The following query params:
+      | taxCode        | 94076720658 |
+      | enableSubunits | true        |
+      | subunitCode    | UF5D7W      |
+    When I send a GET request to "/institutions"
+    Then The status code is 400
+    And The response body contains:
+      | status | 400                                                |
+      | detail | Only taxCode can be provided when subunits is true |
+
+  Scenario: Successfully getInstitutions with taxCode,subunitCode,productId
+    Given User login with username "j.doe" and password "test"
+    And The following query params:
+      | taxCode        | 94076720658 |
+      | subunitCode    | UF5D7W      |
+      | productId      | prod-io     |
+    When I send a GET request to "/institutions"
+    Then The status code is 200
+    And The response body contains the list "institutions" of size 1
+    And The response body contains the list "institutions[0].onboarding" of size 1
+    And The response body contains:
+      | institutions[0].id                      | b4705659-3a01-430a-a19b-7bdb4e340223 |
+      | institutions[0].taxCode                 | 94076720658                          |
+      | institutions[0].subunitCode             | UF5D7W                               |
+      | institutions[0].onboarding[0].productId | prod-io                              |
+
+  Scenario: Invalid request in getInstitutions with taxCode,origin,originId,subunitCode,productId
+    Given User login with username "j.doe" and password "test"
+    And The following query params:
+      | taxCode        | 94076720658 |
+      | origin         | IPA         |
+      | originId       | UF5D7W      |
+      | subunitCode    | UF5D7W      |
+      | productId      | prod-io     |
+    When I send a GET request to "/institutions"
+    Then The status code is 400
+    And The response body contains:
+      | status | 400                                                                                                      |
+      | detail | Invalid request parameters sent. Allowed filters combinations taxCode and subunit or origin and originId |
+
+  Scenario: Successfully getInstitutions with origin,originId,productId
+    Given User login with username "j.doe" and password "test"
+    And The following query params:
+      | origin    | IPA     |
+      | originId  | isticom |
+      | productId | prod-io |
+    When I send a GET request to "/institutions"
+    Then The status code is 200
+    And The response body contains the list "institutions" of size 1
+    And The response body contains the list "institutions[0].onboarding" of size 1
+    And The response body contains:
+      | institutions[0].id                      | fc5466e5-df00-4800-9ad5-aa2e7d9344f9 |
+      | institutions[0].taxCode                 | 94076720658                          |
+      | institutions[0].origin                  | IPA                                  |
+      | institutions[0].originId                | isticom                              |
+      | institutions[0].onboarding[0].productId | prod-io                              |
+
+  Scenario: Validation error in getInstitutions without taxCode,origin,originId
+    Given User login with username "j.doe" and password "test"
+    And The following query params:
+      | subunitCode | UF5D7W  |
+      | productId   | prod-io |
+    When I send a GET request to "/institutions"
+    Then The status code is 400
+    And The response body contains:
+      | status | 400                                                         |
+      | detail | At least one of taxCode, origin or originId must be present |
+
+  Scenario: Validation error in getInstitutions with subunitCode,origin,originId and without taxCode
+    Given User login with username "j.doe" and password "test"
+    And The following query params:
+      | origin      | IPA     |
+      | originId    | isticom |
+      | subunitCode | UF5D7W  |
+      | productId   | prod-io |
+    When I send a GET request to "/institutions"
+    Then The status code is 400
+    And The response body contains:
+      | status | 400                                           |
+      | detail | TaxCode is required if subunitCode is present |
+
 # POST /institutions/from-ipa
 
   @RemoveInstitutionIdAfterScenario
@@ -1289,7 +1429,7 @@ Feature: Institution
       | size | 4 |
     When I send a GET request to "/institutions/products/{productId}"
     Then The status code is 200
-    And The response body contains the list "items" of size 2
+    And The response body contains the list "items" of size 3
 
   Scenario: Get institutions with non existent productId
     Given User login with username "j.doe" and password "test"
@@ -1308,10 +1448,11 @@ Feature: Institution
       | institutionType | PA      |
     When I send a GET request to "/institutions/{productId}/brokers/{institutionType}"
     Then The status code is 200
-    And The response body contains the list "" of size 2
+    And The response body contains the list "" of size 3
     And The response body contains at path "taxCode" the following list of values in any order:
       | 85000870064 |
       | 00310810825 |
+      | 94076720658 |
 
   Scenario: Get institutions brokers with bad productId
     Given User login with username "j.doe" and password "test"

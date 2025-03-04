@@ -473,5 +473,63 @@
     "createdAt": "2022-06-10T13:29:09.792Z",
     "updatedAt": "2024-07-11T09:51:39.8126597Z",
     "_class": "it.pagopa.selfcare.mscore.connector.dao.model.InstitutionEntity"
+  },
+  {
+    "_id": "fc5466e5-df00-4800-9ad5-aa2e7d9344f9",
+    "externalId": "94076720658",
+    "origin": "IPA",
+    "originId": "isticom",
+    "description": "3 Istituto Comprensivo Nocera Inferiore",
+    "institutionType": "PA",
+    "digitalAddress": "saic8bu00x@pec.istruzione.it",
+    "address": "Via San Pietro, 10",
+    "zipCode": "84014",
+    "taxCode": "94076720658",
+    "istatCode": "065078",
+    "attributes": [
+      {
+        "origin": "IPA",
+        "code": "L33",
+        "description": "Istituti di Istruzione Statale di Ogni Ordine e Grado"
+      }
+    ],
+    "imported": false,
+    "createdAt": "2023-11-10T11:45:21.226522053Z",
+    "_class": "it.pagopa.selfcare.mscore.connector.dao.model.InstitutionEntity",
+    "updatedAt": "2024-06-04T13:39:01.379003912Z",
+    "onboarding": [
+      {
+        "productId": "prod-pagopa",
+        "tokenId": "afb6c11d-67f8-44f9-b04f-88d47e0d2fc3",
+        "status": "ACTIVE",
+        "billing": {
+          "vatNumber": "94076720658",
+          "recipientCode": "isticom",
+          "publicServices": false
+        },
+        "createdAt": "2017-12-22T00:00:00Z",
+        "updatedAt": "2024-02-24T12:56:40.645708542Z",
+        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding"
+      },
+      {
+        "productId": "prod-io",
+        "tokenId": "24534011-a806-4137-855c-059ea9b943cd",
+        "status": "ACTIVE",
+        "contract": "parties/docs/24534011-a806-4137-855c-059ea9b943cd/signed_App_IO_accordo_adesione.pdf",
+        "billing": {
+          "vatNumber": "94076720658",
+          "recipientCode": "AAAAA",
+          "publicServices": false
+        },
+        "createdAt": "2024-06-04T13:39:01.30130241Z",
+        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding"
+      }
+    ],
+    "geographicTaxonomies": [
+      {
+        "code": "058",
+        "desc": "ROMA - PROVINCIA"
+      }
+    ]
   }
 ]
