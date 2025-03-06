@@ -1,4 +1,4 @@
-Feature: fake
+Feature: Fake
 
 Scenario: Successfully execute fake test
 When I send a request to "/fake"
