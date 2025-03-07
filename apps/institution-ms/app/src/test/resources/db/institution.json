@@ -242,7 +242,16 @@
         "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding"
       }
     ],
-    "geographicTaxonomies": [],
+    "geographicTaxonomies": [
+      {
+        "code": "058091",
+        "desc": "ROMA - COMUNE"
+      },
+      {
+        "code": "038008",
+        "desc": "FERRARA - COMUNE"
+      }
+    ],
     "attributes": [],
     "paymentServiceProvider": {
       "abiCode": "11111",
@@ -309,7 +318,7 @@
     "originId": "AVO36EJ",
     "description": "COMUNE DI MORANSENGO-TONENGO",
     "digitalAddress": "comune.moransengotonengo@legalmail.it",
-    "address": "Via VIA AIRALI 9 ",
+    "address": "Via VIA AIRALI 9",
     "zipCode": "14023",
     "taxCode": "01726610056",
     "geographicTaxonomies": [],

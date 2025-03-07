@@ -190,4 +190,25 @@ public class CommonSteps {
         );
     }
 
+    @And("The response body contains at path {string} the following list of objects in any order:")
+    public void checkResponseBodyObjectList(String expectedJsonPath, List<Map<String, Object>> expectedObjects) {
+        final List<Map<String, Object>> currentObjects = sharedStepData.getResponse().body().jsonPath().getList(expectedJsonPath);
+
+        Assertions.assertEquals(expectedObjects.size(), currentObjects.size(),
+                String.format("The lists have different sizes. Expected: %s, Current: %s", expectedObjects, currentObjects));
+
+        final Set<String> expectedKeySet = expectedObjects.get(0).keySet();
+        final Set<Map<String, String>> expectedSet = expectedObjects.stream()
+                .map(m -> expectedKeySet.stream()
+                        .collect(Collectors.toMap(k -> k, k -> Optional.ofNullable(m.get(k)).map(Object::toString).orElse(""))))
+                .collect(Collectors.toSet());
+        final Set<Map<String, String>> currentSet = currentObjects.stream()
+                .map(m -> expectedKeySet.stream()
+                        .collect(Collectors.toMap(k -> k, k -> Optional.ofNullable(m.get(k)).map(Object::toString).orElse(""))))
+                .collect(Collectors.toSet());
+
+        Assertions.assertEquals(expectedSet, currentSet,
+                String.format("The lists contain different objects. Expected: %s, Current: %s", expectedSet, currentSet));
+    }
+
 }
