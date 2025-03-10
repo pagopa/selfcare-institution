@@ -50,15 +50,16 @@ public class DelegationSteps {
         Optional.ofNullable(mockDelegationId).ifPresent(delegationRepository::deleteById);
     }
 
-    @And("A pair of mock institutions with id {string} and {string}")
-    public void createPairOfMockInstitutionWithId(String id1, String id2) {
+    @And("A pair of mock institutions with id {string},{string} and taxcode {string},{string} with subunitCode {string},{string}")
+    public void createPairOfMockInstitutionWithId(String id1, String id2, String taxCode1, String taxCode2, String subCode1, String subCode2) {
         final InstitutionEntity entity1 = new InstitutionEntity();
         entity1.setId(id1);
         entity1.setOrigin(Origin.MOCK);
         entity1.setCreatedAt(OffsetDateTime.now());
         entity1.setUpdatedAt(OffsetDateTime.now());
-        entity1.setTaxCode("112233");
+        entity1.setTaxCode(taxCode1);
         entity1.setInstitutionType(InstitutionType.PA);
+        entity1.setSubunitCode(subCode1);
         final InstitutionEntity savedEntity1 = institutionRepository.save(entity1);
         mockInstitutionId1 = savedEntity1.getId();
 
@@ -67,18 +68,19 @@ public class DelegationSteps {
         entity2.setOrigin(Origin.MOCK);
         entity2.setCreatedAt(OffsetDateTime.now());
         entity2.setUpdatedAt(OffsetDateTime.now());
-        entity2.setTaxCode("445566");
+        entity2.setTaxCode(taxCode2);
         entity2.setInstitutionType(InstitutionType.GSP);
+        entity2.setSubunitCode(subCode2);
         final InstitutionEntity savedEntity2 = institutionRepository.save(entity2);
         mockInstitutionId2 = savedEntity2.getId();
     }
 
-    @And("A mock delegation of type {} with productId {string} for institution with id {string} and {string} with status {}")
-    public void createMockDelegation(DelegationType delegationType, String productId, String id1, String id2, DelegationState status) {
+    @And("A mock delegation with id {string} of type {} with productId {string} for institution with id {string} and {string} with status {}")
+    public void createMockDelegation(String delegationId, DelegationType delegationType, String productId, String id1, String id2, DelegationState status) {
         final InstitutionEntity fromInstitution = institutionRepository.findById(id1).orElseThrow();
         final InstitutionEntity toInstitution = institutionRepository.findById(id2).orElseThrow();
         final DelegationEntity delegation = new DelegationEntity();
-        delegation.setId("123456");
+        delegation.setId(delegationId);
         delegation.setFrom(fromInstitution.getId());
         delegation.setTo(toInstitution.getId());
         delegation.setInstitutionFromName("From Institution");
@@ -95,10 +97,36 @@ public class DelegationSteps {
         mockDelegationId = savedDelegation.getId();
     }
 
+    @And("A mock delegation with id {string} without real institutions")
+    public void createMockDelegationWithoutRealInstitutions(String delegationId) {
+        final DelegationEntity delegation = new DelegationEntity();
+        delegation.setId(delegationId);
+        delegation.setFrom("mockFrom");
+        delegation.setTo("mockTo");
+        delegation.setInstitutionFromName("From Institution");
+        delegation.setInstitutionFromRootName("From Root Institution");
+        delegation.setInstitutionToName("To Institution");
+        delegation.setFromTaxCode("mockFromTaxCode");
+        delegation.setToTaxCode("mockToTaxCode");
+        delegation.setFromType(InstitutionType.PA.name());
+        delegation.setToType(InstitutionType.GSP.name());
+        delegation.setProductId("mockProductId");
+        delegation.setStatus(DelegationState.ACTIVE);
+        delegation.setType(DelegationType.PT);
+        final DelegationEntity savedDelegation = delegationRepository.save(delegation);
+        mockDelegationId = savedDelegation.getId();
+    }
+
     @And("The delegation flag for institution {string} is {} on db")
     public void checkDelegationFlag(String institutionId, Boolean expectedValue) {
         final InstitutionEntity institution = institutionRepository.findById(institutionId).orElseThrow();
         Assertions.assertEquals(expectedValue, institution.isDelegation());
+    }
+
+    @And("The delegation with id {string} is in state {} on db")
+    public void checkDelegationState(String delegationId, DelegationState delegationState) {
+        final DelegationEntity delegation = delegationRepository.findById(delegationId).orElseThrow();
+        Assertions.assertEquals(delegationState, delegation.getStatus());
     }
 
     @And("The delegation from institution {string} to institution {string} was saved to db successfully")
