@@ -1,3 +1,4 @@
+@FeatureOnboarding
 Feature: Onboarding
 
   # /onboarding/institution/{externalId}/products/{productId}

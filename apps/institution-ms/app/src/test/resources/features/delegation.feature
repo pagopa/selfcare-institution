@@ -1,3 +1,4 @@
+@FeatureDelegation
 Feature: Delegation
 
 # POST /delegations

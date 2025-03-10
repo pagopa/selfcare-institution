@@ -1,3 +1,4 @@
+@FeatureManagement
 Feature: Management
 
   Scenario: Successfully retrieve institutions in bulk

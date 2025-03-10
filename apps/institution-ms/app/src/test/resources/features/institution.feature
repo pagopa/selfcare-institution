@@ -1,3 +1,4 @@
+@FeatureInstitution
 Feature: Institution
 
 # GET /institutions

@@ -1,3 +1,4 @@
+@FeatureFake
 Feature: Fake
 
 Scenario: Successfully execute fake test

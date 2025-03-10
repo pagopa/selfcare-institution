@@ -1,3 +1,4 @@
+@FeatureExternal
 Feature: External
 
 # GET /external/institutions

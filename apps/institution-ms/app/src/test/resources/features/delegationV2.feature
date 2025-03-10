@@ -1,3 +1,4 @@
+@FeatureDelegationV2
 Feature: DelegationV2
 
   Scenario: Successfully get delegations with institutionId,brokerId,productId,search
