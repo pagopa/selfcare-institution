@@ -45,3 +45,22 @@ After starting, the microservice will be available at `http://localhost:8080/`.
 
 To use the API, refer to the Swagger UI documentation (if available) at `http://localhost:8080/swagger-ui.html`.
 
+## Integration tests
+A new suite of integration tests written with cucumber was added in `it.pagopa.selfcare.mscore.integration_test` package.
+The tests are currently disabled by default, to run the tests locally:
+
+1. Start mongodb, azurite and mockserver using the docker-compose.yml in this folder:
+    ```shell script
+    docker-compose up mongodb
+    docker-compose up azurite
+    docker-compose up mockserver
+    ```
+
+2. Run user-ms at port 8082 using the test public key in `src/test/resources/key/public-key.pub`
+   (by setting the value in a single line of the env var JWT-PUBLIC-KEY).
+   The institution-ms microservice is started automatically with the CucumberSuite
+
+3. Comment the line starting with @ExcludeTags inside the CucumberSuite file and run the test with maven:
+    ```shell script
+   mvn test -DfailIfNoTests=false -Dtest=it.pagopa.selfcare.mscore.integration_test.CucumberSuite
+   ```

@@ -1,0 +1,38 @@
+version: '3.8'
+services:
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - '27017:27017'
+    volumes:
+      - "./app/src/test/resources/db:/docker-entrypoint-initdb.d"
+    networks:
+      - develop-network
+
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    container_name: azurite
+    ports:
+      - "10000:10000"  # Expose blob service
+    volumes:
+      - "./app/src/test/resources/blobStorage:/data"
+    networks:
+      - develop-network
+
+  mockserver:
+    image: mockserver/mockserver
+    ports:
+      - '1080:1080'
+    environment:
+      - MOCKSERVER_INITIALIZATION_JSON_PATH=/config/*.json
+      - MOCKSERVER_ENABLE_CORS_FOR_API="true"
+      - MOCKSERVER_ENABLE_CORS_FOR_ALL_RESPONSES="true"
+    volumes:
+      - "./app/src/test/resources/mock:/config"
+    networks:
+      - develop-network
+
+networks:
+  develop-network:
+    name: selfcare-develop-network
