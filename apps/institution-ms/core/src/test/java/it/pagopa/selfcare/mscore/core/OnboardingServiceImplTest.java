@@ -1,11 +1,10 @@
 package it.pagopa.selfcare.mscore.core;
 
 import it.pagopa.selfcare.mscore.api.InstitutionConnector;
+import it.pagopa.selfcare.mscore.api.MailNotificationConnector;
 import it.pagopa.selfcare.mscore.api.PecNotificationConnector;
-import it.pagopa.selfcare.mscore.api.ProductConnector;
 import it.pagopa.selfcare.mscore.config.InstitutionSendMailConfig;
 import it.pagopa.selfcare.mscore.constant.RelationshipState;
-import it.pagopa.selfcare.mscore.core.mapper.TokenMapper;
 import it.pagopa.selfcare.mscore.core.util.UtilEnumList;
 import it.pagopa.selfcare.mscore.exception.InvalidRequestException;
 import it.pagopa.selfcare.mscore.exception.ResourceNotFoundException;
@@ -14,12 +13,14 @@ import it.pagopa.selfcare.mscore.model.institution.Institution;
 import it.pagopa.selfcare.mscore.model.institution.Onboarding;
 import it.pagopa.selfcare.mscore.model.onboarding.Token;
 import it.pagopa.selfcare.mscore.model.onboarding.VerifyOnboardingFilters;
-import it.pagopa.selfcare.mscore.model.pecnotification.PecNotification;
 import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ContextConfiguration;
@@ -28,13 +29,9 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
-import static it.pagopa.selfcare.mscore.constant.GenericError.DELETE_NOTIFICATION_OPERATION_ERROR;
-import static it.pagopa.selfcare.mscore.constant.GenericError.ONBOARDING_OPERATION_ERROR;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -56,16 +53,10 @@ class OnboardingServiceImplTest {
     private InstitutionConnector institutionConnector;
 
     @Mock
-    private ProductConnector productConnector;
-
-    @Mock
-    private UserNotificationService userNotificationService;
-
-    @Mock
     private PecNotificationConnector pecNotificationConnector;
 
-    @Spy
-    private TokenMapper tokenMapper;
+    @Mock
+    private MailNotificationConnector mailNotificationConnector;
 
     @Mock
     private InstitutionSendMailConfig institutionSendMailConfig;
@@ -149,10 +140,10 @@ class OnboardingServiceImplTest {
         institution.setOnboarding(List.of(onboarding, dummyOnboarding()));
         institution.setInstitutionType(InstitutionType.PA);
 
-        doNothing().when(pecNotificationConnector).insertPecNotification(any(PecNotification.class));
+        when(mailNotificationConnector.addMailNotification(any(), any(), any(), anyInt())).thenReturn(true);
         when(institutionConnector.findById(institution.getId())).thenReturn(institution);
         when(institutionSendMailConfig.getPecNotificationDisabled()).thenReturn(false);
-        when(institutionSendMailConfig.getProducts()).thenReturn(Map.of(onboarding.getProductId(),30));
+        when(institutionSendMailConfig.getPecNotificationFrequency()).thenReturn(30);
         when(institutionSendMailConfig.getEpochDatePecNotification()).thenReturn("2024-01-01");
 
         String institutionId = institution.getId();
@@ -187,7 +178,7 @@ class OnboardingServiceImplTest {
 
         onboardingServiceImpl.persistOnboarding(institutionId, productId, onb, statusCode);
 
-        verify(pecNotificationConnector, never()).insertPecNotification(any(PecNotification.class));
+        verify(mailNotificationConnector, never()).addMailNotification(any(), any(), any(), anyInt());
         assertEquals(HttpStatus.OK.value(), Integer.parseInt(statusCode.toString()));
     }
 
@@ -214,7 +205,7 @@ class OnboardingServiceImplTest {
         onboardingServiceImpl.persistOnboarding(institutionId,
                 productId, onb, statusCode);
 
-        verify(pecNotificationConnector, never()).insertPecNotification(any(PecNotification.class));
+        verify(mailNotificationConnector, never()).addMailNotification(any(), any(), any(), anyInt());
 
         assertEquals(HttpStatus.OK.value(), Integer.parseInt(statusCode.toString()));
     }
@@ -274,6 +265,8 @@ class OnboardingServiceImplTest {
         onboardingToPersist.setProductId(productId);
         onboardingToPersist.setBilling(billing);
         onboardingToPersist.setIsAggregator(true);
+        onboardingToPersist.setCreatedAt(OffsetDateTime.of(
+                2025, 3, 13, 0, 0, 0, 0, ZoneOffset.UTC));
 
         Institution institution = new Institution();
         institution.setId("institutionId");
@@ -290,13 +283,12 @@ class OnboardingServiceImplTest {
         token.setStatus(onboarding.getStatus());
         token.setContractSigned(onboarding.getContract());
 
-        doNothing().when(pecNotificationConnector).insertPecNotification(any(PecNotification.class));
         when(institutionConnector.findById(institution.getId())).thenReturn(institution);
         when(institutionConnector.findAndUpdate(any(), any(), any(), any())).thenReturn(institution);
         when(institutionSendMailConfig.getPecNotificationDisabled()).thenReturn(false);
-        when(institutionSendMailConfig.getProducts()).thenReturn(Map.of(productId,30));
+        when(institutionSendMailConfig.getPecNotificationFrequency()).thenReturn(30);
         when(institutionSendMailConfig.getEpochDatePecNotification()).thenReturn("2024-01-01");
-        
+
         StringBuilder statusCode = new StringBuilder();
 
         onboardingServiceImpl.persistOnboarding(institution.getId(), productId, onboardingToPersist, statusCode);
@@ -306,14 +298,10 @@ class OnboardingServiceImplTest {
                 .findAndUpdate(any(), captor.capture(), any(), any());
         Onboarding actual = captor.getValue();
         assertEquals(billing, actual.getBilling());
-        assertEquals(actual.getCreatedAt().getDayOfYear(), LocalDate.now().getDayOfYear());
+        assertEquals(actual.getCreatedAt().getDayOfYear(), LocalDate.of(2025, 3, 13).getDayOfYear());
         assertEquals(HttpStatus.CREATED.value(), Integer.parseInt(statusCode.toString()));
 
-        ArgumentCaptor< PecNotification > argCaptor = ArgumentCaptor.forClass(PecNotification.class);
-        verify(pecNotificationConnector, times(1)). insertPecNotification(argCaptor.capture());
-        assertEquals(productId, argCaptor.getValue().getProductId());
-        assertEquals("institutionId", argCaptor.getValue().getInstitutionId());
-        assertEquals("test@junit.pagopa", argCaptor.getValue().getDigitalAddress());
+        verify(mailNotificationConnector, times(1)).addMailNotification("institutionId", "productId", "test@junit.pagopa", 17);
     }
 
     private Onboarding dummyOnboarding() {
@@ -327,7 +315,6 @@ class OnboardingServiceImplTest {
 
     @Test
     void deleteOnboardedInstitution_success() {
-
         String institutionId = UUID.randomUUID().toString();
         String productId = UUID.randomUUID().toString();
 
@@ -336,64 +323,36 @@ class OnboardingServiceImplTest {
         onboarding.setStatus(RelationshipState.DELETED);
 
         when(pecNotificationConnector.findAndDeletePecNotification(institutionId, productId)).thenReturn(true);
-        
+        when(mailNotificationConnector.removeMailNotification(institutionId, productId)).thenReturn(true);
+
         onboardingServiceImpl.deleteOnboardedInstitution(institutionId, productId);
 
         verify(institutionConnector, times(1)).findAndDeleteOnboarding(institutionId, productId);
         verify(pecNotificationConnector, times(1)).findAndDeletePecNotification(institutionId, productId);
+        verify(mailNotificationConnector, times(1)).removeMailNotification(institutionId, productId);
     }
 
     @Test
-    void deleteOnboardedInstitution_deletePecNotificationFails() {
-
+    void deleteOnboardedInstitution_fail() {
         String institutionId = UUID.randomUUID().toString();
-        String productId = "prod-io";
+        String productId = UUID.randomUUID().toString();
 
         Onboarding onboarding = new Onboarding();
         onboarding.setProductId(productId);
         onboarding.setStatus(RelationshipState.DELETED);
-        
+
         when(pecNotificationConnector.findAndDeletePecNotification(institutionId, productId)).thenReturn(false);
+        when(mailNotificationConnector.removeMailNotification(institutionId, productId)).thenReturn(false);
 
-        InvalidRequestException exception = assertThrows(InvalidRequestException.class, () -> {
-            onboardingServiceImpl.deleteOnboardedInstitution(institutionId, productId);
-        });
-
-        assertEquals(DELETE_NOTIFICATION_OPERATION_ERROR.getMessage(), exception.getMessage());
-        assertEquals(ONBOARDING_OPERATION_ERROR.getCode(), exception.getCode());
+        onboardingServiceImpl.deleteOnboardedInstitution(institutionId, productId);
 
         verify(institutionConnector, times(1)).findAndDeleteOnboarding(institutionId, productId);
         verify(pecNotificationConnector, times(1)).findAndDeletePecNotification(institutionId, productId);
-    }
-
-
-
-    @Test
-    public void insertPecNotification() {
-        String institutionId = "testInstitution";
-        String productId = "testProduct";
-        String digitalAddress = "test@domain.com";
-        OffsetDateTime createdAtOnboarding = OffsetDateTime.of(2024, 8, 30, 10, 0, 0, 0, ZoneOffset.UTC);
-
-        Map<String, Integer> products = new HashMap<>();
-        products.put(productId, 30);
-
-        when(institutionSendMailConfig.getPecNotificationDisabled()).thenReturn(false);
-        when(institutionSendMailConfig.getProducts()).thenReturn(products);
-        when(institutionSendMailConfig.getEpochDatePecNotification()).thenReturn("2024-01-01");
-        doNothing().when(pecNotificationConnector).insertPecNotification(any(PecNotification.class));
-
-        // Act
-        onboardingServiceImpl.insertPecNotification(institutionId, productId, digitalAddress, createdAtOnboarding);
-
-        // Assert
-        ArgumentCaptor<PecNotification> argumentCaptor = ArgumentCaptor.forClass(PecNotification.class);
-        verify(pecNotificationConnector, times(1)).insertPecNotification(argumentCaptor.capture());
-        assertEquals(2, argumentCaptor.getValue().getModuleDayOfTheEpoch());
+        verify(mailNotificationConnector, times(1)).removeMailNotification(institutionId, productId);
     }
 
     @Test
-    public void testCalculateModuleDayOfTheEpoch() {
+    void testCalculateModuleDayOfTheEpoch() {
         OffsetDateTime mockCurrentDate = OffsetDateTime.of(2024, 2, 1, 0, 0, 0, 0, ZoneOffset.UTC); // 31 days after epoch
 
         int result = onboardingServiceImpl.calculateModuleDayOfTheEpoch("2024-01-01", mockCurrentDate, 30);

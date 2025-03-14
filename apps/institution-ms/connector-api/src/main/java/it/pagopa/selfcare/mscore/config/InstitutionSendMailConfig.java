@@ -5,8 +5,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
-import java.util.Map;
-
 @Data
 @Configuration
 @PropertySource("classpath:config/core-config.properties")
@@ -15,5 +13,6 @@ public class InstitutionSendMailConfig {
 
     String epochDatePecNotification;
     Boolean pecNotificationDisabled;
-    Map<String, Integer> products;
+    Integer pecNotificationFrequency;
+
 }
