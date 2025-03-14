@@ -22,7 +22,12 @@ public interface MongoCustomConnector {
 
     <O> O findAndModify(Query query, UpdateDefinition updateDefinition, FindAndModifyOptions findAndModifyOptions, Class<O> outputType);
 
+    <O> O findAndRemove(Query query, Class<O> outputType);
+
     <O> List<O> findUserInstitutionAggregation(UserInstitutionFilter filter, Class<O> outputType);
 
     <O> UpdateResult updateMulti(Query query, UpdateDefinition updateDefinition, Class<O> outputType);
+
+    <O> UpdateResult upsert(Query query, UpdateDefinition updateDefinition, Class<O> outputType);
+
 }

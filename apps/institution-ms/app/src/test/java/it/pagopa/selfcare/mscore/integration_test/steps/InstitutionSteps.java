@@ -4,8 +4,10 @@ import io.cucumber.java.After;
 import io.cucumber.java.Scenario;
 import io.cucumber.java.en.And;
 import it.pagopa.selfcare.mscore.connector.dao.InstitutionRepository;
+import it.pagopa.selfcare.mscore.connector.dao.MailNotificationRepository;
 import it.pagopa.selfcare.mscore.connector.dao.PecNotificationRepository;
 import it.pagopa.selfcare.mscore.connector.dao.model.InstitutionEntity;
+import it.pagopa.selfcare.mscore.connector.dao.model.MailNotificationEntity;
 import it.pagopa.selfcare.mscore.connector.dao.model.PecNotificationEntity;
 import it.pagopa.selfcare.mscore.connector.dao.model.inner.OnboardingEntity;
 import it.pagopa.selfcare.mscore.constant.Origin;
@@ -16,16 +18,19 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 public class InstitutionSteps {
 
     private final SharedStepData sharedStepData;
     private final InstitutionRepository institutionRepository;
     private final PecNotificationRepository pecNotificationRepository;
+    private final MailNotificationRepository mailNotificationRepository;
     private final MongoTemplate mongoTemplate;
 
     private String mockInstitutionId;
@@ -33,10 +38,12 @@ public class InstitutionSteps {
     public InstitutionSteps(SharedStepData sharedStepData,
                             InstitutionRepository institutionRepository,
                             PecNotificationRepository pecNotificationRepository,
+                            MailNotificationRepository mailNotificationRepository,
                             MongoTemplate mongoTemplate) {
         this.sharedStepData = sharedStepData;
         this.institutionRepository = institutionRepository;
         this.pecNotificationRepository = pecNotificationRepository;
+        this.mailNotificationRepository = mailNotificationRepository;
         this.mongoTemplate = mongoTemplate;
     }
 
@@ -59,6 +66,7 @@ public class InstitutionSteps {
         Optional.ofNullable(mockInstitutionId).ifPresent(id -> {
             institutionRepository.deleteById(id);
             mongoTemplate.remove(new Query(Criteria.where("institutionId").is(id)), PecNotificationEntity.class);
+            mongoTemplate.remove(new Query(Criteria.where("institutionId").is(id)), MailNotificationEntity.class);
         });
     }
 
@@ -78,6 +86,7 @@ public class InstitutionSteps {
         entity.setDigitalAddress("digital.address@test.com");
         final InstitutionEntity savedEntity = institutionRepository.save(entity);
         mockInstitutionId = savedEntity.getId();
+
         final PecNotificationEntity pecNotificationEntityIO = new PecNotificationEntity();
         pecNotificationEntityIO.setInstitutionId(mockInstitutionId);
         pecNotificationEntityIO.setProductId("prod-io");
@@ -90,12 +99,38 @@ public class InstitutionSteps {
         pecNotificationEntityPA.setModuleDayOfTheEpoch(20);
         pecNotificationEntityPA.setDigitalAddress("digital.address@test.com");
         pecNotificationRepository.save(pecNotificationEntityPA);
+
+        final MailNotificationEntity mailNotificationEntity = new MailNotificationEntity();
+        mailNotificationEntity.setInstitutionId(mockInstitutionId);
+        mailNotificationEntity.setProductIds(Set.of("prod-io", "prod-pagopa"));
+        mailNotificationEntity.setModuleDayOfTheEpoch(10);
+        mailNotificationEntity.setDigitalAddress("digital.address@test.com");
+        mailNotificationEntity.setCreatedAt(Instant.now());
+        mailNotificationEntity.setUpdatedAt(Instant.now());
+        mailNotificationRepository.save(mailNotificationEntity);
+    }
+
+    @And("A mock institution with id {string} without active onboardings")
+    public void createMockInstitutionWithoutActiveOnboardings(String id) {
+        final InstitutionEntity entity = new InstitutionEntity();
+        entity.setId(id);
+        entity.setOrigin(Origin.MOCK);
+        entity.setCreatedAt(OffsetDateTime.now());
+        entity.setUpdatedAt(OffsetDateTime.now());
+        entity.setDigitalAddress("digital.address@test.com");
+        entity.setOnboarding(List.of(
+                createMockOnboardingEntity("prod-idpay", RelationshipState.DELETED, OffsetDateTime.now(), OffsetDateTime.now())
+        ));
+        final InstitutionEntity savedEntity = institutionRepository.save(entity);
+        mockInstitutionId = savedEntity.getId();
     }
 
     private OnboardingEntity createMockOnboardingEntity(String productId, RelationshipState status, OffsetDateTime createdAt, OffsetDateTime updatedAt) {
         final OnboardingEntity onboardingEntity = new OnboardingEntity();
         onboardingEntity.setProductId(productId);
         onboardingEntity.setStatus(status);
+        onboardingEntity.setContract("MOCK_CONTRACT");
+        onboardingEntity.setTokenId("MOCK_TOKEN");
         onboardingEntity.setCreatedAt(createdAt);
         onboardingEntity.setUpdatedAt(updatedAt);
         return onboardingEntity;
@@ -119,6 +154,50 @@ public class InstitutionSteps {
     public void checkPecNotificationCount(String institutionId, long expectedCount) {
         long count = mongoTemplate.count(new Query(Criteria.where("institutionId").is(institutionId)), PecNotificationEntity.class);
         Assertions.assertEquals(expectedCount, count);
+    }
+
+    @And("Count of MailNotification with institutionId {string} is {long}")
+    public void checkMailNotificationCount(String institutionId, long expectedCount) {
+        long count = mongoTemplate.count(new Query(Criteria.where("institutionId").is(institutionId)), MailNotificationEntity.class);
+        Assertions.assertEquals(expectedCount, count);
+    }
+
+    @And("Onboarding for institutionId {string} and productId {string} was saved to db successfully with token {string} contract {string} and a module of {int}")
+    public void checkOnboardingWasSaved(String institutionId, String productId, String expectedToken, String expectedContract, int expectedModule) {
+        final InstitutionEntity institution = institutionRepository.findById(institutionId).orElseThrow();
+        final List<OnboardingEntity> onboardings = institution.getOnboarding().stream()
+                .filter(o -> o.getProductId().equals(productId) && (o.getStatus().equals(RelationshipState.ACTIVE) || o.getStatus().equals(RelationshipState.SUSPENDED))).toList();
+        Assertions.assertEquals(1, onboardings.size());
+
+        final OnboardingEntity onboarding = onboardings.get(0);
+        Assertions.assertEquals(expectedToken, onboarding.getTokenId());
+        Assertions.assertEquals(expectedContract, onboarding.getContract());
+
+        final List<MailNotificationEntity> entities = mailNotificationRepository.find(Query.query(Criteria.where("institutionId").is(institutionId)), MailNotificationEntity.class);
+        Assertions.assertEquals(1, entities.size());
+
+        final MailNotificationEntity mailNotification = entities.get(0);
+        Assertions.assertEquals(institutionId, mailNotification.getInstitutionId());
+        Assertions.assertEquals(institution.getDigitalAddress(), mailNotification.getDigitalAddress());
+        Assertions.assertEquals(expectedModule, mailNotification.getModuleDayOfTheEpoch());
+        Assertions.assertTrue(mailNotification.getProductIds().contains(productId));
+        Assertions.assertNotNull(mailNotification.getCreatedAt());
+        Assertions.assertNotNull(mailNotification.getUpdatedAt());
+    }
+
+    @And("MailNotification for institutionId {string} and productId {string} was removed from db successfully")
+    public void checkMailNotificationWasRemoved(String institutionId, String productId) {
+        final List<MailNotificationEntity> entities = mailNotificationRepository.find(Query.query(Criteria.where("institutionId").is(institutionId)), MailNotificationEntity.class);
+        Assertions.assertEquals(1, entities.size());
+
+        final MailNotificationEntity mailNotification = entities.get(0);
+        Assertions.assertFalse(mailNotification.getProductIds().contains(productId));
+    }
+
+    @And("MailNotification for institutionId {string} was deleted from db successfully")
+    public void checkMailNotificationWasDeleted(String institutionId) {
+        final List<MailNotificationEntity> entities = mailNotificationRepository.find(Query.query(Criteria.where("institutionId").is(institutionId)), MailNotificationEntity.class);
+        Assertions.assertTrue(entities.isEmpty());
     }
 
 }

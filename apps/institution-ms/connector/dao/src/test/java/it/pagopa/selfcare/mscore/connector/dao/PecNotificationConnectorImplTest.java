@@ -1,10 +1,7 @@
 package it.pagopa.selfcare.mscore.connector.dao;
 
 import it.pagopa.selfcare.mscore.connector.dao.model.PecNotificationEntity;
-import it.pagopa.selfcare.mscore.connector.dao.model.mapper.PecNotificationEntityMapper;
-import it.pagopa.selfcare.mscore.model.pecnotification.PecNotification;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,16 +24,12 @@ class PecNotificationConnectorImplTest {
     @Mock
     private PecNotificationRepository repository;
 
-    @Mock
-    private PecNotificationEntityMapper pecNotificationMapper;
-
     @InjectMocks
     private PecNotificationConnectorImpl pecNotificationConnector;
 
     private String institutionId;
     private String productId;
     private PecNotificationEntity pecNotificationEntity;
-    private PecNotification pecNotification;
 
     @BeforeEach
     void setUp() {
@@ -47,7 +40,6 @@ class PecNotificationConnectorImplTest {
         pecNotificationEntity.setProductId(productId);
         pecNotificationEntity.setDigitalAddress("digitalAddress@test.com");
         pecNotificationEntity.setModuleDayOfTheEpoch(1);
-        pecNotification = new PecNotification();
     }
 
     @Test
@@ -84,35 +76,4 @@ class PecNotificationConnectorImplTest {
         verify(repository, never()).delete(any());
     }
 
-    @Test
-    void insertPecNotification_success() {
-        when(pecNotificationMapper.convertToPecNotificationEntity(pecNotification)).thenReturn(pecNotificationEntity);
-        when(repository.existsByInstitutionIdAndProductId(any(), any())).thenReturn(false);
-
-        pecNotificationConnector.insertPecNotification(pecNotification);
-
-        verify(repository, times(1)).insert(pecNotificationEntity);
-    }
-
-    @Test
-    void insertPecNotification_alreadyExists() {
-        when(pecNotificationMapper.convertToPecNotificationEntity(pecNotification)).thenReturn(pecNotificationEntity);
-        when(repository.existsByInstitutionIdAndProductId(any(), any())).thenReturn(true);
-
-        pecNotificationConnector.insertPecNotification(pecNotification);
-
-        verify(repository, never()).insert(pecNotificationEntity);
-    }
-
-    @Test
-    @DisplayName("PecNotification is not saved because some mandatory fields misses")
-    void insertPecNotification_someValueMissing() {
-        when(pecNotificationMapper.convertToPecNotificationEntity(pecNotification)).thenReturn(new PecNotificationEntity());
-        when(repository.existsByInstitutionIdAndProductId(any(), any())).thenReturn(false);
-
-        pecNotificationConnector.insertPecNotification(pecNotification);
-
-        verify(repository, never()).insert(pecNotificationEntity);
-    }
-	
 }

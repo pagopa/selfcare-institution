@@ -18,6 +18,7 @@ import it.pagopa.selfcare.mscore.web.model.onboarding.OnboardedProducts;
 import it.pagopa.selfcare.mscore.web.util.CustomExceptionMessage;
 import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -368,10 +369,11 @@ public class InstitutionController {
     public ResponseEntity<InstitutionResponse> onboardingInstitution(@RequestBody @Valid InstitutionOnboardingRequest request,
                                                                      @PathVariable("id") String id) {
         CustomExceptionMessage.setCustomMessage(GenericError.ONBOARDING_OPERATION_ERROR);
-        
+
         StringBuilder httpStatus = new StringBuilder();
-        
-        Institution institution = onboardingService.persistOnboarding(id, request.getProductId(), onboardingResourceMapper.toOnboarding(request), httpStatus);
+
+        Institution institution = onboardingService.persistOnboarding(StringEscapeUtils.escapeJava(id),
+                StringEscapeUtils.escapeJava(request.getProductId()), onboardingResourceMapper.toOnboarding(request), httpStatus);
         
         return ResponseEntity
                 .status(HttpStatus.valueOf(Integer.parseInt(httpStatus.toString())))
@@ -385,7 +387,7 @@ public class InstitutionController {
                                            @PathVariable("id") String institutionId) {
 
         CustomExceptionMessage.setCustomMessage(GenericError.DELETE_ONBOARDED_OPERATION_ERROR);
-        onboardingService.deleteOnboardedInstitution(institutionId, productId);
+        onboardingService.deleteOnboardedInstitution(StringEscapeUtils.escapeJava(institutionId), StringEscapeUtils.escapeJava(productId));
 
     }
 

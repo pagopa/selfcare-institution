@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.mscore.core;
 
 import it.pagopa.selfcare.mscore.api.InstitutionConnector;
+import it.pagopa.selfcare.mscore.api.MailNotificationConnector;
 import it.pagopa.selfcare.mscore.api.PecNotificationConnector;
 import it.pagopa.selfcare.mscore.config.InstitutionSendMailConfig;
 import it.pagopa.selfcare.mscore.constant.CustomError;
@@ -11,14 +12,11 @@ import it.pagopa.selfcare.mscore.exception.ResourceNotFoundException;
 import it.pagopa.selfcare.mscore.model.institution.Institution;
 import it.pagopa.selfcare.mscore.model.institution.Onboarding;
 import it.pagopa.selfcare.mscore.model.onboarding.VerifyOnboardingFilters;
-import it.pagopa.selfcare.mscore.model.pecnotification.PecNotification;
 import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import lombok.extern.slf4j.Slf4j;
-import org.bson.types.ObjectId;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
@@ -26,7 +24,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static it.pagopa.selfcare.mscore.constant.GenericError.*;
+import static it.pagopa.selfcare.mscore.constant.GenericError.ONBOARDING_OPERATION_ERROR;
 
 @Slf4j
 @Service
@@ -35,6 +33,7 @@ public class OnboardingServiceImpl implements OnboardingService {
     private final InstitutionService institutionService;
     private final InstitutionConnector institutionConnector;
     private final PecNotificationConnector pecNotificationConnector;
+    private final MailNotificationConnector mailNotificationConnector;
 
     private final InstitutionSendMailConfig institutionSendMailConfig;
 
@@ -42,12 +41,14 @@ public class OnboardingServiceImpl implements OnboardingService {
                                  InstitutionService institutionService,
                                  InstitutionConnector institutionConnector,
                                  PecNotificationConnector pecNotificationConnector,
+                                 MailNotificationConnector mailNotificationConnector,
                                  InstitutionSendMailConfig institutionSendMailConfig) {
 
         this.onboardingDao = onboardingDao;
         this.institutionService = institutionService;
         this.institutionConnector = institutionConnector;
         this.pecNotificationConnector = pecNotificationConnector;
+        this.mailNotificationConnector = mailNotificationConnector;
         this.institutionSendMailConfig = institutionSendMailConfig;
     }
 
@@ -77,26 +78,6 @@ public class OnboardingServiceImpl implements OnboardingService {
         }
     }
 
-    public void insertPecNotification(String institutionId, String productId, String digitalAddress, OffsetDateTime createdAtOnboarding) {
-
-        //If sending mail ActiveUsers enabled for this product
-        if (!institutionSendMailConfig.getPecNotificationDisabled()
-                && institutionSendMailConfig.getProducts().containsKey(productId)) {
-
-            PecNotification pecNotification = new PecNotification();
-            pecNotification.setId(ObjectId.get());
-            pecNotification.setCreatedAt(Instant.now());
-            pecNotification.setProductId(productId);
-            pecNotification.setInstitutionId(institutionId);
-            pecNotification.setModuleDayOfTheEpoch(calculateModuleDayOfTheEpoch(institutionSendMailConfig.getEpochDatePecNotification(),
-                    createdAtOnboarding, institutionSendMailConfig.getProducts().get(productId)));
-            pecNotification.setDigitalAddress(digitalAddress);
-
-            pecNotificationConnector.insertPecNotification(pecNotification);
-        }
-
-    }
-
     public int calculateModuleDayOfTheEpoch(String epochDatePecNotification, OffsetDateTime createdAtOnboarding, Integer sendingFrequencyPecNotification) {
         LocalDate epochStart = LocalDate.parse(epochDatePecNotification);
         long daysDiff = ChronoUnit.DAYS.between(epochStart, createdAtOnboarding);
@@ -108,9 +89,13 @@ public class OnboardingServiceImpl implements OnboardingService {
             productId, Onboarding onboarding, StringBuilder httpStatus) {
 
         Institution institution = persistAndGetInstitution(institutionId, productId, onboarding, httpStatus);
-        if (!InstitutionType.PT.equals(institution.getInstitutionType())) {
-            insertPecNotification(institutionId, productId, institution.getDigitalAddress(), onboarding.getCreatedAt());
+
+        if (isMailNotificationEnabled(institution)) {
+            mailNotificationConnector.addMailNotification(institutionId, productId, institution.getDigitalAddress(),
+                        calculateModuleDayOfTheEpoch(institutionSendMailConfig.getEpochDatePecNotification(), onboarding.getCreatedAt(),
+                                institutionSendMailConfig.getPecNotificationFrequency()));
         }
+
         return institution;
     }
 
@@ -150,21 +135,20 @@ public class OnboardingServiceImpl implements OnboardingService {
         }
     }
 
+    private boolean isMailNotificationEnabled(Institution institution) {
+        if (Boolean.TRUE.equals(institutionSendMailConfig.getPecNotificationDisabled())) {
+            // If property is enabled then mail notification is disabled
+            return false;
+        }
+        // If institution is of type PT then mail notification is disabled
+        return !InstitutionType.PT.equals(institution.getInstitutionType());
+    }
+
     @Override
     public void deleteOnboardedInstitution(String institutionId, String productId) {
-
-        log.trace("persist logic delete Onboarding - start");
         institutionConnector.findAndDeleteOnboarding(institutionId, productId);
-        log.trace("persist logic delete Onboarding - end");
-
-        log.trace("persist delete PecNotification - start");
-        boolean isDeleted = pecNotificationConnector.findAndDeletePecNotification(institutionId, productId);
-        if (!isDeleted) {
-            throw new InvalidRequestException(DELETE_NOTIFICATION_OPERATION_ERROR.getMessage(),
-                    ONBOARDING_OPERATION_ERROR.getCode());
-        }
-        log.trace("persist delete PecNotification - end");
-
+        mailNotificationConnector.removeMailNotification(institutionId, productId);
+        pecNotificationConnector.findAndDeletePecNotification(institutionId, productId);
     }
 
 }

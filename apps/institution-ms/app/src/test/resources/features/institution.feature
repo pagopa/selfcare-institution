@@ -75,9 +75,9 @@ Feature: Institution
   Scenario: Successfully getInstitutions with taxCode,subunitCode,productId
     Given User login with username "j.doe" and password "test"
     And The following query params:
-      | taxCode        | 94076720658 |
-      | subunitCode    | UF5D7W      |
-      | productId      | prod-io     |
+      | taxCode     | 94076720658 |
+      | subunitCode | UF5D7W      |
+      | productId   | prod-io     |
     When I send a GET request to "/institutions"
     Then The status code is 200
     And The response body contains the list "institutions" of size 1
@@ -91,11 +91,11 @@ Feature: Institution
   Scenario: Invalid request in getInstitutions with taxCode,origin,originId,subunitCode,productId
     Given User login with username "j.doe" and password "test"
     And The following query params:
-      | taxCode        | 94076720658 |
-      | origin         | IPA         |
-      | originId       | UF5D7W      |
-      | subunitCode    | UF5D7W      |
-      | productId      | prod-io     |
+      | taxCode     | 94076720658 |
+      | origin      | IPA         |
+      | originId    | UF5D7W      |
+      | subunitCode | UF5D7W      |
+      | productId   | prod-io     |
     When I send a GET request to "/institutions"
     Then The status code is 400
     And The response body contains:
@@ -555,9 +555,9 @@ Feature: Institution
     When I send a POST request to "/institutions/from-anac"
     Then The status code is 201
     And The response body contains:
-      | taxCode   | 06068501219 |
-      | origin    | ANAC        |
-      | originId  | 06068501219 |
+      | taxCode  | 06068501219 |
+      | origin   | ANAC        |
+      | originId | 06068501219 |
     And The response body contains field "id"
     And The response body doesn't contain field "supportEmail"
     # UPDATE
@@ -572,10 +572,10 @@ Feature: Institution
     When I send a POST request to "/institutions/from-anac"
     Then The status code is 201
     And The response body contains:
-      | taxCode       | 06068501219 |
-      | origin        | ANAC        |
-      | originId      | 06068501219 |
-      | supportEmail  | test@pec.it |
+      | taxCode      | 06068501219 |
+      | origin       | ANAC        |
+      | originId     | 06068501219 |
+      | supportEmail | test@pec.it |
     And The response body contains field "id"
 
 # POST /institutions/from-ivass
@@ -1053,12 +1053,12 @@ Feature: Institution
     When I send a PUT request to "/institutions/{id}"
     Then The status code is 200
     And The response body contains:
-      | id                           | 123                                    |
-      | digitalAddress               | updated.digital.address@test.com       |
-      | description                  | Updated institution description        |
-      | delegation                   | false                                  |
-      | geographicTaxonomies[0].code | 058091                                 |
-      | geographicTaxonomies[0].desc | ROMA - COMUNE                          |
+      | id                           | 123                              |
+      | digitalAddress               | updated.digital.address@test.com |
+      | description                  | Updated institution description  |
+      | delegation                   | false                            |
+      | geographicTaxonomies[0].code | 058091                           |
+      | geographicTaxonomies[0].desc | ROMA - COMUNE                    |
 
   Scenario: Not found institutionId while updating institution
     Given User login with username "j.doe" and password "test"
@@ -1077,7 +1077,7 @@ Feature: Institution
 # POST /institutions/{id}/onboarding
 
   @RemoveMockInstitutionAfterScenario
-  Scenario: Successfully persistOnboarding
+  Scenario: Successfully persistOnboarding updating MailNotification
     Given User login with username "j.doe" and password "test"
     And A mock institution with id "123"
     And The following path params:
@@ -1107,7 +1107,38 @@ Feature: Institution
       | prod-idpay      | DELETED   |
       | prod-pn         | SUSPENDED |
       | prod-io-premium | ACTIVE    |
-    And Count of PecNotification with institutionId "123" is 3
+    And Count of PecNotification with institutionId "123" is 2
+    And Count of MailNotification with institutionId "123" is 1
+    And Onboarding for institutionId "123" and productId "prod-io-premium" was saved to db successfully with token "123456789" contract "testContractPath" and a module of 10
+
+  @RemoveMockInstitutionAfterScenario
+  Scenario: Successfully persistOnboarding creating MailNotification
+    Given User login with username "j.doe" and password "test"
+    And A mock institution with id "123" without active onboardings
+    And The following path params:
+      | id | 123 |
+    And The following request body:
+      """
+      {
+        "productId": "prod-io",
+        "tokenId": "123456789",
+        "contractPath": "testContractPath",
+        "activatedAt": "2025-02-28T15:00:00Z",
+        "isAggregator": false
+      }
+      """
+    When I send a POST request to "/institutions/{id}/onboarding"
+    Then The status code is 201
+    And The response body contains at path "onboarding.productId" the following list of values in any order:
+      | prod-io    |
+      | prod-idpay |
+    And The response body contains field "id"
+    And Onboardings of institution with id "123" have following states:
+      | prod-io    | ACTIVE  |
+      | prod-idpay | DELETED |
+    And Count of PecNotification with institutionId "123" is 0
+    And Count of MailNotification with institutionId "123" is 1
+    And Onboarding for institutionId "123" and productId "prod-io" was saved to db successfully with token "123456789" contract "testContractPath" and a module of 4
 
   @RemoveMockInstitutionAfterScenario
   Scenario: Successfully persistOnboarding with existing productId
@@ -1128,17 +1159,18 @@ Feature: Institution
     When I send a POST request to "/institutions/{id}/onboarding"
     Then The status code is 200
     And The response body contains at path "onboarding.productId" the following list of values in any order:
-      | prod-io         |
-      | prod-pagopa     |
-      | prod-idpay      |
-      | prod-pn         |
+      | prod-io     |
+      | prod-pagopa |
+      | prod-idpay  |
+      | prod-pn     |
     And The response body contains field "id"
     And Onboardings of institution with id "123" have following states:
-      | prod-io         | ACTIVE    |
-      | prod-pagopa     | ACTIVE    |
-      | prod-idpay      | DELETED   |
-      | prod-pn         | SUSPENDED |
-    And Count of PecNotification with institutionId "123" is 3
+      | prod-io     | ACTIVE    |
+      | prod-pagopa | ACTIVE    |
+      | prod-idpay  | DELETED   |
+      | prod-pn     | SUSPENDED |
+    And Count of PecNotification with institutionId "123" is 2
+    And Onboarding for institutionId "123" and productId "prod-pn" was saved to db successfully with token "MOCK_TOKEN" contract "MOCK_CONTRACT" and a module of 10
 
   Scenario: Do not persist PecNotification with PT institution type
     Given User login with username "j.doe" and password "test"
@@ -1153,12 +1185,13 @@ Feature: Institution
     When I send a POST request to "/institutions/{id}/onboarding"
     Then The status code is 200
     And The response body contains at path "onboarding.productId" the following list of values in any order:
-      | prod-io         |
-      | prod-pagopa     |
-      | prod-pagopa     |
-      | prod-interop    |
+      | prod-io      |
+      | prod-pagopa  |
+      | prod-pagopa  |
+      | prod-interop |
     And The response body contains field "id"
     And Count of PecNotification with institutionId "067327d3-bdd6-408d-8655-87e8f1960046" is 0
+    And Count of MailNotification with institutionId "067327d3-bdd6-408d-8655-87e8f1960046" is 0
 
   Scenario: Not found institution while persistOnboarding
     Given User login with username "j.doe" and password "test"
@@ -1202,7 +1235,7 @@ Feature: Institution
 # DELETE /institutions/{id}/products/{productId}
 
   @RemoveMockInstitutionAfterScenario
-  Scenario: Successfully delete onboarding
+  Scenario: Successfully delete onboarding updating MailNotification
     Given User login with username "j.doe" and password "test"
     And A mock institution with id "123"
     And The following path params:
@@ -1216,25 +1249,40 @@ Feature: Institution
       | prod-idpay  | DELETED   |
       | prod-pn     | SUSPENDED |
     And Count of PecNotification with institutionId "123" is 1
+    And Count of MailNotification with institutionId "123" is 1
+    And MailNotification for institutionId "123" and productId "prod-pagopa" was removed from db successfully
+    # No more products left in MailNotification
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | id        | 123     |
+      | productId | prod-io |
+    When I send a DELETE request to "/institutions/{id}/products/{productId}"
+    Then The status code is 204
+    And Onboardings of institution with id "123" have following states:
+      | prod-io     | DELETED   |
+      | prod-pagopa | DELETED   |
+      | prod-idpay  | DELETED   |
+      | prod-pn     | SUSPENDED |
+    And Count of PecNotification with institutionId "123" is 0
+    And Count of MailNotification with institutionId "123" is 0
+    And MailNotification for institutionId "123" was deleted from db successfully
 
   @RemoveMockInstitutionAfterScenario
-  Scenario: Invalid request deleting onboarding
+  Scenario: Successfully delete onboarding without existing PecNotification
     Given User login with username "j.doe" and password "test"
     And A mock institution with id "123"
     And The following path params:
       | id        | 123        |
       | productId | prod-idpay |
     When I send a DELETE request to "/institutions/{id}/products/{productId}"
-    Then The status code is 400
+    Then The status code is 204
     And Onboardings of institution with id "123" have following states:
       | prod-io     | ACTIVE    |
       | prod-pagopa | ACTIVE    |
       | prod-idpay  | DELETED   |
       | prod-pn     | SUSPENDED |
     And Count of PecNotification with institutionId "123" is 2
-    And The response body contains:
-      | status | 400                                                                                                  |
-      | detail | PecNotificationEntity was not deleted because either it does not exist or there are multiple records |
+    And Count of MailNotification with institutionId "123" is 1
 
 # GET /institutions/{id}/geotaxonomies
 
@@ -1286,7 +1334,7 @@ Feature: Institution
     When I send a GET request to "/institutions/{id}"
     Then The status code is 200
     And The response body contains:
-      | id | c9a50656-f345-4c81-84be-5b2474470544 |
+      | id   | c9a50656-f345-4c81-84be-5b2474470544                        |
       | logo | test-logo-url/c9a50656-f345-4c81-84be-5b2474470544/logo.png |
 
   Scenario: Get institution by id not found

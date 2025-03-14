@@ -135,5 +135,22 @@ class MongoCustomConnectorImplTest {
         assertNotNull(mongoCustomConnector.updateMulti(query, updateDefinition, Object.class));
     }
 
+    @Test
+    void findAndRemove() {
+        Object a = new Object();
+        when(mongoOperations.findAndRemove(any(), any())).thenReturn(a);
+        Query query = new Query();
+        assertNotNull(mongoCustomConnector.findAndRemove(query, Object.class));
+    }
+
+    @Test
+    void upsert() {
+        UpdateResult updateResult = mock(UpdateResult.class);
+        when(mongoOperations.upsert(any(), any(), (Class<Object>) any())).thenReturn(updateResult);
+        Query query = new Query();
+        UpdateDefinition updateDefinition = new Update();
+        assertNotNull(mongoCustomConnector.upsert(query, updateDefinition, Object.class));
+    }
+
 }
 
