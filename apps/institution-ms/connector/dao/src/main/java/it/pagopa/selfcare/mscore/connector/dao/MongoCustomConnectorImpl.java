@@ -62,6 +62,11 @@ public class MongoCustomConnectorImpl implements MongoCustomConnector {
     }
 
     @Override
+    public <O> O findAndRemove(Query query, Class<O> outputType) {
+        return mongoOperations.findAndRemove(query, outputType);
+    }
+
+    @Override
     public <O> List<O> findUserInstitutionAggregation(UserInstitutionFilter filter, Class<O> outputType) {
         MatchOperation matchUserId = Aggregation.match(Criteria.where(ENTITY_ID).is(filter.getUserId()));
         //Output a new document for each userBindings
@@ -103,5 +108,10 @@ public class MongoCustomConnectorImpl implements MongoCustomConnector {
     @Override
     public <O> UpdateResult updateMulti(Query query, UpdateDefinition updateDefinition, Class<O> outputType){
         return mongoOperations.updateMulti(query, updateDefinition, outputType);
+    }
+
+    @Override
+    public <O> UpdateResult upsert(Query query, UpdateDefinition updateDefinition, Class<O> outputType) {
+        return mongoOperations.upsert(query, updateDefinition, outputType);
     }
 }
