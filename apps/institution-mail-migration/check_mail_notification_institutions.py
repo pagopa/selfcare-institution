@@ -46,12 +46,13 @@ def checkProductIds(mailNotificationDoc, institutionDoc):
     for o in onboarding:
         status = o["status"]
         product = o["productId"]
-        if product in PRODUCTS_WHITELIST and status == "ACTIVE":
+        if status == "ACTIVE":
             foundProducts.append(product)
-            if product not in productIds:
-                print(AnsiColors.ERROR, "Anomaly in MailNotification for institutionId", institutionId, ": product", product, "NOT FOUND", AnsiColors.ENDC)
-    if len(productIds) != len(foundProducts):
-        print(AnsiColors.ERROR, "Anomaly in MailNotification for institutionId", institutionId, ": productIds", productIds, " different from the one in institution", foundProducts, AnsiColors.ENDC)
+            if product in PRODUCTS_WHITELIST and product not in productIds:
+                print(AnsiColors.ERROR, "Anomaly in MailNotification for institutionId", institutionId, ": productId", product, "not found in MailNotification", AnsiColors.ENDC)
+    for p in productIds:
+        if p not in foundProducts:
+            print(AnsiColors.ERROR, "Anomaly in MailNotification for institutionId", institutionId, ": productId", p, "not found in institution", foundProducts, AnsiColors.ENDC)
 
 def main():
     client = MongoClient(MONGO_HOST)
