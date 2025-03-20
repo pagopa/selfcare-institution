@@ -46,7 +46,7 @@ def checkProductId(pecNotificationDoc, institutionDoc):
     for o in onboarding:
         status = o["status"]
         product = o["productId"]
-        if product == productId and (status == "ACTIVE" or status == "SUSPENDED"):
+        if product == productId and status == "ACTIVE":
             if not foundOnboardingForProductId:
                 foundOnboardingForProductId = True
             else:

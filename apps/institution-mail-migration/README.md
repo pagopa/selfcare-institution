@@ -15,4 +15,6 @@ Python scripts to migrate from the old PecNotification collection to the new Mai
     - Check that the digitalAddress is the one present in Institution
     - Check that every productId in state ACTIVE or SUSPENDED for each Institution is present in the productIds field of the respective MailNotification document
 
+4. check_institutions_mail_notification.py: verify if there are Institutions without a MailNotification document associated for the onboarded products
+
 Before launching any script remember to export the `MONGO_HOST` environment variable with the connection string of the target mongo database

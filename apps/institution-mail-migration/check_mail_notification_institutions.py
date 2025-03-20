@@ -9,6 +9,7 @@ MONGO_BATCH_SIZE = 100
 INSTITUTION_DB = "selcMsCore"
 INSTITUTION_COLLECTION = "Institution"
 MAIL_NOTIFICATION_COLLECTION = "MailNotification"
+PRODUCTS_WHITELIST = ["prod-interop", "prod-pagopa", "prod-io", "prod-pn", "prod-io-premium", "prod-io-sign"]
 
 class AnsiColors:
     WARNING = '\033[93m'
@@ -41,16 +42,16 @@ def checkProductIds(mailNotificationDoc, institutionDoc):
     institutionId = mailNotificationDoc["institutionId"]
     productIds = mailNotificationDoc["productIds"]
     onboarding = institutionDoc["onboarding"]
-    productActiveSuspendedCounter = 0
+    foundProducts = []
     for o in onboarding:
         status = o["status"]
         product = o["productId"]
-        if status == "ACTIVE" or status == "SUSPENDED":
-            productActiveSuspendedCounter += 1
+        if product in PRODUCTS_WHITELIST and status == "ACTIVE":
+            foundProducts.append(product)
             if product not in productIds:
                 print(AnsiColors.ERROR, "Anomaly in MailNotification for institutionId", institutionId, ": product", product, "NOT FOUND", AnsiColors.ENDC)
-    if len(productIds) != productActiveSuspendedCounter:
-        print(AnsiColors.ERROR, "Anomaly in MailNotification for institutionId", institutionId, ": different productIds", AnsiColors.ENDC)
+    if len(productIds) != len(foundProducts):
+        print(AnsiColors.ERROR, "Anomaly in MailNotification for institutionId", institutionId, ": productIds", productIds, " different from the one in institution", foundProducts, AnsiColors.ENDC)
 
 def main():
     client = MongoClient(MONGO_HOST)
@@ -67,7 +68,7 @@ def main():
         if institutionDocs:
             institutionDoc = institutionDocs[0]
             checkDigitalAddress(mailNotificationDoc, institutionDoc)
-            checkDigitalAddress(mailNotificationDoc, institutionDoc)
+            checkProductIds(mailNotificationDoc, institutionDoc)
         else:
             print(AnsiColors.ERROR, "Anomaly in MailNotification for institutionId", institutionId, ": institutionId NOT FOUND in Institution", AnsiColors.ENDC)
         checkedMailNotificationCount += 1
