@@ -15,7 +15,7 @@ public class Application implements QuarkusApplication {
 
     @Override
     public int run(String... args){
-        return institutionSendMailScheduledServiceImpl.retrieveInstitutionFromPecNotificationAndSendMail()
+        return institutionSendMailScheduledServiceImpl.retrieveInstitutionFromMailNotificationAndSendMail()
                 .replaceWith(0)
                 .await().indefinitely();
     }

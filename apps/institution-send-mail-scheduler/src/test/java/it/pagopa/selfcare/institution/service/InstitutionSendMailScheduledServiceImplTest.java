@@ -7,8 +7,7 @@ import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.helpers.test.UniAssertSubscriber;
-import it.pagopa.selfcare.institution.config.ProductConfig;
-import it.pagopa.selfcare.institution.entity.PecNotification;
+import it.pagopa.selfcare.institution.entity.MailNotification;
 import it.pagopa.selfcare.product.entity.Product;
 import it.pagopa.selfcare.product.service.ProductService;
 import jakarta.inject.Inject;
@@ -18,12 +17,15 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.openapi.quarkus.selfcare_user_json.api.InstitutionApi;
 import org.openapi.quarkus.selfcare_user_json.model.OnboardedProductResponse;
+import org.openapi.quarkus.selfcare_user_json.model.OnboardedProductState;
 import org.openapi.quarkus.selfcare_user_json.model.UserInstitutionResponse;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -35,9 +37,6 @@ class InstitutionSendMailScheduledServiceImplTest {
 
     @InjectMock
     ProductService productService;
-
-    @Inject
-    ProductConfig productConfig;
 
     @Inject
     InstitutionSendMailScheduledServiceImpl service;
@@ -56,65 +55,90 @@ class InstitutionSendMailScheduledServiceImplTest {
     String templateMail;
 
     @Test
-    void sendMailToAllPecNotificationsForCurrentModuleDay() {
-        String institutionId = "institution-id";
-        String productId = "product-io";
-        List<PecNotification> notifications = getPecNotifications();
-        PanacheMock.mock(PecNotification.class);
+    void retrieveInstitutionFromMailNotificationAndSendMail() {
+        final String institutionId = "institutionId";
+        final List<String> productIds = List.of("prod-1", "prod-2");
+        final String digitalAddress = "test@test.com";
+
+        PanacheMock.mock(MailNotification.class);
         ReactivePanacheQuery<ReactivePanacheMongoEntityBase> query = Mockito.mock(ReactivePanacheQuery.class);
-        when(PecNotification.find(any(), any(Object.class)))
-                .thenReturn(query);
+        when(MailNotification.find(any(), any(Object.class))).thenReturn(query);
         when(query.page(0, querySize)).thenReturn(query);
+        when(query.hasNextPage()).thenReturn(Uni.createFrom().item(false));
+        when(query.firstResult()).thenReturn(Uni.createFrom().item(getMailNotification(institutionId, digitalAddress,
+                productIds, 1, Instant.now().minus(60, ChronoUnit.DAYS), Instant.now().minus(60, ChronoUnit.DAYS))));
 
+        final Product product1 = new Product();
+        product1.setTitle("product-title-1");
+        when(productService.getProduct("prod-1")).thenReturn(product1);
 
-        ReactivePanacheQuery<ReactivePanacheMongoEntityBase> query2 = Mockito.mock(ReactivePanacheQuery.class);
-        when(query.page(1, querySize)).thenReturn(query2);
-        when(query.hasNextPage()).thenReturn(Uni.createFrom().item(true));
-        when(query.firstResult()).thenReturn(Uni.createFrom().item(notifications.get(0)));
+        final Product product2 = new Product();
+        product2.setTitle("product-title-2");
+        when(productService.getProduct("prod-2")).thenReturn(product2);
 
+        final OnboardedProductResponse userInst1Prod1 = getProduct("prod-1", OnboardedProductState.ACTIVE, LocalDateTime.now(), LocalDateTime.now());
+        final OnboardedProductResponse userInst1Prod2 = getProduct("prod-2", OnboardedProductState.ACTIVE, LocalDateTime.now().minusDays(31), LocalDateTime.now());
+        final OnboardedProductResponse userInst1Prod3 = getProduct("prod-2", OnboardedProductState.PENDING, LocalDateTime.now(), LocalDateTime.now());
+        final UserInstitutionResponse userInst1 = getUserInstitution(institutionId, List.of(userInst1Prod1, userInst1Prod2, userInst1Prod3));
 
-        when(query2.firstResult()).thenReturn(Uni.createFrom().item(notifications.get(2)));
-        when(query2.hasNextPage()).thenReturn(Uni.createFrom().item(false));
+        final OnboardedProductResponse userInst2Prod1 = getProduct("prod-1", OnboardedProductState.ACTIVE, LocalDateTime.now().minusDays(10), LocalDateTime.now());
+        final OnboardedProductResponse userInst2Prod2 = getProduct("prod-1", OnboardedProductState.DELETED, LocalDateTime.now(), LocalDateTime.now());
+        final OnboardedProductResponse userInst2Prod3 = getProduct("prod-2", OnboardedProductState.SUSPENDED, LocalDateTime.now(), LocalDateTime.now());
+        final OnboardedProductResponse userInst2Prod4 = getProduct("prod-2", OnboardedProductState.DELETED, LocalDateTime.now(), LocalDateTime.now().minusDays(31));
+        final UserInstitutionResponse userInst2 = getUserInstitution(institutionId, List.of(userInst2Prod1, userInst2Prod2, userInst2Prod3, userInst2Prod4));
 
-        Product product = new Product();
-        product.setTitle("prod-io");
-        when(productService.getProduct("product-io")).thenReturn(product);
+        when(institutionApi.institutionsInstitutionIdUserInstitutionsGet(institutionId, null, productIds, null, null, null))
+                .thenReturn(Uni.createFrom().item(List.of(userInst1, userInst2)));
 
-        when(institutionApi.institutionsInstitutionIdUserInstitutionsGet(institutionId,
-                null,
-                List.of(productId),
-                null,
-                null,
-                null)).thenReturn(Uni.createFrom().item(getUserInstitutionResponse(institutionId, productId)));
+        final Map<String, String> expectedMailParameters = getExpectedMailParameters(
+                institutionId,
+                "Utenti aggiunti questo mese: <ul><li><strong>2</strong> utenti per il prodotto <strong>product-title-1</strong></li><li><strong>1</strong> utenti per il prodotto <strong>product-title-2</strong></li></ul>",
+                "Utenti rimossi questo mese: <ul><li><strong>1</strong> utenti per il prodotto <strong>product-title-1</strong></li></ul>"
+        );
 
-        Uni<Void> result = service.retrieveInstitutionFromPecNotificationAndSendMail();
+        Uni<Void> result = service.retrieveInstitutionFromMailNotificationAndSendMail();
         UniAssertSubscriber<Void> subscriber = result.subscribe().withSubscriber(UniAssertSubscriber.create());
-        subscriber.assertNotTerminated();
-        Mockito.verify(mailService, Mockito.atLeast(4))
-                .sendMail(Mockito.anyList(), Mockito.anyString(), Mockito.anyMap(), Mockito.any());
+        subscriber.assertCompleted();
+        Mockito.verify(mailService, Mockito.times(1))
+                .sendMail(Mockito.eq(List.of(digitalAddress)), Mockito.eq(templateMail), Mockito.eq(expectedMailParameters), Mockito.isNull());
     }
-
 
     @Test
     void shouldNotSendMail_whenOnboardingHappenToday() {
-        PecNotification notification1 = new PecNotification();
-        notification1.setProductId("product-id");
-        notification1.setDigitalAddress("test@test.it");
-        notification1.setModuleDayOfTheEpoch(1);
-        notification1.setCreatedAt(Instant.now().minusSeconds(360));
-        notification1.setInstitutionId("institution-id");
-        PanacheMock.mock(PecNotification.class);
+        final String institutionId = "institutionId";
+        final List<String> productIds = List.of("prod-1", "prod-2");
+        final String digitalAddress = "test@test.com";
 
+        PanacheMock.mock(MailNotification.class);
         ReactivePanacheQuery<ReactivePanacheMongoEntityBase> query = Mockito.mock(ReactivePanacheQuery.class);
-        when(PecNotification.find(any(), any(Object.class)))
-                .thenReturn(query);
+        when(MailNotification.find(any(), any(Object.class))).thenReturn(query);
         when(query.page(0, querySize)).thenReturn(query);
-
-
         when(query.hasNextPage()).thenReturn(Uni.createFrom().item(false));
-        when(query.firstResult()).thenReturn(Uni.createFrom().item(notification1));
+        when(query.firstResult()).thenReturn(Uni.createFrom().item(getMailNotification(institutionId, digitalAddress,
+                productIds, 1, Instant.now(), Instant.now().minus(60, ChronoUnit.DAYS))));
 
-        Uni<Void> result = service.retrieveInstitutionFromPecNotificationAndSendMail();
+        Uni<Void> result = service.retrieveInstitutionFromMailNotificationAndSendMail();
+        UniAssertSubscriber<Void> subscriber = result.subscribe().withSubscriber(UniAssertSubscriber.create());
+        subscriber.assertCompleted();
+        Mockito.verify(mailService, Mockito.times(0))
+                .sendMail(Mockito.anyList(), Mockito.anyString(), Mockito.anyMap(), Mockito.anyString());
+    }
+
+    @Test
+    void shouldNotSendMail_whenDigitalAddressIsMissing() {
+        final String institutionId = "institutionId";
+        final List<String> productIds = List.of("prod-1", "prod-2");
+        final String digitalAddress = null;
+
+        PanacheMock.mock(MailNotification.class);
+        ReactivePanacheQuery<ReactivePanacheMongoEntityBase> query = Mockito.mock(ReactivePanacheQuery.class);
+        when(MailNotification.find(any(), any(Object.class))).thenReturn(query);
+        when(query.page(0, querySize)).thenReturn(query);
+        when(query.hasNextPage()).thenReturn(Uni.createFrom().item(false));
+        when(query.firstResult()).thenReturn(Uni.createFrom().item(getMailNotification(institutionId, digitalAddress,
+                productIds, 1, Instant.now().minus(60, ChronoUnit.DAYS), Instant.now().minus(60, ChronoUnit.DAYS))));
+
+        Uni<Void> result = service.retrieveInstitutionFromMailNotificationAndSendMail();
         UniAssertSubscriber<Void> subscriber = result.subscribe().withSubscriber(UniAssertSubscriber.create());
         subscriber.assertCompleted();
         Mockito.verify(mailService, Mockito.times(0))
@@ -123,48 +147,41 @@ class InstitutionSendMailScheduledServiceImplTest {
 
     @Test
     void shouldLogErrorAndContinueOnMailSendFailure() {
-        final int page = 0;
-        final long moduleDayOfTheEpoch = 1L;
-        // Setup mocks
-        PecNotification notification1 = new PecNotification();
-        notification1.setProductId("product-id");
-        notification1.setDigitalAddress("test@test.it");
-        notification1.setModuleDayOfTheEpoch(1);
-        notification1.setCreatedAt(Instant.now().minusSeconds(86500));
-        notification1.setInstitutionId("institution-id");
-        PanacheMock.mock(PecNotification.class);
+        final String institutionId = "institutionId";
+        final List<String> productIds = List.of("prod-1", "prod-2");
+        final String digitalAddress = "test@test.com";
+
+        PanacheMock.mock(MailNotification.class);
         ReactivePanacheQuery<ReactivePanacheMongoEntityBase> query = Mockito.mock(ReactivePanacheQuery.class);
-        when(PecNotification.find(any(), any(Object.class)))
-                .thenReturn(query);
+        when(MailNotification.find(any(), any(Object.class))).thenReturn(query);
         when(query.page(0, querySize)).thenReturn(query);
         when(query.hasNextPage()).thenReturn(Uni.createFrom().item(false));
-        when(query.firstResult()).thenReturn(Uni.createFrom().item(notification1));
-        Product product = new Product();
-        product.setTitle("prod-io");
-        when(productService.getProduct("product-id")).thenReturn(product);
+        when(query.firstResult()).thenReturn(Uni.createFrom().item(getMailNotification(institutionId, digitalAddress,
+                productIds, 1, Instant.now().minus(60, ChronoUnit.DAYS), Instant.now().minus(60, ChronoUnit.DAYS))));
+
         Mockito.doThrow(new RuntimeException("Mail send failed")).when(mailService).sendMail(Mockito.anyList(), Mockito.anyString(), Mockito.anyMap(), Mockito.anyString());
 
         // Execute
-        Uni<Boolean> result = service.runQueryAndSendNotification(moduleDayOfTheEpoch, page, "productId");
+        Uni<Boolean> result = service.runQueryAndSendNotification(1L, 0);
         UniAssertSubscriber<Boolean> subscriber = result.subscribe().withSubscriber(UniAssertSubscriber.create());
 
         // Verify
-        subscriber.assertFailedWith(RuntimeException.class, "Mail send failed");
+        subscriber.assertItem(false);
     }
 
     @Test
     void shouldHandleNoPecNotificationsForCurrentModuleDay() {
         final int page = 0;
-        PanacheMock.mock(PecNotification.class);
+        PanacheMock.mock(MailNotification.class);
         ReactivePanacheQuery<ReactivePanacheMongoEntityBase> query = Mockito.mock(ReactivePanacheQuery.class);
-        when(PecNotification.find(any(), any(Object.class)))
+        when(MailNotification.find(any(), any(Object.class)))
                 .thenReturn(query);
         when(query.page(page, querySize)).thenReturn(query);
         when(query.hasNextPage()).thenReturn(Uni.createFrom().item(false));
         when(query.firstResult()).thenReturn(Uni.createFrom().nullItem());
 
         // Execute
-        Uni<Boolean> result = service.runQueryAndSendNotification(0L, page, "productId");
+        Uni<Boolean> result = service.runQueryAndSendNotification(0L, page);
         UniAssertSubscriber<Boolean> subscriber = result.subscribe().withSubscriber(UniAssertSubscriber.create());
 
         // Verify
@@ -174,78 +191,73 @@ class InstitutionSendMailScheduledServiceImplTest {
 
     @Test
     void sendFirstMailTemplate() {
-        String institutionId = "institution-id";
-        String productId = "prod-io";
+        final String institutionId = "institutionId";
+        final List<String> productIds = List.of("prod-1");
+        final String digitalAddress = "test@test.com";
 
-        PecNotification pecNotification = new PecNotification();
-        pecNotification.setProductId(productId);
-        pecNotification.setInstitutionId(institutionId);
-        pecNotification.setDigitalAddress("test@test1.it");
-        pecNotification.setCreatedAt(Instant.now().minus(productConfig.products().get(productId), ChronoUnit.DAYS));
-        pecNotification.setModuleDayOfTheEpoch(1);
-
-        PanacheMock.mock(PecNotification.class);
+        PanacheMock.mock(MailNotification.class);
         ReactivePanacheQuery<ReactivePanacheMongoEntityBase> query = Mockito.mock(ReactivePanacheQuery.class);
-        when(PecNotification.find(any(), any(Object.class))).thenReturn(query);
+        when(MailNotification.find(any(), any(Object.class))).thenReturn(query);
         when(query.page(0, querySize)).thenReturn(query);
-        when(query.hasNextPage()).thenReturn(Uni.createFrom().item(true));
-        when(query.firstResult()).thenReturn(Uni.createFrom().item(pecNotification));
+        when(query.hasNextPage()).thenReturn(Uni.createFrom().item(false));
+        when(query.firstResult()).thenReturn(Uni.createFrom().item(getMailNotification(institutionId, digitalAddress,
+                productIds, 1, Instant.now().minus(20, ChronoUnit.DAYS), Instant.now().minus(60, ChronoUnit.DAYS))));
 
-        Product product = new Product();
-        product.setTitle("prod-io");
-        when(productService.getProduct("prod-io")).thenReturn(product);
+        final Product product1 = new Product();
+        product1.setTitle("product-title-1");
+        when(productService.getProduct("prod-1")).thenReturn(product1);
 
-        when(institutionApi.institutionsInstitutionIdUserInstitutionsGet(institutionId,
-                null,
-                List.of(productId),
-                null,
-                null,
-                null)).thenReturn(Uni.createFrom().item(getUserInstitutionResponse(institutionId, productId)));
+        final OnboardedProductResponse userInst1Prod1 = getProduct("prod-1", OnboardedProductState.ACTIVE, LocalDateTime.now(), LocalDateTime.now());
+        final UserInstitutionResponse userInst1 = getUserInstitution(institutionId, List.of(userInst1Prod1));
 
-        Uni<Void> result = service.retrieveInstitutionFromPecNotificationAndSendMail();
+        when(institutionApi.institutionsInstitutionIdUserInstitutionsGet(institutionId, null, productIds, null, null, null))
+                .thenReturn(Uni.createFrom().item(List.of(userInst1)));
+
+        Uni<Void> result = service.retrieveInstitutionFromMailNotificationAndSendMail();
         UniAssertSubscriber<Void> subscriber = result.subscribe().withSubscriber(UniAssertSubscriber.create());
-        subscriber.assertNotTerminated();
-        Mockito.verify(mailService, Mockito.atLeast(1))
+        subscriber.assertCompleted();
+
+        Mockito.verify(mailService, Mockito.times(1))
                 .sendMail(Mockito.anyList(), Mockito.eq(templateMailFirstNotification), Mockito.anyMap(), Mockito.any());
         Mockito.verify(mailService, Mockito.never())
                 .sendMail(Mockito.anyList(), Mockito.eq(templateMail), Mockito.anyMap(), Mockito.any());
     }
 
-    private List<UserInstitutionResponse> getUserInstitutionResponse(String institutionId, String productId) {
-        UserInstitutionResponse userInstitutionResponse = new UserInstitutionResponse();
-        userInstitutionResponse.setInstitutionId(institutionId);
-        OnboardedProductResponse userProductResponse = new OnboardedProductResponse();
-        userProductResponse.setCreatedAt(LocalDateTime.now());
-        userProductResponse.setProductId(productId);
-        userInstitutionResponse.setProducts(List.of(userProductResponse));
-        return List.of(userInstitutionResponse);
+    private MailNotification getMailNotification(String institutionId, String digitalAddress, List<String> productIds,
+                                                 Integer moduleDayOfTheEpoch, Instant createdAt, Instant updatedAt) {
+        final MailNotification mailNotification = new MailNotification();
+        mailNotification.setInstitutionId(institutionId);
+        mailNotification.setDigitalAddress(digitalAddress);
+        mailNotification.setProductIds(productIds);
+        mailNotification.setModuleDayOfTheEpoch(moduleDayOfTheEpoch);
+        mailNotification.setCreatedAt(createdAt);
+        mailNotification.setUpdatedAt(updatedAt);
+        return mailNotification;
     }
 
-    private static List<PecNotification> getPecNotifications() {
-        PecNotification notification1 = new PecNotification();
-        PecNotification notification2 = new PecNotification();
-        PecNotification notification3 = new PecNotification();
-        PecNotification notification4 = new PecNotification();
-        notification1.setProductId("product-id");
-        notification1.setInstitutionId("institution-id");
-        notification1.setDigitalAddress("test@test1.it");
-        notification1.setCreatedAt(Instant.now().minus(60, ChronoUnit.DAYS));
-        notification1.setModuleDayOfTheEpoch(1);
-        notification2.setProductId("product-id");
-        notification2.setDigitalAddress("test@test2.it");
-        notification2.setModuleDayOfTheEpoch(1);
-        notification2.setCreatedAt(Instant.now());
-        notification2.setInstitutionId("institution-id");
-        notification3.setProductId("product-id");
-        notification3.setDigitalAddress("test@test3.it");
-        notification3.setModuleDayOfTheEpoch(1);
-        notification3.setInstitutionId("institution-id");
-        notification3.setCreatedAt(Instant.now());
-        notification4.setProductId("product-id");
-        notification4.setDigitalAddress("test@test4.it");
-        notification4.setModuleDayOfTheEpoch(1);
-        notification4.setCreatedAt(Instant.now());
-        notification4.setInstitutionId("institution-id");
-        return List.of(notification1, notification2, notification3, notification4);
+    private UserInstitutionResponse getUserInstitution(String institutionId, List<OnboardedProductResponse> products) {
+        final UserInstitutionResponse response = new UserInstitutionResponse();
+        response.setInstitutionId(institutionId);
+        response.setProducts(products);
+        return response;
     }
+
+    private OnboardedProductResponse getProduct(String productId, OnboardedProductState status,
+                                                LocalDateTime createdAt, LocalDateTime updatedAt) {
+        final OnboardedProductResponse response = new OnboardedProductResponse();
+        response.setProductId(productId);
+        response.setStatus(status);
+        response.setCreatedAt(createdAt);
+        response.setUpdatedAt(updatedAt);
+        return response;
+    }
+
+    private Map<String, String> getExpectedMailParameters(String institutionId, String addedUsersList, String removedUsersList) {
+        final Map<String, String> expectedMailParameters = new HashMap<>();
+        expectedMailParameters.put("id_institution", institutionId);
+        expectedMailParameters.put("added_users_list", addedUsersList);
+        expectedMailParameters.put("removed_users_list", removedUsersList);
+        return expectedMailParameters;
+    }
+
 }
