@@ -5,10 +5,8 @@ import io.cucumber.java.Scenario;
 import io.cucumber.java.en.And;
 import it.pagopa.selfcare.mscore.connector.dao.InstitutionRepository;
 import it.pagopa.selfcare.mscore.connector.dao.MailNotificationRepository;
-import it.pagopa.selfcare.mscore.connector.dao.PecNotificationRepository;
 import it.pagopa.selfcare.mscore.connector.dao.model.InstitutionEntity;
 import it.pagopa.selfcare.mscore.connector.dao.model.MailNotificationEntity;
-import it.pagopa.selfcare.mscore.connector.dao.model.PecNotificationEntity;
 import it.pagopa.selfcare.mscore.connector.dao.model.inner.OnboardingEntity;
 import it.pagopa.selfcare.mscore.constant.Origin;
 import it.pagopa.selfcare.mscore.constant.RelationshipState;
@@ -29,7 +27,6 @@ public class InstitutionSteps {
 
     private final SharedStepData sharedStepData;
     private final InstitutionRepository institutionRepository;
-    private final PecNotificationRepository pecNotificationRepository;
     private final MailNotificationRepository mailNotificationRepository;
     private final MongoTemplate mongoTemplate;
 
@@ -37,12 +34,10 @@ public class InstitutionSteps {
 
     public InstitutionSteps(SharedStepData sharedStepData,
                             InstitutionRepository institutionRepository,
-                            PecNotificationRepository pecNotificationRepository,
                             MailNotificationRepository mailNotificationRepository,
                             MongoTemplate mongoTemplate) {
         this.sharedStepData = sharedStepData;
         this.institutionRepository = institutionRepository;
-        this.pecNotificationRepository = pecNotificationRepository;
         this.mailNotificationRepository = mailNotificationRepository;
         this.mongoTemplate = mongoTemplate;
     }
@@ -65,7 +60,6 @@ public class InstitutionSteps {
     public void removeMockInstitution() {
         Optional.ofNullable(mockInstitutionId).ifPresent(id -> {
             institutionRepository.deleteById(id);
-            mongoTemplate.remove(new Query(Criteria.where("institutionId").is(id)), PecNotificationEntity.class);
             mongoTemplate.remove(new Query(Criteria.where("institutionId").is(id)), MailNotificationEntity.class);
         });
     }
@@ -86,19 +80,6 @@ public class InstitutionSteps {
         entity.setDigitalAddress("digital.address@test.com");
         final InstitutionEntity savedEntity = institutionRepository.save(entity);
         mockInstitutionId = savedEntity.getId();
-
-        final PecNotificationEntity pecNotificationEntityIO = new PecNotificationEntity();
-        pecNotificationEntityIO.setInstitutionId(mockInstitutionId);
-        pecNotificationEntityIO.setProductId("prod-io");
-        pecNotificationEntityIO.setModuleDayOfTheEpoch(10);
-        pecNotificationEntityIO.setDigitalAddress("digital.address@test.com");
-        pecNotificationRepository.save(pecNotificationEntityIO);
-        final PecNotificationEntity pecNotificationEntityPA = new PecNotificationEntity();
-        pecNotificationEntityPA.setInstitutionId(mockInstitutionId);
-        pecNotificationEntityPA.setProductId("prod-pagopa");
-        pecNotificationEntityPA.setModuleDayOfTheEpoch(20);
-        pecNotificationEntityPA.setDigitalAddress("digital.address@test.com");
-        pecNotificationRepository.save(pecNotificationEntityPA);
 
         final MailNotificationEntity mailNotificationEntity = new MailNotificationEntity();
         mailNotificationEntity.setInstitutionId(mockInstitutionId);
@@ -148,12 +129,6 @@ public class InstitutionSteps {
     public void checkOnboardingsStates(String institutionId, Map<String, String> expectedProductState) {
         final InstitutionEntity entity = institutionRepository.findById(institutionId).orElseThrow();
         entity.getOnboarding().forEach(e -> Assertions.assertEquals(expectedProductState.get(e.getProductId()), e.getStatus().name()));
-    }
-
-    @And("Count of PecNotification with institutionId {string} is {long}")
-    public void checkPecNotificationCount(String institutionId, long expectedCount) {
-        long count = mongoTemplate.count(new Query(Criteria.where("institutionId").is(institutionId)), PecNotificationEntity.class);
-        Assertions.assertEquals(expectedCount, count);
     }
 
     @And("Count of MailNotification with institutionId {string} is {long}")

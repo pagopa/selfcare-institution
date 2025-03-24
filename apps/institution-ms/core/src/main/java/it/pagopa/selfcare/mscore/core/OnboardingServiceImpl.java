@@ -2,7 +2,6 @@ package it.pagopa.selfcare.mscore.core;
 
 import it.pagopa.selfcare.mscore.api.InstitutionConnector;
 import it.pagopa.selfcare.mscore.api.MailNotificationConnector;
-import it.pagopa.selfcare.mscore.api.PecNotificationConnector;
 import it.pagopa.selfcare.mscore.config.InstitutionSendMailConfig;
 import it.pagopa.selfcare.mscore.constant.CustomError;
 import it.pagopa.selfcare.mscore.constant.RelationshipState;
@@ -32,7 +31,6 @@ public class OnboardingServiceImpl implements OnboardingService {
     private final OnboardingDao onboardingDao;
     private final InstitutionService institutionService;
     private final InstitutionConnector institutionConnector;
-    private final PecNotificationConnector pecNotificationConnector;
     private final MailNotificationConnector mailNotificationConnector;
 
     private final InstitutionSendMailConfig institutionSendMailConfig;
@@ -40,14 +38,12 @@ public class OnboardingServiceImpl implements OnboardingService {
     public OnboardingServiceImpl(OnboardingDao onboardingDao,
                                  InstitutionService institutionService,
                                  InstitutionConnector institutionConnector,
-                                 PecNotificationConnector pecNotificationConnector,
                                  MailNotificationConnector mailNotificationConnector,
                                  InstitutionSendMailConfig institutionSendMailConfig) {
 
         this.onboardingDao = onboardingDao;
         this.institutionService = institutionService;
         this.institutionConnector = institutionConnector;
-        this.pecNotificationConnector = pecNotificationConnector;
         this.mailNotificationConnector = mailNotificationConnector;
         this.institutionSendMailConfig = institutionSendMailConfig;
     }
@@ -148,7 +144,6 @@ public class OnboardingServiceImpl implements OnboardingService {
     public void deleteOnboardedInstitution(String institutionId, String productId) {
         institutionConnector.findAndDeleteOnboarding(institutionId, productId);
         mailNotificationConnector.removeMailNotification(institutionId, productId);
-        pecNotificationConnector.findAndDeletePecNotification(institutionId, productId);
     }
 
 }
