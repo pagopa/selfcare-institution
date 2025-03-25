@@ -1107,7 +1107,6 @@ Feature: Institution
       | prod-idpay      | DELETED   |
       | prod-pn         | SUSPENDED |
       | prod-io-premium | ACTIVE    |
-    And Count of PecNotification with institutionId "123" is 2
     And Count of MailNotification with institutionId "123" is 1
     And Onboarding for institutionId "123" and productId "prod-io-premium" was saved to db successfully with token "123456789" contract "testContractPath" and a module of 10
 
@@ -1136,7 +1135,6 @@ Feature: Institution
     And Onboardings of institution with id "123" have following states:
       | prod-io    | ACTIVE  |
       | prod-idpay | DELETED |
-    And Count of PecNotification with institutionId "123" is 0
     And Count of MailNotification with institutionId "123" is 1
     And Onboarding for institutionId "123" and productId "prod-io" was saved to db successfully with token "123456789" contract "testContractPath" and a module of 4
 
@@ -1169,7 +1167,6 @@ Feature: Institution
       | prod-pagopa | ACTIVE    |
       | prod-idpay  | DELETED   |
       | prod-pn     | SUSPENDED |
-    And Count of PecNotification with institutionId "123" is 2
     And Onboarding for institutionId "123" and productId "prod-pn" was saved to db successfully with token "MOCK_TOKEN" contract "MOCK_CONTRACT" and a module of 10
 
   Scenario: Do not persist PecNotification with PT institution type
@@ -1190,7 +1187,6 @@ Feature: Institution
       | prod-pagopa  |
       | prod-interop |
     And The response body contains field "id"
-    And Count of PecNotification with institutionId "067327d3-bdd6-408d-8655-87e8f1960046" is 0
     And Count of MailNotification with institutionId "067327d3-bdd6-408d-8655-87e8f1960046" is 0
 
   Scenario: Not found institution while persistOnboarding
@@ -1248,7 +1244,6 @@ Feature: Institution
       | prod-pagopa | DELETED   |
       | prod-idpay  | DELETED   |
       | prod-pn     | SUSPENDED |
-    And Count of PecNotification with institutionId "123" is 1
     And Count of MailNotification with institutionId "123" is 1
     And MailNotification for institutionId "123" and productId "prod-pagopa" was removed from db successfully
     # No more products left in MailNotification
@@ -1263,7 +1258,6 @@ Feature: Institution
       | prod-pagopa | DELETED   |
       | prod-idpay  | DELETED   |
       | prod-pn     | SUSPENDED |
-    And Count of PecNotification with institutionId "123" is 0
     And Count of MailNotification with institutionId "123" is 0
     And MailNotification for institutionId "123" was deleted from db successfully
 
@@ -1281,7 +1275,6 @@ Feature: Institution
       | prod-pagopa | ACTIVE    |
       | prod-idpay  | DELETED   |
       | prod-pn     | SUSPENDED |
-    And Count of PecNotification with institutionId "123" is 2
     And Count of MailNotification with institutionId "123" is 1
 
 # GET /institutions/{id}/geotaxonomies

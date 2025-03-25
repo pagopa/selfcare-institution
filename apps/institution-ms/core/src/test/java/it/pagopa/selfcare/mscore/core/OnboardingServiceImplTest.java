@@ -2,7 +2,6 @@ package it.pagopa.selfcare.mscore.core;
 
 import it.pagopa.selfcare.mscore.api.InstitutionConnector;
 import it.pagopa.selfcare.mscore.api.MailNotificationConnector;
-import it.pagopa.selfcare.mscore.api.PecNotificationConnector;
 import it.pagopa.selfcare.mscore.config.InstitutionSendMailConfig;
 import it.pagopa.selfcare.mscore.constant.RelationshipState;
 import it.pagopa.selfcare.mscore.core.util.UtilEnumList;
@@ -51,9 +50,6 @@ class OnboardingServiceImplTest {
 
     @Mock
     private InstitutionConnector institutionConnector;
-
-    @Mock
-    private PecNotificationConnector pecNotificationConnector;
 
     @Mock
     private MailNotificationConnector mailNotificationConnector;
@@ -322,13 +318,11 @@ class OnboardingServiceImplTest {
         onboarding.setProductId(productId);
         onboarding.setStatus(RelationshipState.DELETED);
 
-        when(pecNotificationConnector.findAndDeletePecNotification(institutionId, productId)).thenReturn(true);
         when(mailNotificationConnector.removeMailNotification(institutionId, productId)).thenReturn(true);
 
         onboardingServiceImpl.deleteOnboardedInstitution(institutionId, productId);
 
         verify(institutionConnector, times(1)).findAndDeleteOnboarding(institutionId, productId);
-        verify(pecNotificationConnector, times(1)).findAndDeletePecNotification(institutionId, productId);
         verify(mailNotificationConnector, times(1)).removeMailNotification(institutionId, productId);
     }
 
@@ -341,13 +335,11 @@ class OnboardingServiceImplTest {
         onboarding.setProductId(productId);
         onboarding.setStatus(RelationshipState.DELETED);
 
-        when(pecNotificationConnector.findAndDeletePecNotification(institutionId, productId)).thenReturn(false);
         when(mailNotificationConnector.removeMailNotification(institutionId, productId)).thenReturn(false);
 
         onboardingServiceImpl.deleteOnboardedInstitution(institutionId, productId);
 
         verify(institutionConnector, times(1)).findAndDeleteOnboarding(institutionId, productId);
-        verify(pecNotificationConnector, times(1)).findAndDeletePecNotification(institutionId, productId);
         verify(mailNotificationConnector, times(1)).removeMailNotification(institutionId, productId);
     }
 
