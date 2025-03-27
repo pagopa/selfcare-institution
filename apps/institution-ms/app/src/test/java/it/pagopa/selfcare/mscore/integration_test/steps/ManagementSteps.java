@@ -1,7 +1,7 @@
 package it.pagopa.selfcare.mscore.integration_test.steps;
 
 import io.cucumber.java.en.And;
-import it.pagopa.selfcare.mscore.integration_test.utils.SharedStepData;
+import it.pagopa.selfcare.cucumber.utils.SharedStepData;
 import it.pagopa.selfcare.mscore.web.model.institution.BulkInstitutions;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
