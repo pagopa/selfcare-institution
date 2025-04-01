@@ -46,4 +46,8 @@ jobs:
         run: |
           gh workflow run release_scheduler.yml \
             --ref ${{ steps.create_branch.outputs.new_branch_name }}
-  
+
+      - name: Trigger release Delegation-cdc UAT Release
+        run: |
+          gh workflow run release_delegation_cdc.yml \
+            --ref ${{ steps.create_branch.outputs.new_branch_name }}  

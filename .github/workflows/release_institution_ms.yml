@@ -38,7 +38,7 @@ jobs:
 
   release_uat:
     uses: pagopa/selfcare-commons/.github/workflows/call_release_docker.yml@main
-    name: '[UAT] Core ms Release'
+    name: '[UAT] Institution Ms Release'
     if: ${{ (startsWith(github.ref_name, 'releases/') == true && inputs.env == null) || inputs.env == 'uat' }}
     secrets: inherit
     with:
@@ -51,7 +51,7 @@ jobs:
 
   release_prod:
     uses: pagopa/selfcare-commons/.github/workflows/call_release_docker.yml@main
-    name: '[Prod] Core ms Release'
+    name: '[Prod] Institution Ms Release'
     if: ${{ inputs.env == 'prod' }}
     secrets: inherit
     with:
