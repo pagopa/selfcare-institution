@@ -21,7 +21,7 @@ on:
 jobs:
   code_review:
     uses: ./.github/workflows/call_code_review.yml
-    name: 'institution-ms Code Review'
+    name: 'delegation-cdc Code Review'
     secrets: inherit
     if: github.event_name == 'pull_request'
     with:
@@ -29,4 +29,4 @@ jobs:
       source_branch: ${{ github.head_ref }}
       target_branch: ${{ github.base_ref }}
       sonar_key: 'pagopa_selfcare-institution'
-      module: 'institution-ms'
+      module: 'delegation-cdc'
