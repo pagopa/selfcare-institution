@@ -21,9 +21,8 @@ on:
 jobs:
   code_review:
     uses: ./.github/workflows/call_code_review.yml
-    name: 'delegation-cdc Code Review'
+    name: delegation-cdc Code Review
     secrets: inherit
-    if: github.event_name == 'pull_request'
     with:
       pr_number: ${{ github.event.pull_request.number }}
       source_branch: ${{ github.head_ref }}
