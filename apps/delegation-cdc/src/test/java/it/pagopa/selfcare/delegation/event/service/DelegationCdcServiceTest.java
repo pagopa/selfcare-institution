@@ -17,7 +17,7 @@ import static org.mockito.Mockito.when;
 
 @QuarkusTest
 @QuarkusTestResource(MongoTestResource.class)
-class DelegationCdcServiceTest {
+public class DelegationCdcServiceTest {
 
     @Inject
     DelegationCdcService delegationCdcService;
