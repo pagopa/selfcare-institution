@@ -15,9 +15,11 @@ import io.quarkus.runtime.Quarkus;
 import io.quarkus.runtime.Startup;
 import io.quarkus.runtime.configuration.ConfigUtils;
 import io.smallrye.mutiny.Multi;
+import it.pagopa.selfcare.delegation.event.config.ConfigUtilsBean;
 import it.pagopa.selfcare.delegation.event.constant.CdcStartAtConstant;
 import it.pagopa.selfcare.delegation.event.entity.DelegationsEntity;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.BsonDocument;
 import org.bson.conversions.Bson;
@@ -43,16 +45,19 @@ public class DelegationCdcService {
     private final TableClient tableClient;
     private final String mongodbDatabase;
     private final ReactiveMongoClient mongoClient;
+    private final ConfigUtilsBean configUtilsBean;
 
 
     public DelegationCdcService(ReactiveMongoClient mongoClient,
-                                     @ConfigProperty(name = "quarkus.mongodb.database") String mongodbDatabase,
-                                     TelemetryClient telemetryClient,
-                                     TableClient tableClient) {
+                                @ConfigProperty(name = "quarkus.mongodb.database") String mongodbDatabase,
+                                TelemetryClient telemetryClient,
+                                TableClient tableClient,
+                                ConfigUtilsBean configUtilsBean) {
         this.mongoClient = mongoClient;
         this.mongodbDatabase = mongodbDatabase;
         this.telemetryClient = telemetryClient;
         this.tableClient = tableClient;
+        this.configUtilsBean = configUtilsBean;
         telemetryClient.getContext().getOperation().setName(OPERATION_NAME);
         initOrderStream();
     }
@@ -63,7 +68,7 @@ public class DelegationCdcService {
         //Retrieve last resumeToken for watching collection at specific operation
         String resumeToken = null;
 
-        if (!ConfigUtils.getProfiles().contains("test")) {
+        if (!configUtilsBean.getProfiles().contains("test")) {
             try {
                 TableEntity cdcStartAtEntity = tableClient.getEntity(CdcStartAtConstant.CDC_START_AT_PARTITION_KEY, CdcStartAtConstant.CDC_START_AT_ROW_KEY);
                 if (Objects.nonNull(cdcStartAtEntity))

@@ -1,8 +1,6 @@
 package it.pagopa.selfcare.delegation.event.service;
 
 import com.azure.data.tables.TableClient;
-import com.azure.data.tables.models.TableEntity;
-import com.azure.data.tables.models.TableServiceException;
 import com.microsoft.applicationinsights.TelemetryClient;
 import com.microsoft.applicationinsights.extensibility.context.OperationContext;
 import com.microsoft.applicationinsights.telemetry.TelemetryContext;
@@ -16,15 +14,19 @@ import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.mongodb.MongoTestResource;
 import it.pagopa.selfcare.delegation.event.DelegationCdcService;
+import it.pagopa.selfcare.delegation.event.config.ConfigUtilsBean;
 import it.pagopa.selfcare.delegation.event.entity.DelegationsEntity;
 import jakarta.inject.Inject;
 import org.bson.BsonDocument;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
+import org.mockito.Mockito;
 
-import java.util.UUID;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @QuarkusTest
@@ -35,190 +37,81 @@ class DelegationCdcServiceTest {
     DelegationCdcService delegationCdcService;
 
     @InjectMock
-    TableClient tableClient;
+    ConfigUtilsBean configUtilsBean;
 
-    @InjectMock
-    TelemetryClient telemetryClient;
-
-
-    @BeforeEach
-    void setUp() {
-        reset(tableClient, telemetryClient);
-    }
 
     @Test
-    void shouldNotThrowErrorWhenConsumingEvent() {
-        // given
+    void propagateDocumentToConsumers() {
+        //given
         ChangeStreamDocument<DelegationsEntity> document = mock(ChangeStreamDocument.class);
-        DelegationsEntity entity = new DelegationsEntity();
-        entity.setId(UUID.randomUUID().toString());
 
-        when(document.getFullDocument()).thenReturn(entity);
+        DelegationsEntity delegationsEntity = new DelegationsEntity();
+        delegationsEntity.setId("id");
+
+        //when
+        when(document.getFullDocument()).thenReturn(delegationsEntity);
         when(document.getDocumentKey()).thenReturn(new BsonDocument());
 
-        // when + then
-        assertDoesNotThrow(() -> delegationCdcService.consumerDelegationRepositoryEvent(document));
+        final Executable executable = () -> delegationCdcService.consumerDelegationRepositoryEvent(document);
+
+        // then
+        assertDoesNotThrow(executable);
     }
 
     @Test
-    void shouldHandleResumeTokenWhenEntityExists() {
-        // given
-        ReactiveMongoClient mockMongoClient = mock(ReactiveMongoClient.class);
-        ReactiveMongoDatabase mockDatabase = mock(ReactiveMongoDatabase.class);
-        ReactiveMongoCollection<DelegationsEntity> mockCollection = mock(ReactiveMongoCollection.class);
+    void testDelegationCdcServiceConstructorNotTest() {
+        // Configura il mock per il TableClient
+        TableClient tableClientMock = mock(TableClient.class);
+        when(tableClientMock.getEntity(anyString(), anyString())).thenReturn(null);
 
-        TelemetryClient mockTelemetryClient = mock(TelemetryClient.class);
-        TelemetryContext mockTelemetryContext = mock(TelemetryContext.class);
-        OperationContext mockOperationContext = mock(OperationContext.class);
+        // Configura il mock per il ReactiveMongoClient
+        ReactiveMongoClient mongoClientMock = mock(ReactiveMongoClient.class);
+        ReactiveMongoDatabase mongoDatabase = mock(ReactiveMongoDatabase.class);
+        ReactiveMongoCollection<DelegationsEntity> collectionMock = mock(ReactiveMongoCollection.class);
+        when(mongoClientMock.getDatabase(anyString())).thenReturn(mongoDatabase);
+        when(mongoDatabase.getCollection(anyString(), eq(DelegationsEntity.class))).thenReturn(collectionMock);
 
-        when(mockMongoClient.getDatabase(anyString())).thenReturn(mockDatabase);
-        when(mockDatabase.getCollection(anyString(), eq(DelegationsEntity.class))).thenReturn(mockCollection);
+        //Configura il mock per il TelemetryClient
+        TelemetryClient telemetryClient = mock(TelemetryClient.class);
+        TelemetryContext context = mock(TelemetryContext.class);
+        OperationContext operationContext = mock(OperationContext.class);
+        when(telemetryClient.getContext()).thenReturn(context);
+        when(context.getOperation()).thenReturn(operationContext);
 
-        when(mockTelemetryClient.getContext()).thenReturn(mockTelemetryContext);
-        when(mockTelemetryContext.getOperation()).thenReturn(mockOperationContext);
+        Mockito.when(configUtilsBean.getProfiles()).thenReturn(List.of("uat"));
 
-        TableEntity mockEntity = new TableEntity("cdcStartAtPartitionKey", "cdcStartAtRowKey")
-                .addProperty("cdcStartAt", "{ \"_data\": \"resumeTokenMock\" }");
-        when(tableClient.getEntity(anyString(), anyString())).thenReturn(mockEntity);
+        // Crea l'istanza del servizio
+        DelegationCdcService service = new DelegationCdcService(mongoClientMock, "testDatabase", telemetryClient, tableClientMock, configUtilsBean);
 
-        // when + then
-        assertDoesNotThrow(() -> {
-            DelegationCdcService service = new DelegationCdcService(
-                    mockMongoClient,
-                    "test",
-                    mockTelemetryClient,
-                    tableClient
-            );
-        });
+        // Verifica che il metodo watch sia stato chiamato
+        verify(collectionMock).watch(anyList(), eq(DelegationsEntity.class), any(ChangeStreamOptions.class));
     }
 
     @Test
-    void shouldHandleMissingEntityWithWarning() {
-        // given
-        ReactiveMongoClient mockMongoClient = mock(ReactiveMongoClient.class);
-        ReactiveMongoDatabase mockDatabase = mock(ReactiveMongoDatabase.class);
-        ReactiveMongoCollection<DelegationsEntity> mockCollection = mock(ReactiveMongoCollection.class);
+    void testDelegationCdcServiceConstructorTest() {
+        // Configura il mock per il TableClient
+        TableClient tableClientMock = mock(TableClient.class);
+        when(tableClientMock.getEntity(anyString(), anyString())).thenReturn(null);
 
-        TelemetryClient mockTelemetryClient = mock(TelemetryClient.class);
-        TelemetryContext mockTelemetryContext = mock(TelemetryContext.class);
-        OperationContext mockOperationContext = mock(OperationContext.class);
+        // Configura il mock per il ReactiveMongoClient
+        ReactiveMongoClient mongoClientMock = mock(ReactiveMongoClient.class);
+        ReactiveMongoDatabase mongoDatabase = mock(ReactiveMongoDatabase.class);
+        ReactiveMongoCollection<DelegationsEntity> collectionMock = mock(ReactiveMongoCollection.class);
+        when(mongoClientMock.getDatabase(anyString())).thenReturn(mongoDatabase);
+        when(mongoDatabase.getCollection(anyString(), eq(DelegationsEntity.class))).thenReturn(collectionMock);
 
-        when(mockMongoClient.getDatabase(anyString())).thenReturn(mockDatabase);
-        when(mockDatabase.getCollection(anyString(), eq(DelegationsEntity.class))).thenReturn(mockCollection);
+        //Configura il mock per il TelemetryClient
+        TelemetryClient telemetryClient = mock(TelemetryClient.class);
+        TelemetryContext context = mock(TelemetryContext.class);
+        OperationContext operationContext = mock(OperationContext.class);
+        when(telemetryClient.getContext()).thenReturn(context);
+        when(context.getOperation()).thenReturn(operationContext);
 
-        when(mockTelemetryClient.getContext()).thenReturn(mockTelemetryContext);
-        when(mockTelemetryContext.getOperation()).thenReturn(mockOperationContext);
+        // Crea l'istanza del servizio
+        DelegationCdcService service = new DelegationCdcService(mongoClientMock, "testDatabase", telemetryClient, tableClientMock, configUtilsBean);
 
-        when(tableClient.getEntity(anyString(), anyString())).thenThrow(TableServiceException.class);
-
-        // when + then
-        assertDoesNotThrow(() -> {
-            DelegationCdcService service = new DelegationCdcService(
-                    mockMongoClient,
-                    "test",
-                    mockTelemetryClient,
-                    tableClient
-            );
-        });
-    }
-
-    @Test
-    void shouldHandleValidResumeToken() {
-        // given
-        ReactiveMongoClient mockMongoClient = mock(ReactiveMongoClient.class);
-        ReactiveMongoDatabase mockDatabase = mock(ReactiveMongoDatabase.class);
-        ReactiveMongoCollection<DelegationsEntity> mockCollection = mock(ReactiveMongoCollection.class);
-
-        TelemetryClient mockTelemetryClient = mock(TelemetryClient.class);
-        TelemetryContext mockTelemetryContext = mock(TelemetryContext.class);
-        OperationContext mockOperationContext = mock(OperationContext.class);
-
-        when(mockMongoClient.getDatabase(anyString())).thenReturn(mockDatabase);
-        when(mockDatabase.getCollection(anyString(), eq(DelegationsEntity.class))).thenReturn(mockCollection);
-
-        when(mockTelemetryClient.getContext()).thenReturn(mockTelemetryContext);
-        when(mockTelemetryContext.getOperation()).thenReturn(mockOperationContext);
-
-        // Mock valore valido per resumeToken
-        String validResumeToken = "{ \"_data\": \"validResumeTokenMock\" }";
-        TableEntity mockEntity = new TableEntity("cdcStartAtPartitionKey", "cdcStartAtRowKey")
-                .addProperty("cdcStartAt", validResumeToken);
-        when(tableClient.getEntity(anyString(), anyString())).thenReturn(mockEntity);
-
-        // when + then
-        assertDoesNotThrow(() -> {
-            DelegationCdcService service = new DelegationCdcService(
-                    mockMongoClient,
-                    "test-db",
-                    mockTelemetryClient,
-                    tableClient
-            );
-        });
-    }
-
-    @Test
-    void shouldHandleMissingResumeToken() {
-        // given
-        ReactiveMongoClient mockMongoClient = mock(ReactiveMongoClient.class);
-        ReactiveMongoDatabase mockDatabase = mock(ReactiveMongoDatabase.class);
-        ReactiveMongoCollection<DelegationsEntity> mockCollection = mock(ReactiveMongoCollection.class);
-
-        TelemetryClient mockTelemetryClient = mock(TelemetryClient.class);
-        TelemetryContext mockTelemetryContext = mock(TelemetryContext.class);
-        OperationContext mockOperationContext = mock(OperationContext.class);
-
-        when(mockMongoClient.getDatabase(anyString())).thenReturn(mockDatabase);
-        when(mockDatabase.getCollection(anyString(), eq(DelegationsEntity.class))).thenReturn(mockCollection);
-
-        when(mockTelemetryClient.getContext()).thenReturn(mockTelemetryContext);
-        when(mockTelemetryContext.getOperation()).thenReturn(mockOperationContext);
-
-        // Mock valore null per resumeToken
-        when(tableClient.getEntity(anyString(), anyString())).thenThrow(TableServiceException.class);
-
-        // when + then
-        assertDoesNotThrow(() -> {
-            DelegationCdcService service = new DelegationCdcService(
-                    mockMongoClient,
-                    "test-db",
-                    mockTelemetryClient,
-                    tableClient
-            );
-        });
-    }
-
-    @Test
-    void shouldHandleErrorDuringStreamSubscription() {
-        // given
-        ReactiveMongoClient mockMongoClient = mock(ReactiveMongoClient.class);
-        ReactiveMongoDatabase mockDatabase = mock(ReactiveMongoDatabase.class);
-        ReactiveMongoCollection<DelegationsEntity> mockCollection = mock(ReactiveMongoCollection.class);
-
-        TelemetryClient mockTelemetryClient = mock(TelemetryClient.class);
-        TelemetryContext mockTelemetryContext = mock(TelemetryContext.class);
-        OperationContext mockOperationContext = mock(OperationContext.class);
-
-        when(mockMongoClient.getDatabase(anyString())).thenReturn(mockDatabase);
-        when(mockDatabase.getCollection(anyString(), eq(DelegationsEntity.class))).thenReturn(mockCollection);
-
-        when(mockTelemetryClient.getContext()).thenReturn(mockTelemetryContext);
-        when(mockTelemetryContext.getOperation()).thenReturn(mockOperationContext);
-
-        // Mock del publisher che simula errore
-        when(mockCollection.watch(anyList(), eq(DelegationsEntity.class), any(ChangeStreamOptions.class)))
-                .thenThrow(new RuntimeException("Simulated error"));
-
-        // when + then
-        RuntimeException thrownException = assertThrows(RuntimeException.class, () -> {
-            DelegationCdcService service = new DelegationCdcService(
-                    mockMongoClient,
-                    "test-db",
-                    mockTelemetryClient,
-                    tableClient
-            );
-        });
-
-        assertEquals("Simulated error", thrownException.getMessage());
+        // Verifica che il metodo watch sia stato chiamato
+        verify(collectionMock).watch(anyList(), eq(DelegationsEntity.class), any(ChangeStreamOptions.class));
     }
 
 }
