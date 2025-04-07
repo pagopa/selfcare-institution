@@ -83,7 +83,7 @@ class DelegationCdcServiceTest {
         Mockito.when(configUtilsBean.getProfiles()).thenReturn(List.of("uat"));
 
         // Crea l'istanza del servizio
-        DelegationCdcService service = new DelegationCdcService(mongoClientMock, "testDatabase", telemetryClient, tableClientMock, configUtilsBean);
+        new DelegationCdcService(mongoClientMock, "testDatabase", telemetryClient, tableClientMock, configUtilsBean);
 
         // Verifica che il metodo watch sia stato chiamato
         verify(collectionMock).watch(anyList(), eq(DelegationsEntity.class), any(ChangeStreamOptions.class));
@@ -112,7 +112,7 @@ class DelegationCdcServiceTest {
         Mockito.when(configUtilsBean.getProfiles()).thenReturn(List.of("uat"));
 
         // Crea l'istanza del servizio
-        DelegationCdcService service = new DelegationCdcService(mongoClientMock, "testDatabase", telemetryClient, tableClientMock, configUtilsBean);
+        new DelegationCdcService(mongoClientMock, "testDatabase", telemetryClient, tableClientMock, configUtilsBean);
 
         // Verifica che il metodo watch sia stato chiamato
         verify(collectionMock).watch(anyList(), eq(DelegationsEntity.class), any(ChangeStreamOptions.class));
@@ -141,7 +141,7 @@ class DelegationCdcServiceTest {
         Mockito.when(configUtilsBean.getProfiles()).thenReturn(List.of("uat"));
 
         // Crea l'istanza del servizio
-        DelegationCdcService service = new DelegationCdcService(mongoClientMock, "testDatabase", telemetryClient, tableClientMock, configUtilsBean);
+        new DelegationCdcService(mongoClientMock, "testDatabase", telemetryClient, tableClientMock, configUtilsBean);
 
         // Verifica che il metodo watch sia stato chiamato
         verify(collectionMock).watch(anyList(), eq(DelegationsEntity.class), any(ChangeStreamOptions.class));
@@ -168,7 +168,7 @@ class DelegationCdcServiceTest {
         when(context.getOperation()).thenReturn(operationContext);
 
         // Crea l'istanza del servizio
-        DelegationCdcService service = new DelegationCdcService(mongoClientMock, "testDatabase", telemetryClient, tableClientMock, configUtilsBean);
+        new DelegationCdcService(mongoClientMock, "testDatabase", telemetryClient, tableClientMock, configUtilsBean);
 
         // Verifica che il metodo watch sia stato chiamato
         verify(collectionMock).watch(anyList(), eq(DelegationsEntity.class), any(ChangeStreamOptions.class));
