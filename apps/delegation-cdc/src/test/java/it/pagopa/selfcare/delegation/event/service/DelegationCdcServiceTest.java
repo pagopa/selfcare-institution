@@ -1,6 +1,8 @@
 package it.pagopa.selfcare.delegation.event.service;
 
 import com.azure.data.tables.TableClient;
+import com.azure.data.tables.models.TableEntity;
+import com.azure.data.tables.models.TableServiceException;
 import com.microsoft.applicationinsights.TelemetryClient;
 import com.microsoft.applicationinsights.extensibility.context.OperationContext;
 import com.microsoft.applicationinsights.telemetry.TelemetryContext;
@@ -63,6 +65,64 @@ class DelegationCdcServiceTest {
         // Configura il mock per il TableClient
         TableClient tableClientMock = mock(TableClient.class);
         when(tableClientMock.getEntity(anyString(), anyString())).thenReturn(null);
+
+        // Configura il mock per il ReactiveMongoClient
+        ReactiveMongoClient mongoClientMock = mock(ReactiveMongoClient.class);
+        ReactiveMongoDatabase mongoDatabase = mock(ReactiveMongoDatabase.class);
+        ReactiveMongoCollection<DelegationsEntity> collectionMock = mock(ReactiveMongoCollection.class);
+        when(mongoClientMock.getDatabase(anyString())).thenReturn(mongoDatabase);
+        when(mongoDatabase.getCollection(anyString(), eq(DelegationsEntity.class))).thenReturn(collectionMock);
+
+        //Configura il mock per il TelemetryClient
+        TelemetryClient telemetryClient = mock(TelemetryClient.class);
+        TelemetryContext context = mock(TelemetryContext.class);
+        OperationContext operationContext = mock(OperationContext.class);
+        when(telemetryClient.getContext()).thenReturn(context);
+        when(context.getOperation()).thenReturn(operationContext);
+
+        Mockito.when(configUtilsBean.getProfiles()).thenReturn(List.of("uat"));
+
+        // Crea l'istanza del servizio
+        DelegationCdcService service = new DelegationCdcService(mongoClientMock, "testDatabase", telemetryClient, tableClientMock, configUtilsBean);
+
+        // Verifica che il metodo watch sia stato chiamato
+        verify(collectionMock).watch(anyList(), eq(DelegationsEntity.class), any(ChangeStreamOptions.class));
+    }
+
+    @Test
+    void testDelegationCdcServiceConstructorNotTestAndTableEntityNotNull() {
+        // Configura il mock per il TableClient
+        TableClient tableClientMock = mock(TableClient.class);
+        when(tableClientMock.getEntity(anyString(), anyString())).thenReturn(mock(TableEntity.class));
+
+        // Configura il mock per il ReactiveMongoClient
+        ReactiveMongoClient mongoClientMock = mock(ReactiveMongoClient.class);
+        ReactiveMongoDatabase mongoDatabase = mock(ReactiveMongoDatabase.class);
+        ReactiveMongoCollection<DelegationsEntity> collectionMock = mock(ReactiveMongoCollection.class);
+        when(mongoClientMock.getDatabase(anyString())).thenReturn(mongoDatabase);
+        when(mongoDatabase.getCollection(anyString(), eq(DelegationsEntity.class))).thenReturn(collectionMock);
+
+        //Configura il mock per il TelemetryClient
+        TelemetryClient telemetryClient = mock(TelemetryClient.class);
+        TelemetryContext context = mock(TelemetryContext.class);
+        OperationContext operationContext = mock(OperationContext.class);
+        when(telemetryClient.getContext()).thenReturn(context);
+        when(context.getOperation()).thenReturn(operationContext);
+
+        Mockito.when(configUtilsBean.getProfiles()).thenReturn(List.of("uat"));
+
+        // Crea l'istanza del servizio
+        DelegationCdcService service = new DelegationCdcService(mongoClientMock, "testDatabase", telemetryClient, tableClientMock, configUtilsBean);
+
+        // Verifica che il metodo watch sia stato chiamato
+        verify(collectionMock).watch(anyList(), eq(DelegationsEntity.class), any(ChangeStreamOptions.class));
+    }
+
+    @Test
+    void testDelegationCdcServiceConstructorNotTestWithException() {
+        // Configura il mock per il TableClient
+        TableClient tableClientMock = mock(TableClient.class);
+        when(tableClientMock.getEntity(anyString(), anyString())).thenThrow(mock(TableServiceException.class));
 
         // Configura il mock per il ReactiveMongoClient
         ReactiveMongoClient mongoClientMock = mock(ReactiveMongoClient.class);
