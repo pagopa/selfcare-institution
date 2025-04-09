@@ -3347,6 +3347,9 @@
           "institutionType" : {
             "type" : "string"
           },
+          "isTest" : {
+            "type" : "boolean"
+          },
           "istatCode" : {
             "type" : "string"
           },
@@ -3391,9 +3394,6 @@
           },
           "taxCode" : {
             "type" : "string"
-          },
-          "test" : {
-            "type" : "boolean"
           },
           "updatedAt" : {
             "type" : "string",
