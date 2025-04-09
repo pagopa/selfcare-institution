@@ -1,10 +1,10 @@
 package it.pagopa.selfcare.mscore.core.util;
 
-import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import it.pagopa.selfcare.mscore.constant.Origin;
 import it.pagopa.selfcare.mscore.model.institution.*;
 import it.pagopa.selfcare.mscore.model.onboarding.Contract;
 import it.pagopa.selfcare.mscore.model.onboarding.OnboardingRequest;
+import it.pagopa.selfcare.onboarding.common.InstitutionType;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -46,7 +46,7 @@ public class TestUtils {
                 "The characteristics of someone or something", institutionType, "42 Main St", "42 Main St", "21654",
                 "TaxCode","ivass", "city", "county", "country", "istatCode", billing, onboarding, geographicTaxonomies, attributes, paymentServiceProvider,
                 new DataProtectionOfficer(), null, null, "START - setupCommonData", "START - setupCommonData",
-                "START - setupCommonData", true, OffsetDateTime.now(), OffsetDateTime.now(), null, null, null, null, new PaAttributes(),false);
+                "START - setupCommonData", true, OffsetDateTime.now(), OffsetDateTime.now(), null, null, null, null, new PaAttributes(),false,null);
     }
 
     public static OnboardingRequest dummyOnboardingRequest(Billing billing, Contract contract, InstitutionUpdate institutionUpdate){

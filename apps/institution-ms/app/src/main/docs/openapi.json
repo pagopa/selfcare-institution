@@ -3392,6 +3392,9 @@
           "taxCode" : {
             "type" : "string"
           },
+          "test" : {
+            "type" : "boolean"
+          },
           "updatedAt" : {
             "type" : "string",
             "format" : "date-time"
