@@ -503,6 +503,7 @@
       }
     ],
     "imported": false,
+    "isTest": true,
     "createdAt": "2023-11-10T11:45:21.226522053Z",
     "_class": "it.pagopa.selfcare.mscore.connector.dao.model.InstitutionEntity",
     "updatedAt": "2024-06-04T13:39:01.379003912Z",

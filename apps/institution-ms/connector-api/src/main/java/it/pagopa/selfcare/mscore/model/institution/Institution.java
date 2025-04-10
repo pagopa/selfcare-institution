@@ -50,5 +50,6 @@ public class Institution {
     private String parentDescription;
     private PaAttributes paAttributes;
     private boolean delegation;
+    private Boolean isTest;
 
 }

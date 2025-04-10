@@ -1,8 +1,8 @@
 package it.pagopa.selfcare.mscore.connector.dao.model;
 
-import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import it.pagopa.selfcare.mscore.connector.dao.model.inner.*;
 import it.pagopa.selfcare.mscore.constant.Origin;
+import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import lombok.Data;
 import lombok.experimental.FieldNameConstants;
 import org.springframework.data.annotation.Id;
@@ -57,5 +57,6 @@ public class InstitutionEntity {
     private String rootParentId;
     private PaAttributesEntity paAttributes;
     private boolean delegation;
+    private Boolean isTest;
 
 }
