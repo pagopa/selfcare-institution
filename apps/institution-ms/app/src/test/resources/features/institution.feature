@@ -20,6 +20,8 @@ Feature: Institution
       | 94076720658 |
     And The response body contains at path "institutions.subunitCode" the following list of values in any order:
       | UF5D7W |
+    And The response body contains at path "institutions.isTest" the following list of values in any order:
+      | true |
     And The response body contains the list "institutions[0].onboarding" of size 1
     And The response body contains the list "institutions[1].onboarding" of size 1
     And The response body contains:
@@ -87,6 +89,7 @@ Feature: Institution
       | institutions[0].taxCode                 | 94076720658                          |
       | institutions[0].subunitCode             | UF5D7W                               |
       | institutions[0].onboarding[0].productId | prod-io                              |
+    And The response body doesn't contain field "institutions[0].isTest"
 
   Scenario: Invalid request in getInstitutions with taxCode,origin,originId,subunitCode,productId
     Given User login with username "j.doe" and password "test"
@@ -118,6 +121,7 @@ Feature: Institution
       | institutions[0].origin                  | IPA                                  |
       | institutions[0].originId                | isticom                              |
       | institutions[0].onboarding[0].productId | prod-io                              |
+      | institutions[0].isTest                  | true                                 |
 
   Scenario: Validation error in getInstitutions without taxCode,origin,originId
     Given User login with username "j.doe" and password "test"

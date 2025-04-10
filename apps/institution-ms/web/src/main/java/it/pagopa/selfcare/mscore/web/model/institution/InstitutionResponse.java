@@ -48,5 +48,6 @@ public class InstitutionResponse {
     private OffsetDateTime updatedAt;
     private boolean delegation;
     private String logo;
+    private Boolean isTest;
 
 }
