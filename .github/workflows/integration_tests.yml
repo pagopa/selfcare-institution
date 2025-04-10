@@ -23,7 +23,7 @@ jobs:
 
       - name: Docker compose
         working-directory: apps/institution-ms
-        run: docker-compose up -d
+        run: docker compose up -d
 
       - name: Wait docker compose services
         run: sleep 30
