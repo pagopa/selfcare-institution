@@ -24,6 +24,8 @@ jobs:
       - name: Docker compose
         working-directory: apps/institution-ms
         run: docker compose up -d
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Wait docker compose services
         run: sleep 30
