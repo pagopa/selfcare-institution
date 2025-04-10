@@ -37,6 +37,7 @@ ENV JAVA_OPTIONS="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jb
 
 WORKDIR /app
 
+COPY --from=builder /src/apps/delegation-cdc/target/quarkus-app/lib/ ./lib/
 COPY --from=builder /src/apps/delegation-cdc/target/quarkus-app/*.jar ./
 COPY --from=builder /src/apps/delegation-cdc/target/quarkus-app/app/ ./app/
 COPY --from=builder /src/apps/delegation-cdc/target/quarkus-app/quarkus/ ./quarkus/
