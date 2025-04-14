@@ -30,6 +30,7 @@ services:
       - develop-network
     volumes:
       - "./blobStorageInit/initAzurite.sh:/initAzurite.sh"
+      - "./blobStorageInit/products.json:/workspace/products.json"
     environment:
       - SELFCARE_INFRA_PRIVATE_ENV=dev
       - GITHUB_TOKEN=${GITHUB_TOKEN}
