@@ -109,6 +109,85 @@ class DelegationCdcServiceTest {
         verify(delegationRepository).insertDelegations(ArgumentMatchers.any());
     }
 
+    @Test
+    void propagateDocumentToConsumers_exception() {
+        //given
+        ChangeStreamDocument<DelegationsEntity> document = mock(ChangeStreamDocument.class);
+        DelegationsEntity delegationsEntity = new DelegationsEntity();
+        delegationsEntity.setId("id");
+        delegationsEntity.setType(DelegationType.EA);
+        delegationsEntity.setProductId("prod-pagopa");
+        delegationsEntity.setFrom("institutionId");
+        delegationsEntity.setTo("toInstitutionId");
+
+        // then
+        final Executable executable = () -> delegationCdcService.consumerDelegationRepositoryEvent(document);
+        assertThrows(AssertionError.class, executable);
+
+        // verify
+        verify(institutionRepository, never()).findInstitutionById(anyString());
+        verify(delegationRepository, never()).getInstitutionsAlreadyPresent(anyString(), anyString());
+        verify(delegationRepository, never()).getDelegationsEA(anyString(), anyString());
+        verify(delegationRepository, never()).insertDelegations(ArgumentMatchers.any());
+    }
+
+
+    @Test
+    void propagateDocumentToConsumers_notPT() {
+        //given
+        ChangeStreamDocument<DelegationsEntity> document = mock(ChangeStreamDocument.class);
+        DelegationsEntity delegationsEntity = new DelegationsEntity();
+        delegationsEntity.setId("id");
+        delegationsEntity.setType(DelegationType.EA);
+        delegationsEntity.setProductId("prod-pagopa");
+        delegationsEntity.setFrom("institutionId");
+        delegationsEntity.setTo("toInstitutionId");
+
+        BsonDocument bsonDocument = mock(BsonDocument.class);
+
+        //when
+        when(document.getFullDocument()).thenReturn(delegationsEntity);
+        when(document.getDocumentKey()).thenReturn(bsonDocument);
+
+        // then
+        final Executable executable = () -> delegationCdcService.consumerDelegationRepositoryEvent(document);
+        assertDoesNotThrow(executable);
+
+        // verify
+        verify(institutionRepository, never()).findInstitutionById(anyString());
+        verify(delegationRepository, never()).getInstitutionsAlreadyPresent(anyString(), anyString());
+        verify(delegationRepository, never()).getDelegationsEA(anyString(), anyString());
+        verify(delegationRepository, never()).insertDelegations(ArgumentMatchers.any());
+    }
+
+    @Test
+    void propagateDocumentToConsumers_notPagoPA() {
+        //given
+        ChangeStreamDocument<DelegationsEntity> document = mock(ChangeStreamDocument.class);
+        DelegationsEntity delegationsEntity = new DelegationsEntity();
+        delegationsEntity.setId("id");
+        delegationsEntity.setType(DelegationType.PT);
+        delegationsEntity.setProductId("prod-io");
+        delegationsEntity.setFrom("institutionId");
+        delegationsEntity.setTo("toInstitutionId");
+
+        BsonDocument bsonDocument = mock(BsonDocument.class);
+
+        //when
+        when(document.getFullDocument()).thenReturn(delegationsEntity);
+        when(document.getDocumentKey()).thenReturn(bsonDocument);
+
+        // then
+        final Executable executable = () -> delegationCdcService.consumerDelegationRepositoryEvent(document);
+        assertDoesNotThrow(executable);
+
+        // verify
+        verify(institutionRepository, never()).findInstitutionById(anyString());
+        verify(delegationRepository, never()).getInstitutionsAlreadyPresent(anyString(), anyString());
+        verify(delegationRepository, never()).getDelegationsEA(anyString(), anyString());
+        verify(delegationRepository, never()).insertDelegations(ArgumentMatchers.any());
+    }
+
 
     @Test
     void propagateDocumentToConsumers_institutionIsNull() {
