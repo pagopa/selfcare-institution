@@ -25,15 +25,18 @@ import it.pagopa.selfcare.delegation.event.repository.DelegationRepository;
 import it.pagopa.selfcare.delegation.event.repository.InstitutionRepository;
 import jakarta.inject.Inject;
 import org.bson.BsonDocument;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -42,9 +45,14 @@ import static org.mockito.Mockito.*;
 @QuarkusTestResource(MongoTestResource.class)
 class DelegationCdcServiceTest {
 
-    public static final int RETRY_MIN_BACK_OFF = 10;
-    public static final int RETRY_MAX_BACK_OFF = 12;
-    public static final int MAX_RETRY = 3;
+    @ConfigProperty(name = "delegation-cdc.retry.min-backoff")
+    int retryMinBackOff = 10;
+
+    @ConfigProperty(name = "delegation-cdc.retry.max-backoff")
+    int retryMaxBackOff = 12;
+
+    @ConfigProperty(name = "delegation-cdc.retry")
+    int maxRetry = 3;
 
     @Inject
     DelegationCdcService delegationCdcService;
@@ -60,6 +68,12 @@ class DelegationCdcServiceTest {
 
     @Inject
     DelegationMapper delegationMapper;
+
+    @InjectMock
+    TelemetryClient telemetryClient;
+
+    @InjectMock
+    TableClient tableClient;
 
 
     @Test
@@ -88,10 +102,16 @@ class DelegationCdcServiceTest {
         delegationEA.setProductId("prod-pagopa");
 
         BsonDocument bsonDocument = mock(BsonDocument.class);
+        BsonDocument bsonDocument1 = new BsonDocument();
+
+        Map<String, String> propertiesMap = new HashMap<>();
+        propertiesMap.put("documentKey", "toJson");
+        propertiesMap.put("success", "TRUE");
 
         //when
         when(document.getFullDocument()).thenReturn(delegationsEntity);
         when(document.getDocumentKey()).thenReturn(bsonDocument);
+        when(document.getResumeToken()).thenReturn(bsonDocument1);
         when(bsonDocument.toJson()).thenReturn("toJson");
         when(institutionRepository.findInstitutionById(anyString())).thenReturn(Uni.createFrom().item(institution));
         when(delegationRepository.getInstitutionsAlreadyPresent(anyString(), anyString())).thenReturn(Multi.createFrom().empty());
@@ -107,6 +127,9 @@ class DelegationCdcServiceTest {
         verify(delegationRepository).getInstitutionsAlreadyPresent(anyString(), anyString());
         verify(delegationRepository).getDelegationsEA(anyString(), anyString());
         verify(delegationRepository).insertDelegations(ArgumentMatchers.any());
+        ArgumentCaptor<Map<String, Double>> metricsName = ArgumentCaptor.forClass(Map.class);
+        verify(telemetryClient, times(1)).trackEvent(eq("DELEGATION_CDC"), eq(propertiesMap), metricsName.capture());
+        assertEquals("DelegationInsert_success", metricsName.getValue().keySet().stream().findFirst().orElse(null));
     }
 
     @Test
@@ -144,10 +167,13 @@ class DelegationCdcServiceTest {
         delegationsEntity.setTo("toInstitutionId");
 
         BsonDocument bsonDocument = mock(BsonDocument.class);
+        BsonDocument bsonDocument1 = new BsonDocument();
 
         //when
         when(document.getFullDocument()).thenReturn(delegationsEntity);
         when(document.getDocumentKey()).thenReturn(bsonDocument);
+        when(document.getResumeToken()).thenReturn(bsonDocument1);
+        when(bsonDocument.toJson()).thenReturn("toJson");
 
         // then
         final Executable executable = () -> delegationCdcService.consumerDelegationRepositoryEvent(document);
@@ -158,6 +184,7 @@ class DelegationCdcServiceTest {
         verify(delegationRepository, never()).getInstitutionsAlreadyPresent(anyString(), anyString());
         verify(delegationRepository, never()).getDelegationsEA(anyString(), anyString());
         verify(delegationRepository, never()).insertDelegations(ArgumentMatchers.any());
+        verify(telemetryClient, never()).trackEvent(eq("DELEGATION_CDC"), any(), any());
     }
 
     @Test
@@ -172,10 +199,13 @@ class DelegationCdcServiceTest {
         delegationsEntity.setTo("toInstitutionId");
 
         BsonDocument bsonDocument = mock(BsonDocument.class);
+        BsonDocument bsonDocument1 = new BsonDocument();
 
         //when
         when(document.getFullDocument()).thenReturn(delegationsEntity);
         when(document.getDocumentKey()).thenReturn(bsonDocument);
+        when(document.getResumeToken()).thenReturn(bsonDocument1);
+        when(bsonDocument.toJson()).thenReturn("toJson");
 
         // then
         final Executable executable = () -> delegationCdcService.consumerDelegationRepositoryEvent(document);
@@ -186,6 +216,7 @@ class DelegationCdcServiceTest {
         verify(delegationRepository, never()).getInstitutionsAlreadyPresent(anyString(), anyString());
         verify(delegationRepository, never()).getDelegationsEA(anyString(), anyString());
         verify(delegationRepository, never()).insertDelegations(ArgumentMatchers.any());
+        verify(telemetryClient, never()).trackEvent(eq("DELEGATION_CDC"), any(), any());
     }
 
 
@@ -200,9 +231,15 @@ class DelegationCdcServiceTest {
         delegationsEntity.setFrom("institutionId");
         delegationsEntity.setTo("toInstitutionId");
 
+        BsonDocument bsonDocument = mock(BsonDocument.class);
+        BsonDocument bsonDocument1 = new BsonDocument();
+
         //when
         when(document.getFullDocument()).thenReturn(delegationsEntity);
-        when(document.getDocumentKey()).thenReturn(new BsonDocument());
+        when(document.getDocumentKey()).thenReturn(bsonDocument);
+        when(document.getResumeToken()).thenReturn(bsonDocument1);
+        when(bsonDocument.toJson()).thenReturn("toJson");
+
         when(institutionRepository.findInstitutionById(anyString())).thenReturn(Uni.createFrom().nullItem());
 
         // then
@@ -240,9 +277,18 @@ class DelegationCdcServiceTest {
         onboardingEntity2.setCreatedAt("2024-10-12T18:31:21.314946089Z");
         institution.setOnboarding(List.of(onboardingEntity, onboardingEntity2));
 
+        BsonDocument bsonDocument = mock(BsonDocument.class);
+        BsonDocument bsonDocument1 = new BsonDocument();
+
+        Map<String, String> propertiesMap = new HashMap<>();
+        propertiesMap.put("documentKey", "toJson");
+        propertiesMap.put("success", "TRUE");
+
         //when
         when(document.getFullDocument()).thenReturn(delegationsEntity);
-        when(document.getDocumentKey()).thenReturn(new BsonDocument());
+        when(document.getDocumentKey()).thenReturn(bsonDocument);
+        when(document.getResumeToken()).thenReturn(bsonDocument1);
+        when(bsonDocument.toJson()).thenReturn("toJson");
         when(institutionRepository.findInstitutionById(anyString())).thenReturn(Uni.createFrom().item(institution));
 
         // then
@@ -254,15 +300,18 @@ class DelegationCdcServiceTest {
         verify(delegationRepository, never()).getInstitutionsAlreadyPresent(anyString(), anyString());
         verify(delegationRepository, never()).getDelegationsEA(anyString(), anyString());
         verify(delegationRepository, never()).insertDelegations(ArgumentMatchers.any());
+        ArgumentCaptor<Map<String, Double>> metricsName = ArgumentCaptor.forClass(Map.class);
+        verify(telemetryClient, times(1)).trackEvent(eq("DELEGATION_CDC"), eq(propertiesMap), metricsName.capture());
+        assertEquals("DelegationInsert_success", metricsName.getValue().keySet().stream().findFirst().orElse(null));
     }
 
 
     @Test
-    void testConsumerDelegationRepositoryEvent_Failure() {
-        // given
+    void consumerDelegationRepositoryEvent_failure() {
+        //given
         ChangeStreamDocument<DelegationsEntity> document = mock(ChangeStreamDocument.class);
         DelegationsEntity delegationsEntity = new DelegationsEntity();
-        delegationsEntity.setId("delegationId");
+        delegationsEntity.setId("id");
         delegationsEntity.setType(DelegationType.PT);
         delegationsEntity.setProductId("prod-pagopa");
         delegationsEntity.setFrom("institutionId");
@@ -271,34 +320,39 @@ class DelegationCdcServiceTest {
         Institution institution = new Institution();
         OnboardingEntity onboardingEntity = new OnboardingEntity();
         onboardingEntity.setStatus(RelationshipState.ACTIVE);
+        onboardingEntity.setCreatedAt("2024-07-09T12:40:21.414946089Z");
         onboardingEntity.setProductId("prod-pagopa");
         onboardingEntity.setIsAggregator(Boolean.TRUE);
         institution.setOnboarding(List.of(onboardingEntity));
 
-        DelegationsEntity delegationEA = new DelegationsEntity();
-        delegationEA.setId("idEA");
-        delegationEA.setFrom("institutionIdFromEA");
-        delegationEA.setTo("institutionIdToEA");
-        delegationEA.setProductId("prod-pagopa");
-
         BsonDocument bsonDocument = mock(BsonDocument.class);
+        BsonDocument bsonDocument1 = new BsonDocument();
 
-        // when
+        Map<String, String> propertiesMap = new HashMap<>();
+        propertiesMap.put("documentKey", "toJson");
+        propertiesMap.put("success", "FALSE");
+
+        //when
         when(document.getFullDocument()).thenReturn(delegationsEntity);
         when(document.getDocumentKey()).thenReturn(bsonDocument);
+        when(document.getResumeToken()).thenReturn(bsonDocument1);
         when(bsonDocument.toJson()).thenReturn("toJson");
-        when(institutionRepository.findInstitutionById(anyString())).thenThrow(new RuntimeException());
+        when(institutionRepository.findInstitutionById(anyString())).thenReturn(Uni.createFrom().item(institution));
+        when(delegationRepository.getInstitutionsAlreadyPresent(anyString(), anyString())).thenReturn(Multi.createFrom().empty());
+        when(delegationRepository.getDelegationsEA(anyString(), anyString())).thenReturn(Multi.createFrom().items(new DelegationsEntity()));
+        when(delegationRepository.insertDelegations(ArgumentMatchers.any())).thenReturn(Uni.createFrom().failure(new RuntimeException("Insert failed")));
 
         // then
         final Executable executable = () -> delegationCdcService.consumerDelegationRepositoryEvent(document);
-        assertThrows(RuntimeException.class, executable);
+        assertDoesNotThrow(executable);
 
         // verify
         verify(institutionRepository).findInstitutionById(anyString());
-        verify(delegationRepository, never()).getInstitutionsAlreadyPresent(anyString(), anyString());
-        verify(delegationRepository, never()).getDelegationsEA(anyString(), anyString());
-        verify(delegationRepository, never()).insertDelegations(ArgumentMatchers.any());
+        verify(delegationRepository).getInstitutionsAlreadyPresent(anyString(), anyString());
+        verify(delegationRepository).getDelegationsEA(anyString(), anyString());
+        verify(delegationRepository).insertDelegations(ArgumentMatchers.any());
     }
+
 
     @Test
     void testDelegationCdcServiceConstructorNotTest() {
@@ -323,7 +377,7 @@ class DelegationCdcServiceTest {
         Mockito.when(configUtilsBean.getProfiles()).thenReturn(List.of("uat"));
 
         // Crea l'istanza del servizio
-        new DelegationCdcService(mongoClientMock, "testDatabase", telemetryClient, tableClientMock, configUtilsBean, institutionRepository, delegationRepository, RETRY_MIN_BACK_OFF, RETRY_MAX_BACK_OFF, MAX_RETRY);
+        new DelegationCdcService(mongoClientMock, "testDatabase", telemetryClient, tableClientMock, configUtilsBean, institutionRepository, delegationRepository, retryMinBackOff, retryMaxBackOff, maxRetry);
 
         // Verifica che il metodo watch sia stato chiamato
         verify(collectionMock).watch(anyList(), eq(DelegationsEntity.class), any(ChangeStreamOptions.class));
@@ -352,7 +406,7 @@ class DelegationCdcServiceTest {
         Mockito.when(configUtilsBean.getProfiles()).thenReturn(List.of("uat"));
 
         // Crea l'istanza del servizio
-        new DelegationCdcService(mongoClientMock, "testDatabase", telemetryClient, tableClientMock, configUtilsBean, institutionRepository, delegationRepository, RETRY_MIN_BACK_OFF, RETRY_MAX_BACK_OFF, MAX_RETRY);
+        new DelegationCdcService(mongoClientMock, "testDatabase", telemetryClient, tableClientMock, configUtilsBean, institutionRepository, delegationRepository, retryMinBackOff, retryMaxBackOff, maxRetry);
 
         // Verifica che il metodo watch sia stato chiamato
         verify(collectionMock).watch(anyList(), eq(DelegationsEntity.class), any(ChangeStreamOptions.class));
@@ -381,7 +435,7 @@ class DelegationCdcServiceTest {
         Mockito.when(configUtilsBean.getProfiles()).thenReturn(List.of("uat"));
 
         // Crea l'istanza del servizio
-        new DelegationCdcService(mongoClientMock, "testDatabase", telemetryClient, tableClientMock, configUtilsBean, institutionRepository, delegationRepository, RETRY_MIN_BACK_OFF, RETRY_MAX_BACK_OFF, MAX_RETRY);
+        new DelegationCdcService(mongoClientMock, "testDatabase", telemetryClient, tableClientMock, configUtilsBean, institutionRepository, delegationRepository, retryMinBackOff, retryMaxBackOff, maxRetry);
 
         // Verifica che il metodo watch sia stato chiamato
         verify(collectionMock).watch(anyList(), eq(DelegationsEntity.class), any(ChangeStreamOptions.class));
@@ -408,7 +462,7 @@ class DelegationCdcServiceTest {
         when(context.getOperation()).thenReturn(operationContext);
 
         // Crea l'istanza del servizio
-        new DelegationCdcService(mongoClientMock, "testDatabase", telemetryClient, tableClientMock, configUtilsBean, institutionRepository, delegationRepository, RETRY_MIN_BACK_OFF, RETRY_MAX_BACK_OFF, MAX_RETRY);
+        new DelegationCdcService(mongoClientMock, "testDatabase", telemetryClient, tableClientMock, configUtilsBean, institutionRepository, delegationRepository, retryMinBackOff, retryMaxBackOff, maxRetry);
 
         // Verifica che il metodo watch sia stato chiamato
         verify(collectionMock).watch(anyList(), eq(DelegationsEntity.class), any(ChangeStreamOptions.class));
