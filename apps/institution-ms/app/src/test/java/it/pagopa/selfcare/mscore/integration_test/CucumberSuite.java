@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.mscore.integration_test;
 
 import io.cucumber.spring.CucumberContextConfiguration;
+import io.restassured.RestAssured;
 import it.pagopa.selfcare.mscore.SelfCareCoreApplication;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.platform.suite.api.ConfigurationParameter;
@@ -44,6 +45,8 @@ public class CucumberSuite {
                 .waitingFor("azure-cli", Wait.forLogMessage(".*BLOBSTORAGE INITIALIZED.*\\n", 1));
         composeContainer.start();
         Runtime.getRuntime().addShutdownHook(new Thread(composeContainer::stop));
+        RestAssured.port = 8082;
+        RestAssured.baseURI = "http://localhost";
     }
 
     @DynamicPropertySource

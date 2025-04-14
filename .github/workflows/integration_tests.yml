@@ -48,3 +48,4 @@ jobs:
         shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          APP_SERVER_PORT: 8082

@@ -48,6 +48,17 @@ services:
     networks:
       - develop-network
 
+  userms:
+    image: ghcr.io/pagopa/selfcare-user-ms:sha-f3cd392
+    ports:
+      - '8080:8080'
+    env_file:
+      - testenv
+    networks:
+      - develop-network
+    depends_on:
+      - mongodb
+
 networks:
   develop-network:
     name: selfcare-develop-network
