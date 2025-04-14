@@ -129,6 +129,12 @@
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>txw2</artifactId>
         </dependency>
+        <dependency>
+            <groupId>it.pagopa.selfcare</groupId>
+            <artifactId>onboarding-sdk-common</artifactId>
+            <version>0.6.9</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
