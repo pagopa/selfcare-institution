@@ -46,13 +46,13 @@ import static org.mockito.Mockito.*;
 class DelegationCdcServiceTest {
 
     @ConfigProperty(name = "delegation-cdc.retry.min-backoff")
-    int retryMinBackOff = 10;
+    int retryMinBackOff = 1;
 
     @ConfigProperty(name = "delegation-cdc.retry.max-backoff")
-    int retryMaxBackOff = 12;
+    int retryMaxBackOff = 1;
 
     @ConfigProperty(name = "delegation-cdc.retry")
-    int maxRetry = 3;
+    int maxRetry = 0;
 
     @Inject
     DelegationCdcService delegationCdcService;
@@ -234,6 +234,10 @@ class DelegationCdcServiceTest {
         BsonDocument bsonDocument = mock(BsonDocument.class);
         BsonDocument bsonDocument1 = new BsonDocument();
 
+        Map<String, String> propertiesMap = new HashMap<>();
+        propertiesMap.put("documentKey", "toJson");
+        propertiesMap.put("success", "FALSE");
+
         //when
         when(document.getFullDocument()).thenReturn(delegationsEntity);
         when(document.getDocumentKey()).thenReturn(bsonDocument);
@@ -251,6 +255,9 @@ class DelegationCdcServiceTest {
         verify(delegationRepository, never()).getInstitutionsAlreadyPresent(anyString(), anyString());
         verify(delegationRepository, never()).getDelegationsEA(anyString(), anyString());
         verify(delegationRepository, never()).insertDelegations(ArgumentMatchers.any());
+        ArgumentCaptor<Map<String, Double>> metricsName = ArgumentCaptor.forClass(Map.class);
+        verify(telemetryClient).trackEvent(eq("DELEGATION_CDC"), eq(propertiesMap), metricsName.capture());
+        assertEquals("DelegationInsert_failure", metricsName.getValue().keySet().stream().findFirst().orElse(null));
     }
 
     @Test
@@ -326,16 +333,10 @@ class DelegationCdcServiceTest {
         institution.setOnboarding(List.of(onboardingEntity));
 
         BsonDocument bsonDocument = mock(BsonDocument.class);
-        BsonDocument bsonDocument1 = new BsonDocument();
-
-        Map<String, String> propertiesMap = new HashMap<>();
-        propertiesMap.put("documentKey", "toJson");
-        propertiesMap.put("success", "FALSE");
 
         //when
         when(document.getFullDocument()).thenReturn(delegationsEntity);
         when(document.getDocumentKey()).thenReturn(bsonDocument);
-        when(document.getResumeToken()).thenReturn(bsonDocument1);
         when(bsonDocument.toJson()).thenReturn("toJson");
         when(institutionRepository.findInstitutionById(anyString())).thenReturn(Uni.createFrom().item(institution));
         when(delegationRepository.getInstitutionsAlreadyPresent(anyString(), anyString())).thenReturn(Multi.createFrom().empty());
@@ -351,6 +352,7 @@ class DelegationCdcServiceTest {
         verify(delegationRepository).getInstitutionsAlreadyPresent(anyString(), anyString());
         verify(delegationRepository).getDelegationsEA(anyString(), anyString());
         verify(delegationRepository).insertDelegations(ArgumentMatchers.any());
+        verify(telemetryClient).trackEvent(eq("DELEGATION_CDC"), anyMap(), anyMap());
     }
 
 
