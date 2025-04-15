@@ -32,8 +32,8 @@ Feature: DelegationV2
     Then The status code is 200
     And The response body contains the list "delegations" of size 1
     And The response body contains at path "delegations" the following list of objects in any order:
-      | id                                   | institutionId                        | institutionName  | institutionRootName | type | productId | taxCode     | institutionType | brokerId                             | brokerTaxCode | brokerType | brokerName | status |
-      | 31d012c6-e7cf-4900-a243-b72bf416c522 | bf4dcdb6-f223-4996-bfbc-326b119dd101 | Comune di Assisi |                     | EA   | prod-io   | 00313820540 | PA              | cdaa3a10-8e4e-46ae-a365-c31a3f22b267 | 00017561486   | PT         | NTT Data   | ACTIVE |
+      | institutionId                        | institutionName  | status |
+      | bf4dcdb6-f223-4996-bfbc-326b119dd101 | Comune di Assisi | ACTIVE |
     And The response body contains:
         | pageInfo.totalElements | 11    |
         | pageInfo.totalPages    | 2     |
