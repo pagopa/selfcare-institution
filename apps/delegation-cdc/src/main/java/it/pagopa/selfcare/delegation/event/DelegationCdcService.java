@@ -35,6 +35,7 @@ import java.util.*;
 import static com.mongodb.client.model.Projections.fields;
 import static com.mongodb.client.model.Projections.include;
 import static it.pagopa.selfcare.delegation.event.constant.CdcStartAtConstant.*;
+import static it.pagopa.selfcare.onboarding.common.ProductId.PROD_PAGOPA;
 import static java.util.Arrays.asList;
 
 @Startup
@@ -47,6 +48,7 @@ public class DelegationCdcService {
     private static final String ERROR_DURING_SUBSCRIBE_COLLECTION_EXCEPTION_MESSAGE = "Error during subscribe collection, exception: {} , message: {}";
     private static final String EVENT_INSTITUTION_CDC_NAME = "DELEGATION_CDC";
     private static final String OPERATION_NAME = "DELEGATION-CDC-DelegationInsert";
+    private static final List<String> AVAILABLE_PRODUCTS = List.of(PROD_PAGOPA.getValue());
     private final TelemetryClient telemetryClient;
     private final TableClient tableClient;
     private final String mongodbDatabase;
@@ -139,7 +141,7 @@ public class DelegationCdcService {
         String delegationId = insertedDelegation.getId();
         log.info("Starting consumerDelegationsRepositoryEvent from Delegation document having id: {}", delegationId);
 
-        if(DelegationType.PT.equals(insertedDelegation.getType()) && insertedDelegation.getProductId().equals("prod-pagopa")) {
+        if(DelegationType.PT.equals(insertedDelegation.getType()) && AVAILABLE_PRODUCTS.contains(insertedDelegation.getProductId())) {
             attemptToCreateAggregatesDelegations(insertedDelegation)
                     .onFailure().retry().withBackOff(Duration.ofSeconds(retryMinBackOff), Duration.ofHours(retryMaxBackOff)).atMost(maxRetry)
                     .subscribe().with(
@@ -164,7 +166,7 @@ public class DelegationCdcService {
                     if (institution == null) {
                         return Uni.createFrom().failure(new IllegalArgumentException("Institution not found"));
                     }
-                    return isAggregator(institution)
+                    return isAggregator(institution, insertedDelegation.getProductId())
                             .flatMap(isAggregator -> {
                                 if (!Boolean.TRUE.equals(isAggregator)) {
                                     return Uni.createFrom().nullItem();
@@ -207,11 +209,11 @@ public class DelegationCdcService {
     }
 
 
-    public Uni<Boolean> isAggregator(Institution institution) {
+    public Uni<Boolean> isAggregator(Institution institution, String productId) {
         return Uni.createFrom().item(() ->
                 institution.getOnboarding().stream()
                         .filter(onboardingEntity ->
-                                "prod-pagopa".equals(onboardingEntity.getProductId()) &&
+                                productId.equals(onboardingEntity.getProductId()) &&
                                         RelationshipState.ACTIVE.equals(onboardingEntity.getStatus()))
                         .max(Comparator.comparing(onboardingEntity ->
                                 OffsetDateTime.parse(onboardingEntity.getCreatedAt(), DateTimeFormatter.ISO_OFFSET_DATE_TIME)))

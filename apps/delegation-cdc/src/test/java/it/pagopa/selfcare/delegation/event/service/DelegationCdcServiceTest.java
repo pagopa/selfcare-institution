@@ -36,6 +36,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static it.pagopa.selfcare.onboarding.common.ProductId.PROD_IO;
+import static it.pagopa.selfcare.onboarding.common.ProductId.PROD_PAGOPA;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -83,7 +85,7 @@ class DelegationCdcServiceTest {
         DelegationsEntity delegationsEntity = new DelegationsEntity();
         delegationsEntity.setId("id");
         delegationsEntity.setType(DelegationType.PT);
-        delegationsEntity.setProductId("prod-pagopa");
+        delegationsEntity.setProductId(PROD_PAGOPA.getValue());
         delegationsEntity.setFrom("institutionId");
         delegationsEntity.setTo("toInstitutionId");
 
@@ -91,7 +93,7 @@ class DelegationCdcServiceTest {
         OnboardingEntity onboardingEntity = new OnboardingEntity();
         onboardingEntity.setStatus(RelationshipState.ACTIVE);
         onboardingEntity.setCreatedAt("2024-07-09T12:40:21.414946089Z");
-        onboardingEntity.setProductId("prod-pagopa");
+        onboardingEntity.setProductId(PROD_PAGOPA.getValue());
         onboardingEntity.setIsAggregator(Boolean.TRUE);
         institution.setOnboarding(List.of(onboardingEntity));
 
@@ -99,7 +101,7 @@ class DelegationCdcServiceTest {
         delegationEA.setId("idEA");
         delegationEA.setFrom("institutionIdFromEA");
         delegationEA.setTo("institutionIdToEA");
-        delegationEA.setProductId("prod-pagopa");
+        delegationEA.setProductId(PROD_PAGOPA.getValue());
 
         BsonDocument bsonDocument = mock(BsonDocument.class);
         BsonDocument bsonDocument1 = new BsonDocument();
@@ -139,7 +141,7 @@ class DelegationCdcServiceTest {
         DelegationsEntity delegationsEntity = new DelegationsEntity();
         delegationsEntity.setId("id");
         delegationsEntity.setType(DelegationType.EA);
-        delegationsEntity.setProductId("prod-pagopa");
+        delegationsEntity.setProductId(PROD_PAGOPA.getValue());
         delegationsEntity.setFrom("institutionId");
         delegationsEntity.setTo("toInstitutionId");
 
@@ -162,7 +164,7 @@ class DelegationCdcServiceTest {
         DelegationsEntity delegationsEntity = new DelegationsEntity();
         delegationsEntity.setId("id");
         delegationsEntity.setType(DelegationType.EA);
-        delegationsEntity.setProductId("prod-pagopa");
+        delegationsEntity.setProductId(PROD_PAGOPA.getValue());
         delegationsEntity.setFrom("institutionId");
         delegationsEntity.setTo("toInstitutionId");
 
@@ -194,7 +196,7 @@ class DelegationCdcServiceTest {
         DelegationsEntity delegationsEntity = new DelegationsEntity();
         delegationsEntity.setId("id");
         delegationsEntity.setType(DelegationType.PT);
-        delegationsEntity.setProductId("prod-io");
+        delegationsEntity.setProductId(PROD_IO.getValue());
         delegationsEntity.setFrom("institutionId");
         delegationsEntity.setTo("toInstitutionId");
 
@@ -227,7 +229,7 @@ class DelegationCdcServiceTest {
         DelegationsEntity delegationsEntity = new DelegationsEntity();
         delegationsEntity.setId("id");
         delegationsEntity.setType(DelegationType.PT);
-        delegationsEntity.setProductId("prod-pagopa");
+        delegationsEntity.setProductId(PROD_PAGOPA.getValue());
         delegationsEntity.setFrom("institutionId");
         delegationsEntity.setTo("toInstitutionId");
 
@@ -267,19 +269,19 @@ class DelegationCdcServiceTest {
         DelegationsEntity delegationsEntity = new DelegationsEntity();
         delegationsEntity.setId("id");
         delegationsEntity.setType(DelegationType.PT);
-        delegationsEntity.setProductId("prod-pagopa");
+        delegationsEntity.setProductId(PROD_PAGOPA.getValue());
         delegationsEntity.setFrom("institutionId");
         delegationsEntity.setTo("toInstitutionId");
 
         Institution institution = new Institution();
         OnboardingEntity onboardingEntity = new OnboardingEntity();
         onboardingEntity.setStatus(RelationshipState.ACTIVE);
-        onboardingEntity.setProductId("prod-pagopa");
+        onboardingEntity.setProductId(PROD_PAGOPA.getValue());
         onboardingEntity.setIsAggregator(Boolean.TRUE);
         onboardingEntity.setCreatedAt("2024-07-09T12:40:21.414946089Z");
         OnboardingEntity onboardingEntity2 = new OnboardingEntity();
         onboardingEntity2.setStatus(RelationshipState.ACTIVE);
-        onboardingEntity2.setProductId("prod-pagopa");
+        onboardingEntity2.setProductId(PROD_PAGOPA.getValue());
         onboardingEntity2.setIsAggregator(Boolean.FALSE);
         onboardingEntity2.setCreatedAt("2024-10-12T18:31:21.314946089Z");
         institution.setOnboarding(List.of(onboardingEntity, onboardingEntity2));
@@ -320,7 +322,7 @@ class DelegationCdcServiceTest {
         DelegationsEntity delegationsEntity = new DelegationsEntity();
         delegationsEntity.setId("id");
         delegationsEntity.setType(DelegationType.PT);
-        delegationsEntity.setProductId("prod-pagopa");
+        delegationsEntity.setProductId(PROD_PAGOPA.getValue());
         delegationsEntity.setFrom("institutionId");
         delegationsEntity.setTo("toInstitutionId");
 
@@ -328,7 +330,7 @@ class DelegationCdcServiceTest {
         OnboardingEntity onboardingEntity = new OnboardingEntity();
         onboardingEntity.setStatus(RelationshipState.ACTIVE);
         onboardingEntity.setCreatedAt("2024-07-09T12:40:21.414946089Z");
-        onboardingEntity.setProductId("prod-pagopa");
+        onboardingEntity.setProductId(PROD_PAGOPA.getValue());
         onboardingEntity.setIsAggregator(Boolean.TRUE);
         institution.setOnboarding(List.of(onboardingEntity));
 
