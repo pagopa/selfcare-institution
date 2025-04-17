@@ -56,6 +56,9 @@ class DelegationCdcServiceTest {
     @ConfigProperty(name = "delegation-cdc.retry")
     int maxRetry = 0;
 
+    @ConfigProperty(name = "delegation-cdc.products.available")
+    List<String> availableProducts;
+
     @Inject
     DelegationCdcService delegationCdcService;
 
@@ -381,7 +384,7 @@ class DelegationCdcServiceTest {
         Mockito.when(configUtilsBean.getProfiles()).thenReturn(List.of("uat"));
 
         // Crea l'istanza del servizio
-        new DelegationCdcService(mongoClientMock, "testDatabase", telemetryClient, tableClientMock, configUtilsBean, institutionRepository, delegationRepository, retryMinBackOff, retryMaxBackOff, maxRetry);
+        new DelegationCdcService(mongoClientMock, "testDatabase", telemetryClient, tableClientMock, configUtilsBean, institutionRepository, delegationRepository, retryMinBackOff, retryMaxBackOff, maxRetry, availableProducts);
 
         // Verifica che il metodo watch sia stato chiamato
         verify(collectionMock).watch(anyList(), eq(DelegationsEntity.class), any(ChangeStreamOptions.class));
@@ -410,7 +413,7 @@ class DelegationCdcServiceTest {
         Mockito.when(configUtilsBean.getProfiles()).thenReturn(List.of("uat"));
 
         // Crea l'istanza del servizio
-        new DelegationCdcService(mongoClientMock, "testDatabase", telemetryClient, tableClientMock, configUtilsBean, institutionRepository, delegationRepository, retryMinBackOff, retryMaxBackOff, maxRetry);
+        new DelegationCdcService(mongoClientMock, "testDatabase", telemetryClient, tableClientMock, configUtilsBean, institutionRepository, delegationRepository, retryMinBackOff, retryMaxBackOff, maxRetry, availableProducts);
 
         // Verifica che il metodo watch sia stato chiamato
         verify(collectionMock).watch(anyList(), eq(DelegationsEntity.class), any(ChangeStreamOptions.class));
@@ -439,7 +442,7 @@ class DelegationCdcServiceTest {
         Mockito.when(configUtilsBean.getProfiles()).thenReturn(List.of("uat"));
 
         // Crea l'istanza del servizio
-        new DelegationCdcService(mongoClientMock, "testDatabase", telemetryClient, tableClientMock, configUtilsBean, institutionRepository, delegationRepository, retryMinBackOff, retryMaxBackOff, maxRetry);
+        new DelegationCdcService(mongoClientMock, "testDatabase", telemetryClient, tableClientMock, configUtilsBean, institutionRepository, delegationRepository, retryMinBackOff, retryMaxBackOff, maxRetry, availableProducts);
 
         // Verifica che il metodo watch sia stato chiamato
         verify(collectionMock).watch(anyList(), eq(DelegationsEntity.class), any(ChangeStreamOptions.class));
@@ -466,7 +469,7 @@ class DelegationCdcServiceTest {
         when(context.getOperation()).thenReturn(operationContext);
 
         // Crea l'istanza del servizio
-        new DelegationCdcService(mongoClientMock, "testDatabase", telemetryClient, tableClientMock, configUtilsBean, institutionRepository, delegationRepository, retryMinBackOff, retryMaxBackOff, maxRetry);
+        new DelegationCdcService(mongoClientMock, "testDatabase", telemetryClient, tableClientMock, configUtilsBean, institutionRepository, delegationRepository, retryMinBackOff, retryMaxBackOff, maxRetry, availableProducts);
 
         // Verifica che il metodo watch sia stato chiamato
         verify(collectionMock).watch(anyList(), eq(DelegationsEntity.class), any(ChangeStreamOptions.class));
