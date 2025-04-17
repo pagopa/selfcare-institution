@@ -6,13 +6,12 @@ services:
     ports:
       - '27017:27017'
     volumes:
-      - "./app/src/test/resources/db:/docker-entrypoint-initdb.d"
+      - "./db:/docker-entrypoint-initdb.d"
     networks:
       - develop-network
 
   azurite:
-    image: mcr.microsoft.com/azure-storage/azurite@sha256:0a47e12e3693483cef5c71f35468b91d751611f172d2f97414e9c69113b106d9
-    container_name: azurite
+    image: mcr.microsoft.com/azure-storage/azurite
     ports:
       - "10000:10000"
     command: "azurite --blobHost 0.0.0.0 --inMemoryPersistence"
@@ -23,15 +22,15 @@ services:
 
   azure-cli:
     build:
-      context: "../../."
-      dockerfile: "apps/institution-ms/app/src/test/resources/Dockerfile-azure-cli"
-    container_name: azure-cli
+      context: "."
+      dockerfile: "Dockerfile-azure-cli"
     depends_on:
       - azurite
     networks:
       - develop-network
     volumes:
-      - "./app/src/test/resources/blobStorageInit/initAzurite.sh:/initAzurite.sh"
+      - "./blobStorageInit/initAzurite.sh:/initAzurite.sh"
+      - "./blobStorageInit/products.json:/workspace/products.json"
     environment:
       - SELFCARE_INFRA_PRIVATE_ENV=dev
       - GITHUB_TOKEN=${GITHUB_TOKEN}
@@ -45,9 +44,20 @@ services:
       - MOCKSERVER_ENABLE_CORS_FOR_API="true"
       - MOCKSERVER_ENABLE_CORS_FOR_ALL_RESPONSES="true"
     volumes:
-      - "./app/src/test/resources/mock:/config"
+      - "./mock:/config"
     networks:
       - develop-network
+
+  userms:
+    image: ghcr.io/pagopa/selfcare-user-ms:sha-f3cd392
+    ports:
+      - '8080:8080'
+    env_file:
+      - testenv
+    networks:
+      - develop-network
+    depends_on:
+      - mongodb
 
 networks:
   develop-network:
