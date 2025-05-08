@@ -3526,6 +3526,9 @@
           "billing" : {
             "$ref" : "#/components/schemas/BillingResponse"
           },
+          "contract" : {
+            "type" : "string"
+          },
           "createdAt" : {
             "type" : "string",
             "format" : "date-time"

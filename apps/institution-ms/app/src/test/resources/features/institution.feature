@@ -1331,8 +1331,16 @@ Feature: Institution
     When I send a GET request to "/institutions/{id}"
     Then The status code is 200
     And The response body contains:
-      | id   | c9a50656-f345-4c81-84be-5b2474470544                        |
-      | logo | test-logo-url/c9a50656-f345-4c81-84be-5b2474470544/logo.png |
+      | id                      | c9a50656-f345-4c81-84be-5b2474470544                                                                      |
+      | logo                    | test-logo-url/c9a50656-f345-4c81-84be-5b2474470544/logo.png                                               |
+      | onboarding[0].productId | prod-interop                                                                                              |
+      | onboarding[0].contract  | parties/docs/81ea93f8-0276-48a7-bdd2-53106c5e8387/App IO_accordo_adesione (3).pdf17362706113579421406.pdf |
+      | onboarding[1].productId | prod-fd                                                                                                   |
+      | onboarding[1].contract  | parties/docs/a3f2d517-b432-4745-ae9b-5bb1f1bcfb79/Prod Fideiussioni Digitali_accordo_adesione (3).pdf     |
+      | onboarding[2].productId | prod-io                                                                                                   |
+      | onboarding[3].productId | prod-pagopa                                                                                               |
+    And The response body doesn't contain field "onboarding[2].contract"
+    And The response body doesn't contain field "onboarding[3].contract"
 
   Scenario: Get institution by id not found
     Given User login with username "j.doe" and password "test"

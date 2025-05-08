@@ -19,4 +19,5 @@ public class OnboardedProductResponse {
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
     private Boolean isAggregator;
+    private String contract;
 }
