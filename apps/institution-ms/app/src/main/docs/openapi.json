@@ -3166,6 +3166,9 @@
         "title" : "InstitutionPut",
         "type" : "object",
         "properties" : {
+          "address" : {
+            "type" : "string"
+          },
           "description" : {
             "type" : "string"
           },
@@ -3178,7 +3181,16 @@
               "type" : "string"
             }
           },
+          "onboardings" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/OnboardingPut"
+            }
+          },
           "parentDescription" : {
+            "type" : "string"
+          },
+          "zipCode" : {
             "type" : "string"
           }
         }
@@ -3466,6 +3478,12 @@
           "ivassCode" : {
             "type" : "string"
           },
+          "onboardings" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Onboarding"
+            }
+          },
           "parentDescription" : {
             "type" : "string"
           },
@@ -3558,6 +3576,58 @@
             "items" : {
               "$ref" : "#/components/schemas/InstitutionProduct"
             }
+          }
+        }
+      },
+      "Onboarding" : {
+        "title" : "Onboarding",
+        "type" : "object",
+        "properties" : {
+          "billing" : {
+            "$ref" : "#/components/schemas/Billing"
+          },
+          "closedAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "contract" : {
+            "type" : "string"
+          },
+          "createdAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "isAggregator" : {
+            "type" : "boolean"
+          },
+          "pricingPlan" : {
+            "type" : "string"
+          },
+          "productId" : {
+            "type" : "string"
+          },
+          "status" : {
+            "type" : "string",
+            "enum" : [ "ACTIVE", "DELETED", "PENDING", "REJECTED", "SUSPENDED", "TOBEVALIDATED" ]
+          },
+          "tokenId" : {
+            "type" : "string"
+          },
+          "updatedAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        }
+      },
+      "OnboardingPut" : {
+        "title" : "OnboardingPut",
+        "type" : "object",
+        "properties" : {
+          "productId" : {
+            "type" : "string"
+          },
+          "vatNumber" : {
+            "type" : "string"
           }
         }
       },

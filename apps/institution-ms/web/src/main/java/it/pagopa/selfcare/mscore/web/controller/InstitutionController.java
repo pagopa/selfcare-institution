@@ -337,7 +337,7 @@ public class InstitutionController {
     @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<InstitutionResponse> updateInstitution(@ApiParam("${swagger.mscore.institutions.model.institutionId}")
                                                                  @PathVariable("id") String institutionId,
-                                                                 @RequestBody InstitutionPut institutionPut,
+                                                                 @Valid @RequestBody InstitutionPut institutionPut,
                                                                  Authentication authentication
     ) {
 

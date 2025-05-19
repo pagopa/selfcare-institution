@@ -2,19 +2,17 @@ package it.pagopa.selfcare.mscore.connector.dao.model.mapper;
 
 import it.pagopa.selfcare.mscore.connector.dao.model.InstitutionEntity;
 import it.pagopa.selfcare.mscore.connector.dao.model.inner.GeoTaxonomyEntity;
-import it.pagopa.selfcare.mscore.model.institution.DataProtectionOfficer;
-import it.pagopa.selfcare.mscore.model.institution.InstitutionGeographicTaxonomies;
-import it.pagopa.selfcare.mscore.model.institution.InstitutionUpdate;
-import it.pagopa.selfcare.mscore.model.institution.PaymentServiceProvider;
+import it.pagopa.selfcare.mscore.model.institution.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.util.StringUtils;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.time.OffsetDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @NoArgsConstructor(access = AccessLevel.NONE)
 public class InstitutionMapperHelper {
@@ -29,6 +27,28 @@ public class InstitutionMapperHelper {
                 return entity;
             }).collect(Collectors.toList());
             update.set(InstitutionEntity.Fields.geographicTaxonomies.name(), list);
+        }
+    }
+
+    public static void updateOnboarding(InstitutionUpdate institutionUpdate, Update update) {
+        if (institutionUpdate.getOnboardings() != null && !institutionUpdate.getOnboardings().isEmpty()) {
+            IntStream.range(0, institutionUpdate.getOnboardings().size())
+                    .boxed()
+                    .collect(Collectors.toMap(
+                            index -> index,
+                            index -> institutionUpdate.getOnboardings().get(index)
+                    ))
+                    .entrySet().stream()
+                    .filter(entry -> StringUtils.hasText(entry.getValue().getProductId()))
+                    .forEach(entry -> {
+                        int index = entry.getKey();
+                        Onboarding onboarding = entry.getValue();
+                        String identifier = "elem" + index;
+
+                        update.filterArray(Criteria.where(identifier + ".productId").is(onboarding.getProductId()));
+                        update.set("onboarding.$[" + identifier + "].billing.vatNumber", onboarding.getBilling().getVatNumber());
+                        update.set("onboarding.$[" + identifier + "].updatedAt", OffsetDateTime.now());
+                    });
         }
     }
 

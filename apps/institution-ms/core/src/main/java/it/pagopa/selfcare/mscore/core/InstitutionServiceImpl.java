@@ -303,7 +303,7 @@ public class InstitutionServiceImpl implements InstitutionService {
         Institution outdatedInstitution = institutionConnector.findById(institutionId);
 
         List<InstitutionGeographicTaxonomies> geographicTaxonomies = retrieveGeographicTaxonomies(institutionUpdate);
-        Institution updatedInstitution = institutionConnector.findAndUpdate(institutionId, null, geographicTaxonomies, institutionUpdate);
+        Institution updatedInstitution = institutionConnector.findAndUpdate(institutionId, geographicTaxonomies, institutionUpdate);
 
         if(Objects.nonNull(institutionUpdate.getDescription())) {
             try {
@@ -329,7 +329,7 @@ public class InstitutionServiceImpl implements InstitutionService {
         InstitutionUpdate institutionUpdate = new InstitutionUpdate();
         institutionUpdate.setDescription(institution.getDescription());
         institutionUpdate.setParentDescription(institution.getParentDescription());
-        institutionConnector.findAndUpdate(institution.getId(), null, null,  institutionUpdate);
+        institutionConnector.findAndUpdate(institution.getId(), null, institutionUpdate);
     }
 
 
@@ -337,7 +337,7 @@ public class InstitutionServiceImpl implements InstitutionService {
     public void updateInstitutionDelegation(String institutionId, boolean delegation) {
         InstitutionUpdate institutionUpdate = new InstitutionUpdate();
         institutionUpdate.setDelegation(delegation);
-        institutionConnector.findAndUpdate(institutionId, null, null, institutionUpdate);
+        institutionConnector.findAndUpdate(institutionId, null, institutionUpdate);
     }
 
     private List<InstitutionGeographicTaxonomies> retrieveGeographicTaxonomies(InstitutionUpdate institutionUpdate) {
