@@ -30,6 +30,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static it.pagopa.selfcare.mscore.connector.dao.model.mapper.InstitutionMapperHelper.addGeographicTaxonomies;
+import static it.pagopa.selfcare.mscore.connector.dao.model.mapper.InstitutionMapperHelper.updateOnboarding;
 import static it.pagopa.selfcare.mscore.constant.CustomError.GET_INSTITUTION_BILLING_ERROR;
 import static it.pagopa.selfcare.mscore.constant.CustomError.INSTITUTION_NOT_FOUND;
 
@@ -109,16 +110,28 @@ public class InstitutionConnectorImpl implements InstitutionConnector {
     }
 
     @Override
-    public Institution findAndUpdate(String institutionId, Onboarding onboarding, List<InstitutionGeographicTaxonomies> geographicTaxonomiesList, InstitutionUpdate institutionUpdate) {
+    public Institution findAndAddOnboarding(String institutionId, Onboarding onboarding) {
         Query query = Query.query(Criteria.where(InstitutionEntity.Fields.id.name()).is(institutionId));
         Update update = new Update();
         update.set(InstitutionEntity.Fields.updatedAt.name(), OffsetDateTime.now());
         if (onboarding != null) {
             update.addToSet(InstitutionEntity.Fields.onboarding.name(), onboarding);
         }
+
+        FindAndModifyOptions findAndModifyOptions = FindAndModifyOptions.options().upsert(false).returnNew(true);
+        return institutionMapper.convertToInstitution(repository.findAndModify(query, update, findAndModifyOptions, InstitutionEntity.class));
+    }
+
+    @Override
+    public Institution findAndUpdate(String institutionId, List<InstitutionGeographicTaxonomies> geographicTaxonomiesList, InstitutionUpdate institutionUpdate) {
+        Query query = Query.query(Criteria.where(InstitutionEntity.Fields.id.name()).is(institutionId));
+        Update update = new Update();
+        update.set(InstitutionEntity.Fields.updatedAt.name(), OffsetDateTime.now());
+
         if (institutionUpdate != null) {
             Map<String, Object> map = InstitutionMapperHelper.getNotNullField(institutionUpdate);
             map.forEach(update::set);
+            updateOnboarding(institutionUpdate, update);
         }
         addGeographicTaxonomies(geographicTaxonomiesList, update);
         FindAndModifyOptions findAndModifyOptions = FindAndModifyOptions.options().upsert(false).returnNew(true);

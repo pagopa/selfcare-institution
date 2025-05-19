@@ -16,6 +16,8 @@ import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
@@ -66,10 +68,13 @@ class InstitutionControllerTest {
     private DelegationService delegationService;
 
     @Spy
-    private OnboardingResourceMapper onboardingResourceMapper = new OnboardingResourceMapperImpl();
+    private InstitutionUpdateMapper institutionUpdateMapper = new InstitutionUpdateMapperImpl();
 
     @Spy
-    private InstitutionResourceMapper institutionResourceMapper = new InstitutionResourceMapperImpl();
+    private OnboardingResourceMapper onboardingResourceMapper = new OnboardingResourceMapperImpl(institutionUpdateMapper);
+
+    @Spy
+    private InstitutionResourceMapper institutionResourceMapper = new InstitutionResourceMapperImpl(onboardingResourceMapper);
 
     @Spy
     private BrokerMapper brokerMapper = new BrokerMapperImpl();
@@ -1161,6 +1166,7 @@ class InstitutionControllerTest {
         pgInstitutionPut.setDescription("desc");
         pgInstitutionPut.setDigitalAddress("digitalAddress");
         pgInstitutionPut.setParentDescription("parentDesc");
+
         when(institutionService.updateInstitution(any(), any(), any())).thenReturn(new Institution());
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put("/institutions/42")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -1173,15 +1179,48 @@ class InstitutionControllerTest {
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"));
     }
 
+    @ParameterizedTest
+    @MethodSource("it.pagopa.selfcare.mscore.web.TestUtils#getBlankFieldTestCases")
+    void testUpdateInstitutionWithBadRequest(String productId, String vatNumber) throws Exception {
+        // Given
+        Authentication authentication = Mockito.mock(Authentication.class);
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        SecurityContextHolder.setContext(securityContext);
+
+        OnboardingPut onboardingPut = new OnboardingPut();
+        onboardingPut.setProductId(productId);
+        onboardingPut.setVatNumber(vatNumber);
+
+        InstitutionPut pgInstitutionPut = new InstitutionPut();
+        pgInstitutionPut.setDescription("desc");
+        pgInstitutionPut.setDigitalAddress("digitalAddress");
+        pgInstitutionPut.setParentDescription("parentDesc");
+        pgInstitutionPut.setOnboardings(List.of(onboardingPut));
+
+        // When
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put("/institutions/42")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(pgInstitutionPut))
+                .principal(authentication);
+        ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(institutionController)
+                .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+                .build()
+                .perform(requestBuilder);
+
+        actualPerformResult.andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+
+
     @Test
     void testUpdateInstitution() throws Exception {
 
-        InstitutionPut institutionPut = new InstitutionPut();
-        institutionPut.setGeographicTaxonomyCodes(new ArrayList<>());
         SecurityContext securityContext = Mockito.mock(SecurityContext.class);
         Authentication authentication = Mockito.mock(Authentication.class);
         SecurityContextHolder.setContext(securityContext);
         when(authentication.getPrincipal()).thenReturn(SelfCareUser.builder("id").build());
+
+        InstitutionPut institutionPut = TestUtils.createSimpleInstitutionPut();
 
         when(institutionService.updateInstitution(any(), any(), any())).thenReturn(new Institution());
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.put("/institutions/42")

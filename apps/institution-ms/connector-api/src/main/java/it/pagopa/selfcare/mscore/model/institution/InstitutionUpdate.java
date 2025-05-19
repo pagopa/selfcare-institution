@@ -23,6 +23,7 @@ public class InstitutionUpdate {
     private PaymentServiceProvider paymentServiceProvider;
     private DataProtectionOfficer dataProtectionOfficer;
     private List<InstitutionGeographicTaxonomies> geographicTaxonomies;
+    private List<Onboarding> onboardings;
     private String rea;
     private String shareCapital;
     private String businessRegisterPlace;

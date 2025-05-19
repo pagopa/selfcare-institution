@@ -118,7 +118,7 @@ public class OnboardingServiceImpl implements OnboardingService {
 
         try {
             //If not exists, persist a new onboarding for product
-            final Institution institutionUpdated = institutionConnector.findAndUpdate(institutionId, onboarding, List.of(), null);
+            final Institution institutionUpdated = institutionConnector.findAndAddOnboarding(institutionId, onboarding);
 
             log.trace("persistForUpdate end");
             httpStatus.append(HttpStatus.CREATED.value());

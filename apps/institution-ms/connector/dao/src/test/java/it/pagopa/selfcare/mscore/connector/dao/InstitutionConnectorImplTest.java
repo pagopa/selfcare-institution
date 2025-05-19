@@ -243,7 +243,7 @@ class InstitutionConnectorImplTest {
         geographicTaxonomies1.setCode("code");
         geographicTaxonomies1.setDesc("desc");
         geographicTaxonomies.add(geographicTaxonomies1);
-        Institution response = institutionConnectorImpl.findAndUpdate("institutionId", new Onboarding(), geographicTaxonomies, new InstitutionUpdate());
+        Institution response = institutionConnectorImpl.findAndUpdate("institutionId", geographicTaxonomies, new InstitutionUpdate());
         assertNotNull(response);
     }
 

@@ -5,6 +5,7 @@ import it.pagopa.selfcare.mscore.model.institution.Institution;
 import it.pagopa.selfcare.mscore.model.institution.InstitutionGeographicTaxonomies;
 import it.pagopa.selfcare.mscore.model.institution.InstitutionUpdate;
 import it.pagopa.selfcare.mscore.web.model.institution.*;
+import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -13,7 +14,7 @@ import org.springframework.util.StringUtils;
 import java.util.List;
 import java.util.Optional;
 
-@Mapper(componentModel = "spring",  uses = {OnboardingResourceMapper.class})
+@Mapper(componentModel = "spring",  uses = {OnboardingResourceMapper.class}, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface InstitutionResourceMapper {
 
     @Mapping(target = "aooParentCode", source = "paAttributes.aooParentCode")
