@@ -1051,18 +1051,67 @@ Feature: Institution
       {
         "geographicTaxonomyCodes": ["058091"],
         "digitalAddress": "updated.digital.address@test.com",
-        "description": "Updated institution description"
+        "description": "Updated institution description",
+        "address" : "Updated address",
+        "zipCode" : "Updated zipCode",
+        "onboardings" : [
+           {
+             "vatNumber":"Updated vatNumber",
+             "productId" : "prod-io"
+           }
+        ]
       }
       """
     When I send a PUT request to "/institutions/{id}"
     Then The status code is 200
     And The response body contains:
-      | id                           | 123                              |
-      | digitalAddress               | updated.digital.address@test.com |
-      | description                  | Updated institution description  |
-      | delegation                   | false                            |
-      | geographicTaxonomies[0].code | 058091                           |
-      | geographicTaxonomies[0].desc | ROMA - COMUNE                    |
+      | id                                  | 123                              |
+      | digitalAddress                      | updated.digital.address@test.com |
+      | description                         | Updated institution description  |
+      | delegation                          | false                            |
+      | geographicTaxonomies[0].code        | 058091                           |
+      | geographicTaxonomies[0].desc        | ROMA - COMUNE                    |
+      | address                             | Updated address                  |
+      | zipCode                             | Updated zipCode                  |
+      | onboarding[0].billing.vatNumber     | Updated vatNumber                |
+
+  Scenario Outline: Bad request while updating institution with invalid onboarding fields
+    Given User login with username "j.doe" and password "test"
+    And A mock institution with id "123"
+    And The following path params:
+      | id | 123 |
+    And The following request body:
+      """
+      {
+        "geographicTaxonomyCodes": ["058091"],
+        "digitalAddress": "updated.digital.address@test.com",
+        "description": "Updated institution description",
+        "address" : "Updated address",
+        "zipCode" : "Updated zipCode",
+        "onboardings" : [
+           {
+             "vatNumber": <vatNumber>,
+             "productId" : <productId>
+           }
+         ]
+      }
+      """
+    When I send a PUT request to "/institutions/{id}"
+    Then The status code is 400
+    And The response body contains:
+      | status | 400              |
+      | detail | INVALID ARGUMENT |
+    Examples:
+      | vatNumber | productId |
+      | null      | null      |
+      | ""        | ""        |
+      | "   "     | "   "     |
+      | "valid"   | null      |
+      | null      | "valid"   |
+      | "valid"   | ""        |
+      | ""        | "valid"   |
+      | "valid"   | "   "     |
+      | "   "     | "valid"   |
 
   Scenario: Not found institutionId while updating institution
     Given User login with username "j.doe" and password "test"
