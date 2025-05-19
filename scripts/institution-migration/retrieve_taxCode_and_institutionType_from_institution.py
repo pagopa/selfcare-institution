@@ -1,8 +1,9 @@
 import math
-import sys
 import os
-from pymongo import MongoClient
+import sys
 from dotenv import load_dotenv
+from pymongo import MongoClient
+
 from query import *
 
 load_dotenv()
