@@ -1,11 +1,10 @@
 package it.pagopa.selfcare.mscore.web.controller;
 
+import it.pagopa.selfcare.mscore.web.model.mapper.*;
 import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import it.pagopa.selfcare.mscore.constant.RelationshipState;
 import it.pagopa.selfcare.mscore.core.ExternalService;
 import it.pagopa.selfcare.mscore.model.institution.*;
-import it.pagopa.selfcare.mscore.web.model.mapper.InstitutionResourceMapper;
-import it.pagopa.selfcare.mscore.web.model.mapper.InstitutionResourceMapperImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -33,7 +32,14 @@ class ExternalControllerTest {
     private ExternalService externalService;
 
     @Spy
-    private InstitutionResourceMapper institutionResourceMapper = new InstitutionResourceMapperImpl();
+    private InstitutionUpdateMapper institutionUpdateMapper = new InstitutionUpdateMapperImpl();
+
+    @Spy
+    private OnboardingResourceMapper onboardingResourceMapper = new OnboardingResourceMapperImpl(institutionUpdateMapper);
+
+    @Spy
+    private InstitutionResourceMapper institutionResourceMapper = new InstitutionResourceMapperImpl(onboardingResourceMapper);
+
 
     /**
      * Method under test: {@link ExternalController#retrieveInstitutionProductsByExternalId(String, List)}

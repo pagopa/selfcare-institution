@@ -1,14 +1,13 @@
 package it.pagopa.selfcare.mscore.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.pagopa.selfcare.mscore.web.model.mapper.*;
 import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import it.pagopa.selfcare.mscore.constant.Origin;
 import it.pagopa.selfcare.mscore.core.InstitutionService;
 import it.pagopa.selfcare.mscore.model.institution.Billing;
 import it.pagopa.selfcare.mscore.model.institution.Institution;
 import it.pagopa.selfcare.mscore.web.model.institution.PdaInstitutionRequest;
-import it.pagopa.selfcare.mscore.web.model.mapper.InstitutionResourceMapper;
-import it.pagopa.selfcare.mscore.web.model.mapper.InstitutionResourceMapperImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -38,7 +37,14 @@ public class InstitutionControllerPdaTest {
     private InstitutionService institutionService;
     private final ObjectMapper objectMapper = new ObjectMapper();
     @Spy
-    private InstitutionResourceMapper institutionResourceMapper = new InstitutionResourceMapperImpl();
+    private InstitutionUpdateMapper institutionUpdateMapper = new InstitutionUpdateMapperImpl();
+
+    @Spy
+    private OnboardingResourceMapper onboardingResourceMapper = new OnboardingResourceMapperImpl(institutionUpdateMapper);
+
+    @Spy
+    private InstitutionResourceMapper institutionResourceMapper = new InstitutionResourceMapperImpl(onboardingResourceMapper);
+
 
 
     /**

@@ -640,7 +640,7 @@ class InstitutionServiceImplTest {
         institutionUpdate.setDelegation(true);
         assertDoesNotThrow(
                 () -> institutionServiceImpl.updateInstitutionDelegation("42", true));
-        verify(institutionConnector).findAndUpdate("42", null, null, institutionUpdate);
+        verify(institutionConnector).findAndUpdate("42",null, institutionUpdate);
     }
 
     /**
@@ -884,7 +884,46 @@ class InstitutionServiceImplTest {
 
         //when
         when(institutionConnector.findById(institutionId)).thenReturn(new Institution());
-        when(institutionConnector.findAndUpdate(institutionId, null, Collections.emptyList(), institutionUpdate)).thenReturn(updatedInstitution);
+        when(institutionConnector.findAndUpdate(institutionId, Collections.emptyList(), institutionUpdate)).thenReturn(updatedInstitution);
+
+        //then
+        Institution result = institutionServiceImpl.updateInstitution(institutionId, institutionUpdate, "userId");
+        verify(delegationConnector).updateDelegation(updatedInstitution);
+        verify(userApiConnector).updateUserInstitution(institutionId, institutionUpdate);
+        assertEquals(result, updatedInstitution);
+    }
+
+    @Test
+    void testUpdateInstitution() {
+        //given
+        final String institutionId = "id";
+
+        Billing billing = new Billing();
+        billing.setVatNumber("newVatNumber");
+
+        Onboarding onboarding = new Onboarding();
+        onboarding.setBilling(billing);
+
+        Institution updatedInstitution = new Institution();
+        updatedInstitution.setId(institutionId);
+        updatedInstitution.setDescription("newDesc");
+        updatedInstitution.setParentDescription("newRootName");
+        updatedInstitution.setDigitalAddress("newDigitalAddress");
+        updatedInstitution.setAddress("newAddress");
+        updatedInstitution.setZipCode("newZipCode");
+        updatedInstitution.setOnboarding(List.of(onboarding));
+
+        InstitutionUpdate institutionUpdate = new InstitutionUpdate();
+        institutionUpdate.setDescription("newDesc");
+        institutionUpdate.setParentDescription("newRootName");
+        institutionUpdate.setDigitalAddress("newDigitalAddress");
+        institutionUpdate.setAddress("newAddress");
+        institutionUpdate.setZipCode("newZipCode");
+        institutionUpdate.setOnboardings(List.of(onboarding));
+
+        //when
+        when(institutionConnector.findById(institutionId)).thenReturn(new Institution());
+        when(institutionConnector.findAndUpdate(institutionId, Collections.emptyList(), institutionUpdate)).thenReturn(updatedInstitution);
 
         //then
         Institution result = institutionServiceImpl.updateInstitution(institutionId, institutionUpdate, "userId");
@@ -918,13 +957,13 @@ class InstitutionServiceImplTest {
 
         //when
         when(institutionConnector.findById(institutionId)).thenReturn(outdatedInstitution);
-        when(institutionConnector.findAndUpdate(institutionId, null, Collections.emptyList(), institutionUpdate)).thenReturn(updatedInstitution);
+        when(institutionConnector.findAndUpdate(institutionId, Collections.emptyList(), institutionUpdate)).thenReturn(updatedInstitution);
         doThrow(new RuntimeException()).when(delegationConnector).updateDelegation(updatedInstitution);
 
         Executable executable = () -> institutionServiceImpl.updateInstitution(institutionId, institutionUpdate, "userId");
         // Then
         assertThrows(MsCoreException.class, executable);
-        verify(institutionConnector).findAndUpdate(institutionId,null, null, institutionRollback);
+        verify(institutionConnector).findAndUpdate(institutionId, null, institutionRollback);
         verifyNoInteractions(userApiConnector);
     }
 
@@ -953,14 +992,14 @@ class InstitutionServiceImplTest {
 
         //when
         when(institutionConnector.findById(institutionId)).thenReturn(outdatedInstitution);
-        when(institutionConnector.findAndUpdate(institutionId, null, Collections.emptyList(), institutionUpdate)).thenReturn(updatedInstitution);
+        when(institutionConnector.findAndUpdate(institutionId, Collections.emptyList(), institutionUpdate)).thenReturn(updatedInstitution);
         doThrow(new RuntimeException()).when(userApiConnector).updateUserInstitution(institutionId, institutionUpdate);
 
         Executable executable = () -> institutionServiceImpl.updateInstitution(institutionId, institutionUpdate, "userId");
 
         //then
         assertThrows(MsCoreException.class, executable);
-        verify(institutionConnector).findAndUpdate(institutionId,null, null, institutionRollback);
+        verify(institutionConnector).findAndUpdate(institutionId,null, institutionRollback);
         verify(delegationConnector).updateDelegation(outdatedInstitution);
     }
 
@@ -968,7 +1007,7 @@ class InstitutionServiceImplTest {
     void updateInstitution_noDescription(){
         //when
         when(institutionConnector.findById(any())).thenReturn(new Institution());
-        when(institutionConnector.findAndUpdate(any(), any(), any(), any())).thenReturn(new Institution());
+        when(institutionConnector.findAndUpdate(any(), any(), any())).thenReturn(new Institution());
 
         institutionServiceImpl.updateInstitution("id", new InstitutionUpdate(), "userId");
 

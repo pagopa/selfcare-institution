@@ -1,5 +1,7 @@
 package it.pagopa.selfcare.mscore.web;
 
+import it.pagopa.selfcare.mscore.web.model.institution.InstitutionPut;
+import it.pagopa.selfcare.mscore.web.model.institution.OnboardingPut;
 import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import it.pagopa.selfcare.mscore.constant.Origin;
 import it.pagopa.selfcare.mscore.model.institution.Billing;
@@ -7,8 +9,11 @@ import it.pagopa.selfcare.mscore.model.institution.DataProtectionOfficer;
 import it.pagopa.selfcare.mscore.model.institution.Institution;
 import it.pagopa.selfcare.mscore.model.institution.PaymentServiceProvider;
 import it.pagopa.selfcare.mscore.web.model.institution.InstitutionRequest;
+import org.junit.jupiter.params.provider.Arguments;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
 
 public class TestUtils {
 
@@ -141,5 +146,35 @@ public class TestUtils {
         institution.setRea("Rea");
 
         return institution;
+    }
+
+    public static InstitutionPut createSimpleInstitutionPut() {
+        OnboardingPut onboardingPut = new OnboardingPut();
+        onboardingPut.setProductId("productId");
+        onboardingPut.setVatNumber("vatNumber");
+
+        InstitutionPut institutionPut = new InstitutionPut();
+        institutionPut.setDescription("desc");
+        institutionPut.setDigitalAddress("digitalAddress");
+        institutionPut.setParentDescription("parentDesc");
+        institutionPut.setGeographicTaxonomyCodes(new ArrayList<>());
+        institutionPut.setOnboardings(List.of(onboardingPut));
+        institutionPut.setAddress("address");
+        institutionPut.setZipCode("zipCode");
+        return institutionPut;
+    }
+
+    public static Stream<Arguments> getBlankFieldTestCases() {
+        return Stream.of(
+                Arguments.of("", ""),
+                Arguments.of(null, null),
+                Arguments.of("   ", "   "),
+                Arguments.of("valid", ""),
+                Arguments.of("", "valid"),
+                Arguments.of(null, "valid"),
+                Arguments.of("valid", null),
+                Arguments.of("valid", "   "),
+                Arguments.of("   ", "valid")
+        );
     }
 }

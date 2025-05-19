@@ -230,7 +230,7 @@ class OnboardingServiceImplTest {
 
 
         when(institutionConnector.findById(institution.getId())).thenReturn(institution);
-        when(institutionConnector.findAndUpdate(any(), any(), any(), any())).thenThrow(new RuntimeException());
+        when(institutionConnector.findAndAddOnboarding(any(), any())).thenThrow(new RuntimeException());
         String institutionId = institution.getId();
 
         Assertions.assertThrows(InvalidRequestException.class, () -> onboardingServiceImpl.persistOnboarding(
@@ -280,7 +280,7 @@ class OnboardingServiceImplTest {
         token.setContractSigned(onboarding.getContract());
 
         when(institutionConnector.findById(institution.getId())).thenReturn(institution);
-        when(institutionConnector.findAndUpdate(any(), any(), any(), any())).thenReturn(institution);
+        when(institutionConnector.findAndAddOnboarding(any(), any())).thenReturn(institution);
         when(institutionSendMailConfig.getPecNotificationDisabled()).thenReturn(false);
         when(institutionSendMailConfig.getPecNotificationFrequency()).thenReturn(30);
         when(institutionSendMailConfig.getEpochDatePecNotification()).thenReturn("2024-01-01");
@@ -291,7 +291,7 @@ class OnboardingServiceImplTest {
 
         ArgumentCaptor<Onboarding> captor = ArgumentCaptor.forClass(Onboarding.class);
         verify(institutionConnector, times(1))
-                .findAndUpdate(any(), captor.capture(), any(), any());
+                .findAndAddOnboarding(any(), captor.capture());
         Onboarding actual = captor.getValue();
         assertEquals(billing, actual.getBilling());
         assertEquals(actual.getCreatedAt().getDayOfYear(), LocalDate.of(2025, 3, 13).getDayOfYear());
