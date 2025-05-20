@@ -13,7 +13,7 @@ Python scripts to manipulate data about Selfcare Institution domain.
 1. **Clone the repository:**
    ```sh
    git clone <repository_url>
-   cd <repository_directory>/selfcare-institution/apps/institution-migration
+   cd <repository_directory>/selfcare-institution/scripts/institution-migration
    ```
 
 ## institutiton_to_pec_notification

@@ -1,8 +1,8 @@
 import math
 import os
 from dotenv import load_dotenv
-import time
 from pymongo import MongoClient
+
 from query import *
 
 load_dotenv(dotenv_path=".env", override=True)
