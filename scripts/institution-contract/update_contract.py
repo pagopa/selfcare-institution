@@ -15,6 +15,19 @@ TOKENS_COLLECTION = 'tokens'
 BATCH_SIZE = 100
 START_PAGE = 0
 
+"""
+This script synchronizes the 'contract' field related to the institution's onboarding in 'selcMsCore'
+database, using information from the 'tokens' collection in the 'selcOnboarding' database.
+
+For each institution, it iterates through the onboarding entities:
+- If a valid tokenId is present and the corresponding token document contains a 'contractSigned' field,
+  the 'contract' field in the onboarding entry is updated accordingly.
+- If the token is missing or does not contain a 'contractSigned' field, the 'contract' field is removed.
+- The institution document is updated in the database only if any onboarding entry was modified.
+
+The script processes institutions in batches to handle large datasets efficiently.
+"""
+
 def sync_contracts(client):
     print("Start contract synchronization from token...")
 
