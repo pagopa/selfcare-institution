@@ -1617,7 +1617,7 @@
         } ]
       },
       "put" : {
-        "tags" : [ "Institution" ],
+        "tags" : [ "Institution", "support", "support-pnpg" ],
         "summary" : "update institution data of given institution",
         "description" : "update institution data of given institution",
         "operationId" : "updateInstitutionUsingPUT",
