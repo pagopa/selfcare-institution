@@ -48,7 +48,7 @@ services:
       - develop-network
 
   userms:
-    image: ghcr.io/pagopa/selfcare-user-ms:sha-f3cd392
+    image: ghcr.io/pagopa/selfcare-user-ms:latest
     ports:
       - '8080:8080'
     env_file:
