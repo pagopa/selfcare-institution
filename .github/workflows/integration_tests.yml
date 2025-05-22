@@ -47,5 +47,4 @@ jobs:
         run:  mvn test -Dtest=it.pagopa.selfcare.mscore.integration_test.CucumberSuite -Dsurefire.failIfNoSpecifiedTests=false
         shell: bash
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           APP_SERVER_PORT: 8082
