@@ -1077,7 +1077,6 @@ Feature: Institution
 
   Scenario Outline: Bad request while updating institution with invalid onboarding fields
     Given User login with username "j.doe" and password "test"
-    And A mock institution with id "123"
     And The following path params:
       | id | 123 |
     And The following request body:
