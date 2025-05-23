@@ -17,13 +17,6 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>io.cucumber</groupId>
-                <artifactId>cucumber-bom</artifactId>
-                <version>${cucumber.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
                 <groupId>org.junit</groupId>
                 <artifactId>junit-bom</artifactId>
                 <version>5.10.1</version>
@@ -120,7 +113,7 @@
         <dependency>
             <groupId>it.pagopa.selfcare</groupId>
             <artifactId>cucumber-sdk</artifactId>
-            <version>0.0.3</version>
+            <version>0.0.5</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
