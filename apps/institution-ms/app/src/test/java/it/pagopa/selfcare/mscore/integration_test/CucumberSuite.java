@@ -18,8 +18,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
-import java.util.Properties;
 
 import static io.cucumber.junit.platform.engine.Constants.GLUE_PROPERTY_NAME;
 import static io.cucumber.junit.platform.engine.Constants.PLUGIN_PROPERTY_NAME;
@@ -40,12 +38,7 @@ public class CucumberSuite {
     static {
         log.info("Starting test containers...");
 
-        String dockerComposeFilePath = Paths.get(System.getProperty("user.dir"))
-                .toAbsolutePath()
-                .toString()
-                .replaceFirst("(.*apps).*", "$1/institution-ms/docker-compose.yml");
-
-        composeContainer = new ComposeContainer(new File(dockerComposeFilePath))
+        composeContainer = new ComposeContainer(new File("../docker-compose.yml"))
                 .withLocalCompose(true)
                 .waitingFor("azure-cli", Wait.forLogMessage(".*BLOBSTORAGE INITIALIZED.*\\n", 1));
         composeContainer.start();
@@ -56,15 +49,6 @@ public class CucumberSuite {
 
     @DynamicPropertySource
     static void setProperties(DynamicPropertyRegistry registry) throws IOException {
-        Properties props = new Properties();
-        try (InputStream input = Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream("application-test.properties")) {
-            if (input != null) {
-                props.load(input);
-            }
-        }
-        String serverPort = props.getProperty("server.port", "8082");
-        registry.add("server.port", () -> serverPort);
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         InputStream inputStream = classLoader.getResourceAsStream("key/public-key.pub");
         if (inputStream == null) {
