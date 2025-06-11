@@ -454,7 +454,7 @@
         } ]
       }
     },
-    "/v2/v2/delegations" : {
+    "/v2/delegations/delegations-with-pagination" : {
       "get" : {
         "tags" : [ "Delegation", "external-v2", "support" ],
         "summary" : "Retrieve institution's delegations with pagination",

@@ -25,7 +25,7 @@
     import java.util.Objects;
 
     @RestController
-    @RequestMapping(value = {"/v2/delegations", "/v2/v2/delegations"}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/v2/delegations", produces = MediaType.APPLICATION_JSON_VALUE)
     @Api(tags = "Delegation")
     @Slf4j
     public class DelegationV2Controller {
@@ -49,7 +49,7 @@
          * * Code: 400, Message: Bad Request, DataType: Problem
          */
         @ApiOperation(value = "${swagger.mscore.institutions.delegationsV2}", notes = "${swagger.mscore.institutions.delegationsv2}")
-        @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+        @GetMapping(value = {"", "delegations-with-pagination"}, produces = MediaType.APPLICATION_JSON_VALUE)
         @Tag(name = "external-v2")
         @Tag(name = "support")
         @Tag(name = "Delegation")
