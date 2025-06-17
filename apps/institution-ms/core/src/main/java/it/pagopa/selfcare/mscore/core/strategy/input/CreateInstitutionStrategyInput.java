@@ -21,4 +21,5 @@ public class CreateInstitutionStrategyInput {
     private InstitutionType institutionType;
     private String supportEmail;
     private String supportPhone;
+    private String istatCode;
 }

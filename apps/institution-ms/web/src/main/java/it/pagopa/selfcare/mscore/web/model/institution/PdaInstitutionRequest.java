@@ -14,5 +14,8 @@ public class PdaInstitutionRequest {
     private String taxCode;
 
     private String description;
+
+    private String istatCode;
+
     private BillingRequest billing;
 }

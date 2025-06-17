@@ -145,6 +145,7 @@ class CreateInstitutionStrategyTest {
         institution.setId("id");
         institution.setOrigin(origin);
         institution.setOriginId(originId);
+        institution.setIstatCode("42");
 
         when(institutionConnector.findByOriginAndOriginId(any(), any(), eq(null))). thenReturn(List.of(institution));
         when(institutionConnector.save(any())).thenAnswer(args -> args.getArguments()[0]);
@@ -153,12 +154,14 @@ class CreateInstitutionStrategyTest {
         Institution actual = strategyFactory.createInstitutionStrategyIvass(new Institution())
                 .createInstitution(CreateInstitutionStrategyInput.builder()
                         .ivassCode(originId)
+                        .istatCode("42")
                         .supportEmail(SUPPORT_EMAIL)
                         .supportPhone(SUPPORT_PHONE)
                         .build());
 
         assertThat(actual.getSupportEmail()).isEqualTo(SUPPORT_EMAIL);
         assertThat(actual.getSupportPhone()).isEqualTo(SUPPORT_PHONE);
+        assertThat(actual.getIstatCode()).isEqualTo(institution.getIstatCode());
         verifyNoInteractions(partyRegistryProxyConnector);
     }
 
@@ -193,6 +196,7 @@ class CreateInstitutionStrategyTest {
 
         Institution institution = new Institution();
         institution.setId("id");
+        institution.setIstatCode("42");
 
         when(institutionConnector.findByTaxCodeAndSubunitCode(any(), any(), eq(null))). thenReturn(List.of(institution));
         when(institutionConnector.save(any())).thenAnswer(args -> args.getArguments()[0]);
@@ -201,6 +205,7 @@ class CreateInstitutionStrategyTest {
         Institution actual = strategyFactory.createInstitutionStrategyAnac(institution)
                 .createInstitution(CreateInstitutionStrategyInput.builder()
                         .taxCode(institution.getTaxCode())
+                        .istatCode("42")
                         .supportPhone(SUPPORT_PHONE)
                         .supportEmail(SUPPORT_EMAIL)
                         .build());
@@ -208,6 +213,7 @@ class CreateInstitutionStrategyTest {
         //Then
         assertThat(actual.getTaxCode()).isEqualTo(institution.getTaxCode());
         assertThat(actual.getSubunitCode()).isNull();
+        assertThat(actual.getIstatCode()).isEqualTo(institution.getIstatCode());
         assertThat(actual.getSupportPhone()).isEqualTo(SUPPORT_PHONE);
         assertThat(actual.getSupportEmail()).isEqualTo(SUPPORT_EMAIL);
 
@@ -232,6 +238,7 @@ class CreateInstitutionStrategyTest {
         Institution actual = strategyFactory.createInstitutionStrategyAnac(institution)
                 .createInstitution(CreateInstitutionStrategyInput.builder()
                         .taxCode(institution.getTaxCode())
+                        .istatCode("istatCode")
                         .supportPhone(SUPPORT_PHONE)
                         .supportEmail(SUPPORT_EMAIL)
                         .build());
@@ -248,6 +255,7 @@ class CreateInstitutionStrategyTest {
         assertThat(actual.getSubunitType()).isNull();
         assertThat(actual.getSupportPhone()).isEqualTo(SUPPORT_PHONE);
         assertThat(actual.getSupportEmail()).isEqualTo(SUPPORT_EMAIL);
+        assertThat(actual.getIstatCode()).isEqualTo(institution.getIstatCode());
 
         verify(institutionConnector).save(any());
     }
@@ -270,6 +278,7 @@ class CreateInstitutionStrategyTest {
         Institution actual = strategyFactory.createInstitutionStrategyIvass(institution)
                 .createInstitution(CreateInstitutionStrategyInput.builder()
                         .taxCode(institution.getTaxCode())
+                        .istatCode("istatCode")
                         .build());
 
         //Then
@@ -282,6 +291,7 @@ class CreateInstitutionStrategyTest {
         assertThat(actual.getSubunitType()).isNull();
         assertThat(actual.getInstitutionType()).isEqualTo(InstitutionType.AS);
         assertThat(actual.getSubunitType()).isNull();
+        assertThat(actual.getIstatCode()).isEqualTo(institution.getIstatCode());
 
         verify(institutionConnector).save(any());
     }
@@ -302,6 +312,7 @@ class CreateInstitutionStrategyTest {
         Institution actual = strategyFactory.createInstitutionStrategy(institution)
                 .createInstitution(CreateInstitutionStrategyInput.builder()
                         .taxCode(institution.getTaxCode())
+                        .istatCode("istatCode")
                         .build());
 
         //Then
@@ -314,6 +325,7 @@ class CreateInstitutionStrategyTest {
         assertThat(actual.getSubunitType()).isNull();
         assertThat(actual.getInstitutionType()).isEqualTo(InstitutionType.GSP);
         assertThat(actual.getSubunitType()).isNull();
+        assertThat(actual.getIstatCode()).isEqualTo(institution.getIstatCode());
 
         verify(institutionConnector).save(any());
         verify(institutionConnector).findByTaxCodeAndSubunitCode(anyString(), any(), eq(null));

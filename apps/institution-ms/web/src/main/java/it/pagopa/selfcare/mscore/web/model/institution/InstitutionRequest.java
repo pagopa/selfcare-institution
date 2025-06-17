@@ -38,5 +38,6 @@ public class InstitutionRequest {
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
     private boolean delegation;
+    private String istatCode;
 
 }

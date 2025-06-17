@@ -84,7 +84,7 @@ public class CreateInstitutionStrategyPda extends CreateInstitutionStrategyCommo
     private Institution searchInstitutionOnInfocamere(CreateInstitutionStrategyInput strategyInput){
         try {
             NationalRegistriesProfessionalAddress professionalAddress = partyRegistryProxyConnector.getLegalAddress(strategyInput.getTaxCode());
-            return getInstitutionFromInfocamere(strategyInput.getTaxCode(), strategyInput.getDescription(), professionalAddress);
+            return getInstitutionFromInfocamere(strategyInput.getTaxCode(), strategyInput.getDescription(), strategyInput.getIstatCode(), professionalAddress);
         } catch (MsCoreException ex) {
             if(ex.getCode().equalsIgnoreCase(String.valueOf(HttpStatus.NOT_FOUND.value()))) {
                 log.warn("Institution with taxCode {} not found in registry INFOCAMERE", MaskDataUtils.maskString(strategyInput.getTaxCode()));
@@ -94,7 +94,7 @@ public class CreateInstitutionStrategyPda extends CreateInstitutionStrategyCommo
         }
     }
 
-    private Institution getInstitutionFromInfocamere(String taxCode, String description, NationalRegistriesProfessionalAddress professionalAddress) {
+    private Institution getInstitutionFromInfocamere(String taxCode, String description, String istatCode, NationalRegistriesProfessionalAddress professionalAddress) {
         Institution newInstitution = institutionMapper.fromProfessionalAddress(professionalAddress);
         newInstitution.setTaxCode(taxCode);
         newInstitution.setDescription(description);
@@ -105,6 +105,7 @@ public class CreateInstitutionStrategyPda extends CreateInstitutionStrategyCommo
         }else{
             newInstitution.setInstitutionType(InstitutionType.PG);
         }
+        newInstitution.setIstatCode(istatCode);
         newInstitution.setOriginId(taxCode);
         newInstitution.setCreatedAt(OffsetDateTime.now());
         newInstitution.setImported(true);

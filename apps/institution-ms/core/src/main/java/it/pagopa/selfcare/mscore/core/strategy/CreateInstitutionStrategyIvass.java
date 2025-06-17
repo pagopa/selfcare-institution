@@ -41,6 +41,8 @@ public class CreateInstitutionStrategyIvass extends CreateInstitutionStrategyCom
 
             setContacts(strategyInput, institution);
 
+            setIstatCode(strategyInput, institution);
+
         } else {
             //Institution exists but other fields could be updated
             institution = institutions.get(0);
