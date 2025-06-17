@@ -132,6 +132,7 @@ public class InstitutionServiceImpl implements InstitutionService {
         return institutionStrategy.createInstitution(CreateInstitutionStrategyInput.builder()
                 .taxCode(institution.getTaxCode())
                 .description(institution.getDescription())
+                .istatCode(institution.getIstatCode())
                 .build());
     }
 
@@ -140,6 +141,7 @@ public class InstitutionServiceImpl implements InstitutionService {
         return createInstitutionStrategyFactory.createInstitutionStrategy(institution)
                 .createInstitution(CreateInstitutionStrategyInput.builder()
                         .taxCode(institution.getTaxCode())
+                        .istatCode(institution.getIstatCode())
                         .subunitCode(institution.getSubunitCode())
                         .subunitType(Optional.ofNullable(institution.getSubunitType())
                                 .map(InstitutionPaSubunitType::valueOf)
@@ -160,6 +162,7 @@ public class InstitutionServiceImpl implements InstitutionService {
                                 .orElse(null))
                         .supportEmail(institution.getSupportEmail())
                         .supportPhone(institution.getSupportPhone())
+                        .istatCode(institution.getIstatCode())
                         .build());
     }
 
@@ -170,6 +173,7 @@ public class InstitutionServiceImpl implements InstitutionService {
                         .ivassCode(institution.getOriginId())
                         .supportEmail(institution.getSupportEmail())
                         .supportPhone(institution.getSupportPhone())
+                        .istatCode(institution.getIstatCode())
                         .build());
     }
 
@@ -179,6 +183,7 @@ public class InstitutionServiceImpl implements InstitutionService {
         return institutionStrategy.createInstitution(CreateInstitutionStrategyInput.builder()
                 .taxCode(institution.getTaxCode())
                 .description(institution.getDescription())
+                .istatCode(institution.getIstatCode())
                 .build());
     }
 
@@ -212,13 +217,13 @@ public class InstitutionServiceImpl implements InstitutionService {
     }
 
     @Override
-    public Institution createPgInstitution(String taxId, String description, boolean existsInRegistry, SelfCareUser selfCareUser) {
+    public Institution createPgInstitution(String taxId, String description, String istatCode, boolean existsInRegistry, SelfCareUser selfCareUser) {
         return institutionConnector.findByExternalId(taxId)
-                .orElseGet(() -> createNewInstitution(taxId, description, existsInRegistry, selfCareUser));
+                .orElseGet(() -> createNewInstitution(taxId, description, istatCode, existsInRegistry, selfCareUser));
 
     }
 
-    private Institution createNewInstitution(String taxId, String description, boolean existsInRegistry, SelfCareUser selfCareUser) {
+    private Institution createNewInstitution(String taxId, String description, String istatCode, boolean existsInRegistry, SelfCareUser selfCareUser) {
         Institution newInstitution = new Institution();
         newInstitution.setExternalId(taxId);
         newInstitution.setDescription(description);
@@ -226,6 +231,7 @@ public class InstitutionServiceImpl implements InstitutionService {
         newInstitution.setTaxCode(taxId);
         newInstitution.setCreatedAt(OffsetDateTime.now());
         newInstitution.setOriginId(taxId);
+        newInstitution.setIstatCode(istatCode);
 
         if (existsInRegistry) {
             if (coreConfig.isInfoCamereEnable()) {

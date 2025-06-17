@@ -57,6 +57,7 @@ public class InstitutionControllerPdaTest {
         institutionRequest.setInjectionInstitutionType("EC");
         institutionRequest.setDescription("test ec");
         institutionRequest.setTaxCode("taxCode");
+        institutionRequest.setIstatCode("42");
         String content = objectMapper.writeValueAsString(institutionRequest);
 
         Institution institution = createSimpleInstitutionPda();
@@ -72,7 +73,7 @@ public class InstitutionControllerPdaTest {
                 .perform(requestBuilder);
         actualPerformResult.andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-                .andExpect(MockMvcResultMatchers.content().string("{\"id\":\"42\",\"externalId\":\"42\",\"origin\":\"MOCK\",\"originId\":\"Ipa Code\",\"description\":\"The characteristics of someone or something\",\"institutionType\":\"PA\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"attributes\":[],\"imported\":true,\"delegation\":false}"));
+                .andExpect(MockMvcResultMatchers.content().string("{\"id\":\"42\",\"externalId\":\"42\",\"origin\":\"MOCK\",\"originId\":\"Ipa Code\",\"description\":\"The characteristics of someone or something\",\"institutionType\":\"PA\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"attributes\":[],\"imported\":true,\"delegation\":false}"));
     }
 
     public static Institution createSimpleInstitutionPda() {
@@ -80,6 +81,7 @@ public class InstitutionControllerPdaTest {
         institution.setAddress("42 Main St");
         institution.setAttributes(new ArrayList<>());
         institution.setBilling(createSimpleBilling());
+        institution.setIstatCode("42");
 
         institution.setDescription("The characteristics of someone or something");
         institution.setExternalId("42");

@@ -13,6 +13,8 @@ public class CreatePgInstitutionRequest {
 
     private String description;
 
+    private String istatCode;
+
     @NotNull
     private boolean existsInRegistry;
 

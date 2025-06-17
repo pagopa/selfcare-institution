@@ -64,6 +64,8 @@ public class CreateInstitutionStrategyInfocamere extends CreateInstitutionStrate
             toSavedOrUpdate.setUpdatedAt(OffsetDateTime.now());
         }
 
+        setIstatCode(strategyInput, toSavedOrUpdate);
+
         try {
             return institutionConnector.save(toSavedOrUpdate);
         } catch (Exception e) {

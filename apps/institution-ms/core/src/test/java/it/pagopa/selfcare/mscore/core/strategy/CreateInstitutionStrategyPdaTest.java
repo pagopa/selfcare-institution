@@ -109,6 +109,7 @@ public class CreateInstitutionStrategyPdaTest {
         Institution institutionToReturn = new Institution();
         institutionToReturn.setId("id");
         institutionToReturn.setDescription("test");
+        institutionToReturn.setIstatCode("42");
 
         //Given
         when(institutionConnector.findByTaxCodeAndSubunitCode(any(), any(), eq(null)))
@@ -126,6 +127,7 @@ public class CreateInstitutionStrategyPdaTest {
 
         assertThat(actual.getId()).isEqualTo(institutionToReturn.getId());
         assertThat(actual.getDescription()).isEqualTo(institutionToReturn.getDescription());
+        assertThat(actual.getIstatCode()).isEqualTo(institutionToReturn.getIstatCode());
 
         verify(institutionConnector).findByTaxCodeAndSubunitCode(any(), any(), eq(null));
         verify(partyRegistryProxyConnector).getCategory(any(), any());
@@ -141,6 +143,7 @@ public class CreateInstitutionStrategyPdaTest {
         Institution institutionToReturn = new Institution();
         institutionToReturn.setId("id");
         institutionToReturn.setDescription("test");
+        institutionToReturn.setIstatCode("42");
 
         NationalRegistriesProfessionalAddress nationalRegistriesProfessionalAddress = new NationalRegistriesProfessionalAddress();
         nationalRegistriesProfessionalAddress.setZipCode("test");
@@ -158,10 +161,12 @@ public class CreateInstitutionStrategyPdaTest {
         Institution actual = strategyFactory.createInstitutionStrategyPda("EC")
                 .createInstitution(CreateInstitutionStrategyInput.builder()
                         .taxCode("test")
+                        .istatCode("42")
                         .build());
 
         assertThat(actual.getId()).isEqualTo(institutionToReturn.getId());
         assertThat(actual.getDescription()).isEqualTo(institutionToReturn.getDescription());
+        assertThat(actual.getIstatCode()).isEqualTo(institutionToReturn.getIstatCode());
 
         verify(institutionConnector).findByTaxCodeAndSubunitCode(any(), any(), eq(null));
         verify(partyRegistryProxyConnector).getInstitutionById(any());
@@ -177,6 +182,7 @@ public class CreateInstitutionStrategyPdaTest {
         Institution institutionToReturn = new Institution();
         institutionToReturn.setId("id");
         institutionToReturn.setDescription("test");
+        institutionToReturn.setIstatCode("42");
 
         NationalRegistriesProfessionalAddress nationalRegistriesProfessionalAddress = new NationalRegistriesProfessionalAddress();
         nationalRegistriesProfessionalAddress.setZipCode("test");
@@ -194,10 +200,12 @@ public class CreateInstitutionStrategyPdaTest {
         Institution actual = strategyFactory.createInstitutionStrategyPda("EC")
                 .createInstitution(CreateInstitutionStrategyInput.builder()
                         .taxCode("test")
+                        .istatCode("42")
                         .build());
 
         assertThat(actual.getId()).isEqualTo(institutionToReturn.getId());
         assertThat(actual.getDescription()).isEqualTo(institutionToReturn.getDescription());
+        assertThat(actual.getIstatCode()).isEqualTo(institutionToReturn.getIstatCode());
 
         verify(institutionConnector).findByTaxCodeAndSubunitCode(any(), any(), eq(null));
         verify(partyRegistryProxyConnector).getInstitutionById(any());

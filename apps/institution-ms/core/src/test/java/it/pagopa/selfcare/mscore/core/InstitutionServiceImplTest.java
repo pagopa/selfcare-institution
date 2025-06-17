@@ -233,7 +233,7 @@ class InstitutionServiceImplTest {
     }
 
     /**
-     * Method under test: {@link InstitutionServiceImpl#createPgInstitution(String, String, boolean, SelfCareUser)}
+     * Method under test: {@link InstitutionServiceImpl#createPgInstitution(String, String, String, boolean, SelfCareUser)}
      */
     @Test
     void testCreatePgInstitutionNotFoundInstitution() {
@@ -251,14 +251,14 @@ class InstitutionServiceImplTest {
         when(partyRegistryProxyConnector.getLegalAddress(taxId)).thenReturn(professionalAddress);
         when(institutionConnector.save(any())).thenReturn(institution);
         when(coreConfig.isInfoCamereEnable()).thenReturn(true);
-        Institution response = institutionServiceImpl.createPgInstitution(taxId, "42", true, mock(SelfCareUser.class));
+        Institution response = institutionServiceImpl.createPgInstitution(taxId, "42", "42",true, mock(SelfCareUser.class));
         assertEquals(response.getTaxCode(), taxId);
         verify(institutionConnector).findByExternalId(any());
         verify(institutionConnector).save(any());
     }
 
     /**
-     * Method under test: {@link InstitutionServiceImpl#createPgInstitution(String, String, boolean, SelfCareUser)}
+     * Method under test: {@link InstitutionServiceImpl#createPgInstitution(String, String, String, boolean, SelfCareUser)}
      */
     @Test
     void testCreatePgInstitutionFoundedInstitution() {
@@ -268,7 +268,7 @@ class InstitutionServiceImplTest {
         institution.setTaxCode(taxId);
         institution.setExternalId(taxId);
         when(institutionConnector.findByExternalId(taxId)).thenReturn(Optional.of(institution));
-        Institution response = institutionServiceImpl.createPgInstitution(taxId, "42", true, mock(SelfCareUser.class));
+        Institution response = institutionServiceImpl.createPgInstitution(taxId, "42", "42",true, mock(SelfCareUser.class));
         assertEquals(response.getId(), institution.getId());
         assertEquals(response.getTaxCode(), taxId);
         assertEquals(response.getExternalId(), taxId);
@@ -389,7 +389,7 @@ class InstitutionServiceImplTest {
         assertTrue(institutionsResult.isEmpty());
     }
     /**
-     * Method under test: {@link InstitutionServiceImpl#createPgInstitution(String, String, boolean, SelfCareUser)}
+     * Method under test: {@link InstitutionServiceImpl#createPgInstitution(String, String, String, boolean, SelfCareUser)}
      */
     @Test
     void testCreatePgInstitution4() {
@@ -402,12 +402,12 @@ class InstitutionServiceImplTest {
         institutionByLegal.setBusinessTaxId("42");
 
         SelfCareUser selfCareUser = mock(SelfCareUser.class);
-        Institution institutionResult = institutionServiceImpl.createPgInstitution("42", "42", false, selfCareUser);
+        Institution institutionResult = institutionServiceImpl.createPgInstitution("42", "42", "42",false, selfCareUser);
         assertSame(institution, institutionResult);
     }
 
     /**
-     * Method under test: {@link InstitutionServiceImpl#createPgInstitution(String, String, boolean, SelfCareUser)}
+     * Method under test: {@link InstitutionServiceImpl#createPgInstitution(String, String, String, boolean, SelfCareUser)}
      */
     @Test
     void testCreatePgInstitution2() {
@@ -423,23 +423,23 @@ class InstitutionServiceImplTest {
         when(institutionConnector.findByExternalId(any())).thenReturn(Optional.empty());
 
         SelfCareUser selfCareUser = mock(SelfCareUser.class);
-        assertSame(institution, institutionServiceImpl.createPgInstitution("42", "42", true, selfCareUser));
+        assertSame(institution, institutionServiceImpl.createPgInstitution("42", "42", "42",true, selfCareUser));
     }
 
     /**
-     * Method under test: {@link InstitutionServiceImpl#createPgInstitution(String, String, boolean, SelfCareUser)}
+     * Method under test: {@link InstitutionServiceImpl#createPgInstitution(String, String, String, boolean, SelfCareUser)}
      */
     @Test
     void testCreatePgInstitution5() {
         when(institutionConnector.findByExternalId(any()))
                 .thenThrow(new ResourceNotFoundException("An error occurred", "START - check institution {} already exists"));
         assertThrows(ResourceNotFoundException.class,
-                () -> institutionServiceImpl.createPgInstitution("42", "42", true, mock(SelfCareUser.class)));
+                () -> institutionServiceImpl.createPgInstitution("42", "42", "42",true, mock(SelfCareUser.class)));
         verify(institutionConnector).findByExternalId(any());
     }
 
     /**
-     * Method under test: {@link InstitutionServiceImpl#createPgInstitution(String, String, boolean, SelfCareUser)}
+     * Method under test: {@link InstitutionServiceImpl#createPgInstitution(String, String, String, boolean, SelfCareUser)}
      */
     @Test
     void testCreatePgInstitution6() {
@@ -452,13 +452,13 @@ class InstitutionServiceImplTest {
         institutionByLegal.setBusinessTaxId("42");
 
         SelfCareUser selfCareUser = mock(SelfCareUser.class);
-        assertSame(institution, institutionServiceImpl.createPgInstitution("42", "42", false, selfCareUser));
+        assertSame(institution, institutionServiceImpl.createPgInstitution("42", "42","42", false, selfCareUser));
         verify(institutionConnector).save(any());
         verify(institutionConnector).findByExternalId(any());
     }
 
     /**
-     * Method under test: {@link InstitutionServiceImpl#createPgInstitution(String, String, boolean, SelfCareUser)}
+     * Method under test: {@link InstitutionServiceImpl#createPgInstitution(String, String, String, boolean, SelfCareUser)}
      */
     @Test
     void testCreatePgInstitution7() {
@@ -472,11 +472,11 @@ class InstitutionServiceImplTest {
 
         SelfCareUser selfCareUser = mock(SelfCareUser.class);
         assertThrows(ResourceConflictException.class,
-                () -> institutionServiceImpl.createPgInstitution("42", "42", true, selfCareUser));
+                () -> institutionServiceImpl.createPgInstitution("42", "42", "42",true, selfCareUser));
     }
 
     /**
-     * Method under test: {@link InstitutionServiceImpl#createPgInstitution(String, String, boolean, SelfCareUser)}
+     * Method under test: {@link InstitutionServiceImpl#createPgInstitution(String, String, String, boolean, SelfCareUser)}
      */
     @Test
     void testCreatePgInstitution9() {
@@ -491,11 +491,11 @@ class InstitutionServiceImplTest {
         when(institutionConnector.save(any())).thenReturn(institution);
         when(institutionConnector.findByExternalId(any())).thenReturn(Optional.empty());
         SelfCareUser selfCareUser = mock(SelfCareUser.class);
-        assertSame(institution, institutionServiceImpl.createPgInstitution("42", "42", true, selfCareUser));
+        assertSame(institution, institutionServiceImpl.createPgInstitution("42", "42", "42",true, selfCareUser));
     }
 
     /**
-     * Method under test: {@link InstitutionServiceImpl#createPgInstitution(String, String, boolean, SelfCareUser)}
+     * Method under test: {@link InstitutionServiceImpl#createPgInstitution(String, String, String, boolean, SelfCareUser)}
      */
     @Test
     void testCreatePgInstitution14() {
@@ -510,7 +510,7 @@ class InstitutionServiceImplTest {
         when(institutionConnector.save(any())).thenReturn(institution);
         when(institutionConnector.findByExternalId(any())).thenReturn(Optional.empty());
         SelfCareUser selfCareUser = mock(SelfCareUser.class);
-        assertSame(institution, institutionServiceImpl.createPgInstitution("42", "42", false, selfCareUser));
+        assertSame(institution, institutionServiceImpl.createPgInstitution("42", "42", "42", false, selfCareUser));
         verify(institutionConnector).save(any());
         verify(institutionConnector).findByExternalId(any());
     }

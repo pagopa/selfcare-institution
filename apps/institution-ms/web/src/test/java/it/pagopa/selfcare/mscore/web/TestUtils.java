@@ -52,6 +52,7 @@ public class TestUtils {
         institution.setAddress("42 Main St");
         institution.setAttributes(new ArrayList<>());
         institution.setBilling(createSimpleBilling());
+        institution.setIstatCode("42");
 
         institution.setDataProtectionOfficer(createSimpleDataProtectionOfficer());
         institution.setDescription("The characteristics of someone or something");
@@ -78,6 +79,7 @@ public class TestUtils {
         institution.setAddress("42 Main St");
         institution.setAttributes(new ArrayList<>());
         institution.setBilling(createSimpleBilling());
+        institution.setIstatCode("42");
 
         institution.setDataProtectionOfficer(createSimpleDataProtectionOfficer());
         institution.setDescription("The characteristics of someone or something");
@@ -104,6 +106,7 @@ public class TestUtils {
         institution.setAddress("42 Main St");
         institution.setAttributes(new ArrayList<>());
         institution.setBilling(createSimpleBilling());
+        institution.setIstatCode("42");
 
         institution.setDataProtectionOfficer(createSimpleDataProtectionOfficer());
         institution.setDescription("The characteristics of someone or something");
@@ -121,6 +124,24 @@ public class TestUtils {
         institution.setZipCode("21654");
         institution.setShareCapital("Share Capital");
         institution.setRea("Rea");
+
+        return institution;
+    }
+
+    public static Institution createSimpleInstitutionPG() {
+        Institution institution = new Institution();
+        institution.setAddress("42 Main St");
+        institution.setIstatCode("42");
+
+        institution.setDescription("The characteristics of someone or something");
+        institution.setExternalId("42");
+        institution.setId("42");
+        institution.setInstitutionType(InstitutionType.PG);
+        institution.setOriginId("Pg Code");
+        institution.setOrigin(Origin.MOCK.name());
+
+       institution.setTaxCode("Tax Code");
+        institution.setZipCode("21654");
 
         return institution;
     }

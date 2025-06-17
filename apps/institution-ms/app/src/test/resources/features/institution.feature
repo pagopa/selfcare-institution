@@ -524,15 +524,17 @@ Feature: Institution
     And The following request body:
       """
       {
-        "taxCode": "06068501219"
+        "taxCode": "06068501219",
+        "istatCode": "06068501219"
       }
       """
     When I send a POST request to "/institutions/from-anac"
     Then The status code is 201
     And The response body contains:
-      | taxCode  | 06068501219 |
-      | origin   | ANAC        |
-      | originId | 06068501219 |
+      | taxCode   | 06068501219 |
+      | istatCode | 06068501219 |
+      | origin    | ANAC        |
+      | originId  | 06068501219 |
     And The response body contains field "id"
 
   Scenario: TaxCode not found from ANAC
@@ -553,15 +555,17 @@ Feature: Institution
     And The following request body:
       """
       {
-        "taxCode": "06068501219"
+        "taxCode": "06068501219",
+        "istatCode": "06068501219"
       }
       """
     When I send a POST request to "/institutions/from-anac"
     Then The status code is 201
     And The response body contains:
-      | taxCode  | 06068501219 |
-      | origin   | ANAC        |
-      | originId | 06068501219 |
+      | taxCode   | 06068501219 |
+      | istatCode | 06068501219 |
+      | origin    | ANAC        |
+      | originId  | 06068501219 |
     And The response body contains field "id"
     And The response body doesn't contain field "supportEmail"
     # UPDATE
@@ -570,13 +574,15 @@ Feature: Institution
       """
       {
         "taxCode": "06068501219",
-        "supportEmail": "test@pec.it"
+        "supportEmail": "test@pec.it",
+        "istatCode": "06068501220"
       }
       """
     When I send a POST request to "/institutions/from-anac"
     Then The status code is 201
     And The response body contains:
       | taxCode      | 06068501219 |
+      | istatCode    | 06068501220 |
       | origin       | ANAC        |
       | originId     | 06068501219 |
       | supportEmail | test@pec.it |
@@ -590,15 +596,17 @@ Feature: Institution
     And The following request body:
       """
       {
-        "originId": "A044S"
+        "originId": "A044S",
+        "istatCode": "06068501219"
       }
       """
     When I send a POST request to "/institutions/from-ivass"
     Then The status code is 201
     And The response body contains:
-      | taxCode  | 00409920584 |
-      | origin   | IVASS       |
-      | originId | A044S       |
+      | taxCode   | 00409920584 |
+      | istatCode | 06068501219 |
+      | origin    | IVASS       |
+      | originId  | A044S       |
     And The response body contains field "id"
 
   Scenario: originId not found from IVASS
@@ -619,15 +627,17 @@ Feature: Institution
     And The following request body:
       """
       {
-        "originId": "A044S"
+        "originId": "A044S",
+        "istatCode": "06068501219"
       }
       """
     When I send a POST request to "/institutions/from-ivass"
     Then The status code is 201
     And The response body contains:
-      | taxCode  | 00409920584 |
-      | origin   | IVASS       |
-      | originId | A044S       |
+      | taxCode   | 00409920584 |
+      | istatCode | 06068501219 |
+      | origin    | IVASS       |
+      | originId  | A044S       |
     And The response body contains field "id"
     And The response body doesn't contain field "supportEmail"
     # UPDATE
@@ -636,13 +646,15 @@ Feature: Institution
       """
       {
         "originId": "A044S",
-        "supportEmail": "test@pec.it"
+        "supportEmail": "test@pec.it",
+        "istatCode": "06068501220"
       }
       """
     When I send a POST request to "/institutions/from-ivass"
     Then The status code is 201
     And The response body contains:
       | taxCode      | 00409920584 |
+      | istatCode    | 06068501220 |
       | origin       | IVASS       |
       | originId     | A044S       |
       | supportEmail | test@pec.it |
@@ -678,6 +690,7 @@ Feature: Institution
         {
           "injectionInstitutionType": "Test",
           "taxCode": "01501320442",
+          "istatCode": "06068501219",
           "description": "Test description"
         }
       """
@@ -685,6 +698,7 @@ Feature: Institution
     Then The status code is 201
     And The response body contains:
       | taxCode         | 01501320442 |
+      | istatCode       | 06068501219 |
       | origin          | INFOCAMERE  |
       | originId        | 01501320442 |
       | institutionType | PG          |
@@ -730,15 +744,17 @@ Feature: Institution
     And The following request body:
       """
       {
-        "taxCode": "01501320442"
+        "taxCode": "01501320442",
+        "istatCode": "06068501219"
       }
       """
     When I send a POST request to "/institutions/from-infocamere"
     Then The status code is 201
     And The response body contains:
-      | taxCode  | 01501320442 |
-      | origin   | INFOCAMERE  |
-      | originId | 01501320442 |
+      | taxCode   | 01501320442 |
+      | istatCode | 06068501219 |
+      | origin    | INFOCAMERE  |
+      | originId  | 01501320442 |
     And The response body contains field "id"
 
   @RemoveInstitutionIdAfterScenario
@@ -765,15 +781,17 @@ Feature: Institution
     And The following request body:
       """
       {
-        "taxCode": "01501320442"
+        "taxCode": "01501320442",
+        "istatCode": "06068501219"
       }
       """
     When I send a POST request to "/institutions/from-infocamere"
     Then The status code is 201
     And The response body contains:
-      | taxCode  | 01501320442 |
-      | origin   | INFOCAMERE  |
-      | originId | 01501320442 |
+      | taxCode   | 01501320442 |
+      | istatCode | 06068501219 |
+      | origin    | INFOCAMERE  |
+      | originId  | 01501320442 |
     And The response body contains field "id"
     And The response body doesn't contain field "description"
     # UPDATE
@@ -782,6 +800,7 @@ Feature: Institution
       """
       {
         "taxCode": "01501320442",
+        "istatCode": "06068501220",
         "description": "test description"
       }
       """
@@ -789,6 +808,7 @@ Feature: Institution
     Then The status code is 201
     And The response body contains:
       | taxCode     | 01501320442      |
+      | istatCode   | 06068501220      |
       | origin      | INFOCAMERE       |
       | originId    | 01501320442      |
       | description | test description |
@@ -804,15 +824,18 @@ Feature: Institution
     And The following request body:
       """
       {
-        "taxCode": "123456789"
+        "taxCode": "123456789",
+        "istatCode": "06068501219"
+
       }
       """
     When I send a POST request to "/institutions"
     Then The status code is 201
     And The response body contains:
-      | taxCode  | 123456789      |
-      | origin   | SELC           |
-      | originId | SELC_123456789 |
+      | taxCode   | 123456789      |
+      | istatCode | 06068501219 |
+      | origin    | SELC           |
+      | originId  | SELC_123456789 |
     And The response body contains field "id"
 
   @RemoveInstitutionIdAfterScenario
@@ -862,6 +885,7 @@ Feature: Institution
       """
         {
           "taxId": "0987654321",
+          "istatCode": "06068501219",
           "description": "Test PG Institution",
           "existsInRegistry": false
         }
@@ -870,6 +894,7 @@ Feature: Institution
     Then The status code is 201
     And The response body contains:
       | taxCode         | 0987654321          |
+      | istatCode       | 06068501219         |
       | origin          | ADE                 |
       | originId        | 0987654321          |
       | institutionType | PG                  |
@@ -883,6 +908,7 @@ Feature: Institution
       """
         {
           "taxId": "01501320442",
+          "istatCode": "06068501219",
           "description": "Test PG Institution",
           "existsInRegistry": true
         }
@@ -891,6 +917,7 @@ Feature: Institution
     Then The status code is 201
     And The response body contains:
       | taxCode         | 01501320442 |
+      | istatCode       | 06068501219 |
       | origin          | INFOCAMERE  |
       | originId        | 01501320442 |
       | institutionType | PG          |

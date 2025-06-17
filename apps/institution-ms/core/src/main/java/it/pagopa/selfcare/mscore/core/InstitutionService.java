@@ -35,7 +35,7 @@ public interface InstitutionService {
 
     Institution createInstitutionFromInfocamere(Institution institution);
 
-    Institution createPgInstitution(String taxId, String description, boolean existsInRegistry, SelfCareUser selfCareUser);
+    Institution createPgInstitution(String taxId, String description, String istatCode, boolean existsInRegistry, SelfCareUser selfCareUser);
 
     Institution createInstitution(Institution institution);
 

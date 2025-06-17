@@ -2796,6 +2796,9 @@
           "existsInRegistry" : {
             "type" : "boolean"
           },
+          "istatCode" : {
+            "type" : "string"
+          },
           "taxId" : {
             "type" : "string"
           }
@@ -3377,6 +3380,9 @@
             "type" : "string",
             "enum" : [ "AS", "CON", "GPU", "GSP", "PA", "PG", "PRV", "PSP", "PT", "REC", "SA", "SCP" ]
           },
+          "istatCode" : {
+            "type" : "string"
+          },
           "onboarding" : {
             "type" : "array",
             "items" : {
@@ -3952,6 +3958,9 @@
             "type" : "string"
           },
           "injectionInstitutionType" : {
+            "type" : "string"
+          },
+          "istatCode" : {
             "type" : "string"
           },
           "taxCode" : {

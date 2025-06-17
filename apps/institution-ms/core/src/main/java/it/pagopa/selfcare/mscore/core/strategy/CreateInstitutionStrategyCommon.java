@@ -32,8 +32,15 @@ public class CreateInstitutionStrategyCommon {
         if (strategyInput.getDescription() != null) {
             toSavedOrUpdate.setDescription(strategyInput.getDescription());
         }
+        setIstatCode(strategyInput, toSavedOrUpdate);
         setContacts(strategyInput, toSavedOrUpdate);
         toSavedOrUpdate.setUpdatedAt(OffsetDateTime.now());
+    }
+
+    protected static void setIstatCode(CreateInstitutionStrategyInput strategyInput, Institution toSavedOrUpdate) {
+        if (strategyInput.getIstatCode() != null) {
+            toSavedOrUpdate.setIstatCode(strategyInput.getIstatCode());
+        }
     }
 
     protected static void setContacts(CreateInstitutionStrategyInput strategyInput, Institution toSavedOrUpdate) {
