@@ -89,7 +89,10 @@ Feature: Institution
       | institutions[0].taxCode                 | 94076720658                          |
       | institutions[0].subunitCode             | UF5D7W                               |
       | institutions[0].onboarding[0].productId | prod-io                              |
+      | institutions[0].onboarding[0].origin    | IPA                                  |
+      | institutions[0].onboarding[0].originId  | UF5D7W                               |
     And The response body doesn't contain field "institutions[0].isTest"
+    And The response body doesn't contain field "institutions[0].onboarding[0].institutionType"
 
   Scenario: Invalid request in getInstitutions with taxCode,origin,originId,subunitCode,productId
     Given User login with username "j.doe" and password "test"
@@ -116,12 +119,15 @@ Feature: Institution
     And The response body contains the list "institutions" of size 1
     And The response body contains the list "institutions[0].onboarding" of size 1
     And The response body contains:
-      | institutions[0].id                      | fc5466e5-df00-4800-9ad5-aa2e7d9344f9 |
-      | institutions[0].taxCode                 | 94076720658                          |
-      | institutions[0].origin                  | IPA                                  |
-      | institutions[0].originId                | isticom                              |
-      | institutions[0].onboarding[0].productId | prod-io                              |
-      | institutions[0].isTest                  | true                                 |
+      | institutions[0].id                            | fc5466e5-df00-4800-9ad5-aa2e7d9344f9 |
+      | institutions[0].taxCode                       | 94076720658                          |
+      | institutions[0].origin                        | IPA                                  |
+      | institutions[0].originId                      | isticom                              |
+      | institutions[0].isTest                        | true                                 |
+      | institutions[0].onboarding[0].productId       | prod-io                              |
+      | institutions[0].onboarding[0].origin          | IPA                                  |
+      | institutions[0].onboarding[0].originId        | isticom                              |
+      | institutions[0].onboarding[0].institutionType | PA                                   |
 
   Scenario: Validation error in getInstitutions without taxCode,origin,originId
     Given User login with username "j.doe" and password "test"
@@ -1405,9 +1411,22 @@ Feature: Institution
       | id | c9a50656-f345-4c81-84be-5b2474470544 |
     When I send a GET request to "/institutions/{id}"
     Then The status code is 200
+    And The response body contains the list "onboarding" of size 4
+    And The response body contains at path "onboarding" the following list of objects in any order:
+      | productId    | tokenId                              | status | institutionType | origin | originId |
+      | prod-interop | cdd3d4bb-bae3-4187-af16-53ec40358267 | ACTIVE | PA              | IPA    | c_c067   |
+      | prod-fd      | a3f2d517-b432-4745-ae9b-5bb1f1bcfb79 | ACTIVE | PA              | IPA    | c_c067   |
+      | prod-io      | 5eeaf667-e9c1-4150-bb4b-1fce01df6ab9 | ACTIVE | PA              | IPA    | c_c067   |
+      | prod-pagopa  | 6c4fc5c1-65bb-496c-ae0a-547a4c920bd9 | ACTIVE | PA              | IPA    | c_c067   |
     And The response body contains:
-      | id   | c9a50656-f345-4c81-84be-5b2474470544                        |
-      | logo | test-logo-url/c9a50656-f345-4c81-84be-5b2474470544/logo.png |
+      | id              | c9a50656-f345-4c81-84be-5b2474470544                        |
+      | logo            | test-logo-url/c9a50656-f345-4c81-84be-5b2474470544/logo.png |
+      | origin          | IPA                                                         |
+      | originId        | c_c067                                                      |
+      | institutionType | PA                                                          |
+      | description     | Comune di Castelbuono                                       |
+      | taxCode         | 00310810825                                                 |
+      | digitalAddress  | comune.castelbuono@pec.it                                   |
 
   Scenario: Get institution by id not found
     Given User login with username "j.doe" and password "test"
@@ -1426,6 +1445,13 @@ Feature: Institution
       | institutionId | 067327d3-bdd6-408d-8655-87e8f1960046 |
     When I send a GET request to "/institutions/{institutionId}/onboardings"
     Then The status code is 200
+    And The response body contains the list "onboardings" of size 4
+    And The response body contains at path "onboardings" the following list of objects in any order:
+      | productId    | tokenId                              | status  | contract                                                                      | institutionType | origin | originId |
+      | prod-io      | 21f73488-d0df-4a3d-9b6f-9adf634780b5 | ACTIVE  | parties/docs/21f73488-d0df-4a3d-9b6f-9adf634780b5/App IO_accordo_adesione.pdf | PT              | IPA    | c_d277   |
+      | prod-pagopa  | string                               | DELETED | string                                                                        | PT              | IPA    | c_d277   |
+      | prod-pagopa  | string                               | ACTIVE  | string                                                                        | PT              | IPA    | c_d277   |
+      | prod-interop | string                               | ACTIVE  | string                                                                        | PT              | IPA    | c_d277   |
 
   Scenario: Successfully get onboardings on institution with productId
     Given User login with username "j.doe" and password "test"
@@ -1437,8 +1463,15 @@ Feature: Institution
     Then The status code is 200
     And The response body contains the list "onboardings" of size 1
     And The response body contains:
-      | onboardings[0].productId | prod-pagopa |
-      | onboardings[0].status    | ACTIVE      |
+      | onboardings[0].productId              | prod-pagopa                          |
+      | onboardings[0].status                 | ACTIVE                               |
+      | onboardings[0].tokenId                | 6c4fc5c1-65bb-496c-ae0a-547a4c920bd9 |
+      | onboardings[0].billing.vatNumber      | 00750840175                          |
+      | onboardings[0].billing.recipientCode  | UF7ECB                               |
+      | onboardings[0].billing.publicServices | true                                 |
+      | onboardings[0].institutionType        | PA                                   |
+      | onboardings[0].origin                 | IPA                                  |
+      | onboardings[0].originId               | c_c067                               |
 
   Scenario: Get onboardings on institution not found
     Given User login with username "j.doe" and password "test"
@@ -1537,9 +1570,26 @@ Feature: Institution
     When I send a GET request to "/institutions/products/{productId}"
     Then The status code is 200
     And The response body contains the list "items" of size 2
-    And The response body contains:
-      | items[0].onboardings.prod-fd.productId | prod-fd |
-      | items[1].onboardings.prod-fd.productId | prod-fd |
+    And The response body contains at path "items" the following list of objects in any order:
+      | id                                   | externalId  | origin | originId        | institutionType | description           | digitalAddress            | zipCode | taxCode     | supportEmail |
+      | c9a50656-f345-4c81-84be-5b2474470544 | 00310810825 | IPA    | c_c067          | PA              | Comune di Castelbuono | comune.castelbuono@pec.it | 90013   | 00310810825 | a@l.it       |
+      | 0b56686d-3e25-4851-86c8-b9ba0d4fe301 | 15555555555 | SELC   | PSP_15555555555 | PSP             | Comune di Castel Test | test@t.it                 | 11111   | 15555555555 |              |
+    And The response body contains at path "items" the following list of objects in any order:
+      | onboardings.prod-io.productId | onboardings.prod-io.status | onboardings.prod-io.contract                                    | onboardings.prod-io.institutionType | onboardings.prod-io.origin | onboardings.prod-io.originId |
+      | prod-io                       | ACTIVE                     | contracts/template/io/2.4.2/io-accordo_di_adesione-v.2.4.2.html | PA                                  | IPA                        | c_c067                       |
+      | prod-io                       | ACTIVE                     | contracts/template/io/2.4.2/io-accordo_di_adesione-v.2.4.2.html | PSP                                 | SELC                       | PSP_15555555555              |
+    And The response body contains at path "items" the following list of objects in any order:
+      | onboardings.prod-pagopa.productId | onboardings.prod-pagopa.status | onboardings.prod-pagopa.contract | onboardings.prod-pagopa.institutionType | onboardings.prod-pagopa.origin | onboardings.prod-pagopa.originId |
+      | prod-pagopa                       | ACTIVE                         |                                  | PA                                      | IPA                            | c_c067                           |
+      | prod-pagopa                       | ACTIVE                         |                                  | PSP                                     | SELC                           | PSP_15555555555                  |
+    And The response body contains at path "items" the following list of objects in any order:
+      | onboardings.prod-fd.productId | onboardings.prod-fd.status | onboardings.prod-fd.contract                                                                          | onboardings.prod-fd.institutionType | onboardings.prod-fd.origin | onboardings.prod-fd.originId |
+      | prod-fd                       | ACTIVE                     | parties/docs/a3f2d517-b432-4745-ae9b-5bb1f1bcfb79/Prod Fideiussioni Digitali_accordo_adesione (3).pdf | PA                                  | IPA                        | c_c067                       |
+      | prod-fd                       | ACTIVE                     | parties/docs/a3f2d517-b432-4745-ae9b-5bb1f1bcfb79/Prod Fideiussioni Digitali_accordo_adesione (3).pdf | PSP                                 | SELC                       | PSP_15555555555              |
+    And The response body contains at path "items" the following list of objects in any order:
+      | onboardings.prod-interop.productId | onboardings.prod-interop.status | onboardings.prod-interop.contract                                                                         | onboardings.prod-interop.institutionType | onboardings.prod-interop.origin | onboardings.prod-interop.originId |
+      | prod-interop                       | ACTIVE                          | parties/docs/81ea93f8-0276-48a7-bdd2-53106c5e8387/App IO_accordo_adesione (3).pdf17362706113579421406.pdf | PA                                       | IPA                             | c_c067                            |
+      | prod-interop                       | ACTIVE                          | parties/docs/81ea93f8-0276-48a7-bdd2-53106c5e8387/App IO_accordo_adesione (3).pdf17362706113579421406.pdf | PSP                                      | SELC                            | PSP_15555555555                   |
 
   Scenario: Successfully get institutions with productId, page and size
     Given User login with username "j.doe" and password "test"

@@ -202,6 +202,9 @@ public class InstitutionMapperCustom {
                 onboardingResponse.setUpdatedAt(o.getUpdatedAt());
                 onboardingResponse.setClosedAt(o.getClosedAt());
                 onboardingResponse.setIsAggregator(o.getIsAggregator());
+                onboardingResponse.setInstitutionType(o.getInstitutionType());
+                onboardingResponse.setOrigin(o.getOrigin());
+                onboardingResponse.setOriginId(o.getOriginId());
                 if (!map.containsKey(o.getProductId()) ||
                         map.containsKey(o.getProductId()) && map.get(o.getProductId()).getStatus() != RelationshipState.ACTIVE) {
                     map.put(o.getProductId(), onboardingResponse);
@@ -266,6 +269,9 @@ public class InstitutionMapperCustom {
                 bulkProduct.setPricingPlan(onb.getPricingPlan());
                 bulkProduct.setBilling(toBillingResponse(onb.getBilling(), institution));
                 bulkProduct.setStatus(onb.getStatus());
+                bulkProduct.setInstitutionType(onb.getInstitutionType());
+                bulkProduct.setOrigin(onb.getOrigin());
+                bulkProduct.setOriginId(onb.getOriginId());
                 return bulkProduct;
             }).collect(Collectors.toMap(BulkProduct::getProduct, Function.identity(), MERGE_FUNCTION));
         }

@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.mscore.web.model.institution;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import it.pagopa.selfcare.commons.base.utils.InstitutionType;
 import it.pagopa.selfcare.mscore.constant.RelationshipState;
 import lombok.Data;
 
@@ -16,4 +17,8 @@ public class BulkProduct {
     private BillingResponse billing;
     private String pricingPlan;
     private RelationshipState status;
+    private InstitutionType institutionType;
+    private String origin;
+    private String originId;
+
 }

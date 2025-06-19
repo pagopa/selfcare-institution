@@ -16,6 +16,18 @@ Feature: External
       | c9a50656-f345-4c81-84be-5b2474470544 | 00310810825        | IPA    | c_c067   | Comune di Castelbuono                   | PA              | comune.castelbuono@pec.it    | Via Sant' Anna, 25 | 90013   | 00310810825 | false    | a@l.it       | false      |             |             |
       | fc5466e5-df00-4800-9ad5-aa2e7d9344f9 | 94076720658        | IPA    | isticom  | 3 Istituto Comprensivo Nocera Inferiore | PA              | saic8bu00x@pec.istruzione.it | Via San Pietro, 10 | 84014   | 94076720658 | false    |              | false      |             |             |
 
+  Scenario: Successfully retrieve institutions onboarding data by ids
+    Given User login with username "j.doe" and password "test"
+    And The following query params:
+      | ids | fc5466e5-df00-4800-9ad5-aa2e7d9344f9 |
+    When I send a GET request to "/external/institutions"
+    Then The status code is 200
+    And The response body contains the list "[0].onboarding" of size 2
+    And The response body contains at path "[0].onboarding" the following list of objects in any order:
+      | productId   | tokenId                              | status | origin | originId | institutionType |
+      | prod-pagopa | afb6c11d-67f8-44f9-b04f-88d47e0d2fc3 | ACTIVE | IPA    | isticom  | PA              |
+      | prod-io     | 24534011-a806-4137-855c-059ea9b943cd | ACTIVE | IPA    | isticom  | PA              |
+
   Scenario: Bad request while while getting institutions data by ids
     Given User login with username "j.doe" and password "test"
     When I send a GET request to "/external/institutions"
@@ -55,11 +67,11 @@ Feature: External
       | subunitType    | AOO                                   |
     And The response body contains the list "onboarding" of size 4
     And The response body contains at path "onboarding" the following list of objects in any order:
-      | productId    | tokenId                              | status  |
-      | prod-pn      | 5cf41352-de89-4bc1-b42a-3c86ba30c9bb | PENDING |
-      | prod-interop | 7a7bcae7-13f6-4b4c-84f0-adbcfca283b4 | PENDING |
-      | prod-idpay   | 65f7b3f2-9351-4c87-ada6-3205c5660a3d | PENDING |
-      | prod-io      |                                      | ACTIVE  |
+      | productId    | tokenId                              | status  | institutionType | origin | originId |
+      | prod-pn      | 5cf41352-de89-4bc1-b42a-3c86ba30c9bb | PENDING |                 | IPA    | AVO36EJ  |
+      | prod-interop | 7a7bcae7-13f6-4b4c-84f0-adbcfca283b4 | PENDING |                 | IPA    | AVO36EJ  |
+      | prod-idpay   | 65f7b3f2-9351-4c87-ada6-3205c5660a3d | PENDING |                 | IPA    | AVO36EJ  |
+      | prod-io      |                                      | ACTIVE  |                 | IPA    | AVO36EJ  |
 
   Scenario: Not found institutions while getting institution by externalId
     Given User login with username "j.doe" and password "test"

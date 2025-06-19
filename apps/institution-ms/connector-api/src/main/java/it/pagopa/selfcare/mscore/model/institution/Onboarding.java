@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.mscore.model.institution;
 
+import it.pagopa.selfcare.commons.base.utils.InstitutionType;
 import it.pagopa.selfcare.mscore.constant.RelationshipState;
 import lombok.Data;
 import lombok.experimental.FieldNameConstants;
@@ -20,4 +21,8 @@ public class Onboarding {
     private OffsetDateTime updatedAt;
     private OffsetDateTime closedAt;
     private Boolean isAggregator;
+    private InstitutionType institutionType;
+    private String origin;
+    private String originId;
+
 }
