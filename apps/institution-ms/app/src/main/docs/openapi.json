@@ -2762,6 +2762,16 @@
           "billing" : {
             "$ref" : "#/components/schemas/BillingResponse"
           },
+          "institutionType" : {
+            "type" : "string",
+            "enum" : [ "AS", "CON", "GPU", "GSP", "PA", "PG", "PRV", "PSP", "PT", "REC", "SA", "SCP" ]
+          },
+          "origin" : {
+            "type" : "string"
+          },
+          "originId" : {
+            "type" : "string"
+          },
           "pricingPlan" : {
             "type" : "string"
           },
@@ -3673,8 +3683,18 @@
             "type" : "string",
             "format" : "date-time"
           },
+          "institutionType" : {
+            "type" : "string",
+            "enum" : [ "AS", "CON", "GPU", "GSP", "PA", "PG", "PRV", "PSP", "PT", "REC", "SA", "SCP" ]
+          },
           "isAggregator" : {
             "type" : "boolean"
+          },
+          "origin" : {
+            "type" : "string"
+          },
+          "originId" : {
+            "type" : "string"
           },
           "productId" : {
             "type" : "string"
@@ -3722,8 +3742,18 @@
             "type" : "string",
             "format" : "date-time"
           },
+          "institutionType" : {
+            "type" : "string",
+            "enum" : [ "AS", "CON", "GPU", "GSP", "PA", "PG", "PRV", "PSP", "PT", "REC", "SA", "SCP" ]
+          },
           "isAggregator" : {
             "type" : "boolean"
+          },
+          "origin" : {
+            "type" : "string"
+          },
+          "originId" : {
+            "type" : "string"
           },
           "pricingPlan" : {
             "type" : "string"
@@ -3828,8 +3858,18 @@
             "type" : "string",
             "format" : "date-time"
           },
+          "institutionType" : {
+            "type" : "string",
+            "enum" : [ "AS", "CON", "GPU", "GSP", "PA", "PG", "PRV", "PSP", "PT", "REC", "SA", "SCP" ]
+          },
           "isAggregator" : {
             "type" : "boolean"
+          },
+          "origin" : {
+            "type" : "string"
+          },
+          "originId" : {
+            "type" : "string"
           },
           "pricingPlan" : {
             "type" : "string"

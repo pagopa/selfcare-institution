@@ -23,7 +23,10 @@
         },
         "createdAt": "2023-05-03T13:18:08.563134Z",
         "updatedAt": "2023-05-03T13:18:08.563165Z",
-        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding"
+        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding",
+        "origin": "IPA",
+        "originId": "c_c067",
+        "institutionType": "PA"
       },
       {
         "productId": "prod-fd",
@@ -38,7 +41,10 @@
         "createdAt": "2023-06-22T09:12:45.933504Z",
         "updatedAt": "2023-06-22T09:16:50.172777Z",
         "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding",
-        "isAggregator": "false"
+        "isAggregator": "false",
+        "origin": "IPA",
+        "originId": "c_c067",
+        "institutionType": "PA"
       },
       {
         "productId": "prod-io",
@@ -52,7 +58,10 @@
         },
         "createdAt": "2024-06-04T13:06:50.154Z",
         "isAggregator": true,
-        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding"
+        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding",
+        "origin": "IPA",
+        "originId": "c_c067",
+        "institutionType": "PA"
       },
       {
         "productId": "prod-pagopa",
@@ -64,7 +73,10 @@
           "publicServices": true
         },
         "createdAt": "2024-07-05T14:43:04.672108422Z",
-        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding"
+        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding",
+        "origin": "IPA",
+        "originId": "c_c067",
+        "institutionType": "PA"
       }
     ],
     "geographicTaxonomies": [
@@ -109,7 +121,10 @@
         },
         "createdAt": "2022-06-10T13:29:10.462Z",
         "updatedAt": "2023-06-14T12:25:08.237831Z",
-        "contract": "parties/docs/21f73488-d0df-4a3d-9b6f-9adf634780b5/App IO_accordo_adesione.pdf"
+        "contract": "parties/docs/21f73488-d0df-4a3d-9b6f-9adf634780b5/App IO_accordo_adesione.pdf",
+        "origin": "IPA",
+        "originId": "c_d277",
+        "institutionType": "PA"
       },
       {
         "productId": "prod-pagopa",
@@ -126,7 +141,10 @@
         "createdAt": "2024-07-10T07:38:06.665Z",
         "isAggregator": true,
         "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding",
-        "updatedAt": "2024-07-10T16:53:01.4593709Z"
+        "updatedAt": "2024-07-10T16:53:01.4593709Z",
+        "origin": "IPA",
+        "originId": "c_d277",
+        "institutionType": "PA"
       },
       {
         "productId": "prod-pagopa",
@@ -142,7 +160,10 @@
         },
         "createdAt": "2024-07-10T16:48:49.963Z",
         "isAggregator": true,
-        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding"
+        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding",
+        "origin": "IPA",
+        "originId": "c_d277",
+        "institutionType": "PA"
       },
       {
         "productId": "prod-interop",
@@ -158,7 +179,10 @@
         },
         "createdAt": "2024-07-10T16:48:49.963Z",
         "isAggregator": true,
-        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding"
+        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding",
+        "origin": "IPA",
+        "originId": "c_d277",
+        "institutionType": "PA"
       }
     ],
     "geographicTaxonomies": [],
@@ -198,7 +222,10 @@
         },
         "createdAt": "2023-05-03T13:18:08.563134Z",
         "updatedAt": "2023-05-03T13:18:08.563165Z",
-        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding"
+        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding",
+        "origin": "SELC",
+        "originId": "PSP_15555555555",
+        "institutionType": "PSP"
       },
       {
         "productId": "prod-fd",
@@ -213,7 +240,10 @@
         "createdAt": "2023-06-22T09:12:45.933504Z",
         "updatedAt": "2023-06-22T09:16:50.172777Z",
         "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding",
-        "isAggregator": "false"
+        "isAggregator": "false",
+        "origin": "SELC",
+        "originId": "PSP_15555555555",
+        "institutionType": "PSP"
       },
       {
         "productId": "prod-io",
@@ -227,7 +257,10 @@
         },
         "createdAt": "2024-06-04T13:06:50.154Z",
         "isAggregator": true,
-        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding"
+        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding",
+        "origin": "SELC",
+        "originId": "PSP_15555555555",
+        "institutionType": "PSP"
       },
       {
         "productId": "prod-pagopa",
@@ -239,7 +272,10 @@
           "publicServices": true
         },
         "createdAt": "2024-07-05T14:43:04.672108422Z",
-        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding"
+        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding",
+        "origin": "SELC",
+        "originId": "PSP_15555555555",
+        "institutionType": "PSP"
       }
     ],
     "geographicTaxonomies": [
@@ -307,7 +343,9 @@
         },
         "createdAt": "2023-06-12T12:42:56.446631Z",
         "updatedAt": "2023-06-12T12:42:56.446635Z",
-        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding"
+        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding",
+        "origin": "IPA",
+        "originId": "UF5D7W"
       }
     ]
   },
@@ -348,7 +386,9 @@
         },
         "createdAt": "2023-05-31T13:35:57.682148Z",
         "updatedAt": "2023-05-31T13:35:57.682162Z",
-        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding"
+        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding",
+        "origin": "IPA",
+        "originId": "AVO36EJ"
       },
       {
         "productId": "prod-interop",
@@ -362,7 +402,9 @@
         },
         "createdAt": "2023-05-31T13:37:56.713352Z",
         "updatedAt": "2023-05-31T13:37:56.713377Z",
-        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding"
+        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding",
+        "origin": "IPA",
+        "originId": "AVO36EJ"
       },
       {
         "productId": "prod-idpay",
@@ -376,7 +418,9 @@
         },
         "createdAt": "2023-07-20T09:02:01.354188Z",
         "updatedAt": "2023-07-20T09:02:01.354205Z",
-        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding"
+        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding",
+        "origin": "IPA",
+        "originId": "AVO36EJ"
       },
       {
         "productId": "prod-io",
@@ -387,7 +431,9 @@
           "publicServices": false
         },
         "createdAt": "2023-12-06T10:26:57.805095Z",
-        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding"
+        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding",
+        "origin": "IPA",
+        "originId": "AVO36EJ"
       }
     ]
   },
@@ -414,7 +460,10 @@
         },
         "createdAt": "2022-06-10T13:29:10.462Z",
         "updatedAt": "2023-06-14T12:25:08.237831Z",
-        "contract": "parties/docs/21f73488-d0df-4a3d-9b6f-9adf634780b5/App IO_accordo_adesione.pdf"
+        "contract": "parties/docs/21f73488-d0df-4a3d-9b6f-9adf634780b5/App IO_accordo_adesione.pdf",
+        "origin": "IPA",
+        "originId": "c_d277",
+        "institutionType": "PT"
       },
       {
         "productId": "prod-pagopa",
@@ -431,7 +480,10 @@
         "createdAt": "2024-07-10T07:38:06.665Z",
         "isAggregator": true,
         "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding",
-        "updatedAt": "2024-07-10T16:53:01.4593709Z"
+        "updatedAt": "2024-07-10T16:53:01.4593709Z",
+        "origin": "IPA",
+        "originId": "c_d277",
+        "institutionType": "PT"
       },
       {
         "productId": "prod-pagopa",
@@ -447,7 +499,10 @@
         },
         "createdAt": "2024-07-10T16:48:49.963Z",
         "isAggregator": true,
-        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding"
+        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding",
+        "origin": "IPA",
+        "originId": "c_d277",
+        "institutionType": "PT"
       },
       {
         "productId": "prod-interop",
@@ -463,7 +518,10 @@
         },
         "createdAt": "2024-07-10T16:48:49.963Z",
         "isAggregator": true,
-        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding"
+        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding",
+        "origin": "IPA",
+        "originId": "c_d277",
+        "institutionType": "PT"
       }
     ],
     "geographicTaxonomies": [
@@ -519,7 +577,10 @@
         },
         "createdAt": "2017-12-22T00:00:00Z",
         "updatedAt": "2024-02-24T12:56:40.645708542Z",
-        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding"
+        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding",
+        "origin": "IPA",
+        "originId": "isticom",
+        "institutionType": "PA"
       },
       {
         "productId": "prod-io",
@@ -532,7 +593,10 @@
           "publicServices": false
         },
         "createdAt": "2024-06-04T13:39:01.30130241Z",
-        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding"
+        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding",
+        "origin": "IPA",
+        "originId": "isticom",
+        "institutionType": "PA"
       }
     ],
     "geographicTaxonomies": [

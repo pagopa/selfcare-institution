@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.mscore.web.model.onboarding;
 
+import it.pagopa.selfcare.commons.base.utils.InstitutionType;
 import it.pagopa.selfcare.mscore.constant.RelationshipState;
 import it.pagopa.selfcare.mscore.web.model.institution.BillingResponse;
 import lombok.AllArgsConstructor;
@@ -19,4 +20,7 @@ public class OnboardedProductResponse {
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
     private Boolean isAggregator;
+    private InstitutionType institutionType;
+    private String origin;
+    private String originId;
 }
