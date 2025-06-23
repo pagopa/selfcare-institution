@@ -2,7 +2,10 @@
 
 import os
 
-from pymongo import MongoClient
+from pymongo import MongoClient, UpdateOne
+from pymongo.errors import BulkWriteError
+
+from collections import Counter
 
 MONGO_HOST = os.getenv("MONGO_HOST")
 MONGO_BATCH_SIZE = 100
@@ -14,11 +17,11 @@ class AnsiColors:
     ERROR = '\033[91m'
     ENDC = '\033[0m'
 
-def updateInstitutionTypes(institutionDoc, institutionCollection):
+def getInstitutionTypesUpdate(institutionDoc, institutionCollection):
     institutionId = institutionDoc["_id"]
     if "onboarding" not in institutionDoc:
         print(AnsiColors.WARNING, f"Institution {institutionId} without onboarding node", AnsiColors.ENDC)
-        return
+        return None
     institutionType = institutionDoc["institutionType"] if "institutionType" in institutionDoc else None
     origin = institutionDoc["origin"] if "origin" in institutionDoc else None
     originId = institutionDoc["originId"] if "originId" in institutionDoc else None
@@ -39,8 +42,17 @@ def updateInstitutionTypes(institutionDoc, institutionCollection):
         fieldsToSet["onboarding.$[].originId"] = originId
     else:
         fieldsToUnset["onboarding.$[].originId"] = ""
-    # final update
-    institutionCollection.update_one({"_id": institutionId}, {"$set": fieldsToSet, "$unset": fieldsToUnset})
+    # return update operation
+    return UpdateOne({"_id": institutionId}, {"$set": fieldsToSet, "$unset": fieldsToUnset})
+
+def bulkWrite(updateBatch, institutionCollection):
+    try:
+        result = institutionCollection.bulk_write(updateBatch, ordered=False)
+        return { "countInserted": result.inserted_count, "countUpserted": result.upserted_count, "countMatched": result.matched_count, "countModified": result.modified_count, "countRemoved": result.deleted_count }
+    except BulkWriteError as bwe:
+        result = bwe.details
+        print(AnsiColors.ERROR, f"BulkWriteError {result}", AnsiColors.ENDC)
+        return { "countInserted": result["nInserted"], "countUpserted": result["nUpserted"], "countMatched": result["nMatched"], "countModified": result["nModified"], "countRemoved": result["nRemoved"] }
 
 def main():
     client = MongoClient(MONGO_HOST)
@@ -48,14 +60,26 @@ def main():
     institutionCollection = db[INSTITUTION_COLLECTION]
 
     totalInstitutionCount = institutionCollection.count_documents({})
-    updatedInstitutionCount = 0
+    checkedInstitutionCount = 0
+    bulkCounters = { "countInserted": 0, "countUpserted": 0, "countMatched": 0, "countModified": 0, "countRemoved": 0 }
 
+    updateBatch = []
     for institutionDoc in institutionCollection.find({}, batch_size=MONGO_BATCH_SIZE):
-        updateInstitutionTypes(institutionDoc, institutionCollection)
-        updatedInstitutionCount += 1
-        print(f"Updated {updatedInstitutionCount} / {totalInstitutionCount}", end="\r")
+        update = getInstitutionTypesUpdate(institutionDoc, institutionCollection)
+        checkedInstitutionCount += 1
+        if update:
+            updateBatch.append(update)
+        if len(updateBatch) >= MONGO_BATCH_SIZE:
+            result = bulkWrite(updateBatch, institutionCollection)
+            updateBatch = []
+            bulkCounters = dict(Counter(bulkCounters) + Counter(result))
+            print(f"{checkedInstitutionCount} / {totalInstitutionCount} - {bulkCounters}", end="\r")
 
-    print("\n")
+    if len(updateBatch) > 0:
+        result = bulkWrite(updateBatch, institutionCollection)
+        bulkCounters = dict(Counter(bulkCounters) + Counter(result))
+
+    print(f"{checkedInstitutionCount} / {totalInstitutionCount} - {bulkCounters}")
     client.close()
 
 if __name__ == '__main__':
