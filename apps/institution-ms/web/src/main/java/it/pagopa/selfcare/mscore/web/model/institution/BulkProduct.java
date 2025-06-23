@@ -1,8 +1,8 @@
 package it.pagopa.selfcare.mscore.web.model.institution;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import it.pagopa.selfcare.commons.base.utils.InstitutionType;
 import it.pagopa.selfcare.mscore.constant.RelationshipState;
+import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;

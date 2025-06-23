@@ -1417,6 +1417,9 @@ class InstitutionControllerTest {
         InstitutionOnboardingRequest request = new InstitutionOnboardingRequest();
         request.setProductId("id");
         request.setIsAggregator(true);
+        request.setInstitutionType(InstitutionType.PA);
+        request.setOrigin("IPA");
+        request.setOriginId("123x");
 
         when(onboardingService.persistOnboarding(any(), any(), any(), any()))
 	        .thenAnswer(invocation -> {

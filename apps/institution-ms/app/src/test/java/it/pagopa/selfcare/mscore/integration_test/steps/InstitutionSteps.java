@@ -137,8 +137,8 @@ public class InstitutionSteps {
         Assertions.assertEquals(expectedCount, count);
     }
 
-    @And("Onboarding for institutionId {string} and productId {string} was saved to db successfully with token {string} contract {string} and a module of {int}")
-    public void checkOnboardingWasSaved(String institutionId, String productId, String expectedToken, String expectedContract, int expectedModule) {
+    @And("Onboarding for institutionId {string} and productId {string} was saved to db successfully with token {string} contract {string}, a module of {int}, institutionType {string}, origin {string} and originId {string}")
+    public void checkOnboardingWasSaved(String institutionId, String productId, String expectedToken, String expectedContract, int expectedModule, String expectedInstitutionType, String expectedOrigin, String expectedOriginId) {
         final InstitutionEntity institution = institutionRepository.findById(institutionId).orElseThrow();
         final List<OnboardingEntity> onboardings = institution.getOnboarding().stream()
                 .filter(o -> o.getProductId().equals(productId) && (o.getStatus().equals(RelationshipState.ACTIVE) || o.getStatus().equals(RelationshipState.SUSPENDED))).toList();
@@ -147,6 +147,18 @@ public class InstitutionSteps {
         final OnboardingEntity onboarding = onboardings.get(0);
         Assertions.assertEquals(expectedToken, onboarding.getTokenId());
         Assertions.assertEquals(expectedContract, onboarding.getContract());
+
+        if (expectedInstitutionType != null && !expectedInstitutionType.isEmpty()) {
+            Assertions.assertEquals(expectedInstitutionType, onboarding.getInstitutionType().name());
+        }
+
+        if (expectedOrigin != null && !expectedOrigin.isEmpty()) {
+            Assertions.assertEquals(expectedOrigin, onboarding.getOrigin());
+        }
+
+        if (expectedOriginId != null && !expectedOriginId.isEmpty()) {
+            Assertions.assertEquals(expectedOriginId, onboarding.getOriginId());
+        }
 
         final List<MailNotificationEntity> entities = mailNotificationRepository.find(Query.query(Criteria.where("institutionId").is(institutionId)), MailNotificationEntity.class);
         Assertions.assertEquals(1, entities.size());
