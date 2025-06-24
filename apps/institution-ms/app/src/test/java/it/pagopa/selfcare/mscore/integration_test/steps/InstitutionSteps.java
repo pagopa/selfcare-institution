@@ -11,6 +11,7 @@ import it.pagopa.selfcare.mscore.connector.dao.model.MailNotificationEntity;
 import it.pagopa.selfcare.mscore.connector.dao.model.inner.OnboardingEntity;
 import it.pagopa.selfcare.mscore.constant.Origin;
 import it.pagopa.selfcare.mscore.constant.RelationshipState;
+import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -95,7 +96,9 @@ public class InstitutionSteps {
     public void createMockInstitutionWithoutActiveOnboardings(String id) {
         final InstitutionEntity entity = new InstitutionEntity();
         entity.setId(id);
+        entity.setInstitutionType(InstitutionType.PA);
         entity.setOrigin(Origin.MOCK);
+        entity.setOriginId("x1");
         entity.setCreatedAt(OffsetDateTime.now());
         entity.setUpdatedAt(OffsetDateTime.now());
         entity.setDigitalAddress("digital.address@test.com");
@@ -114,6 +117,9 @@ public class InstitutionSteps {
         onboardingEntity.setTokenId("MOCK_TOKEN");
         onboardingEntity.setCreatedAt(createdAt);
         onboardingEntity.setUpdatedAt(updatedAt);
+        onboardingEntity.setInstitutionType(InstitutionType.PA);
+        onboardingEntity.setOrigin(Origin.MOCK.getValue());
+        onboardingEntity.setOriginId("123x");
         return onboardingEntity;
     }
 
@@ -147,19 +153,9 @@ public class InstitutionSteps {
         final OnboardingEntity onboarding = onboardings.get(0);
         Assertions.assertEquals(expectedToken, onboarding.getTokenId());
         Assertions.assertEquals(expectedContract, onboarding.getContract());
-
-        if (expectedInstitutionType != null && !expectedInstitutionType.isEmpty()) {
-            Assertions.assertEquals(expectedInstitutionType, onboarding.getInstitutionType().name());
-        }
-
-        if (expectedOrigin != null && !expectedOrigin.isEmpty()) {
-            Assertions.assertEquals(expectedOrigin, onboarding.getOrigin());
-        }
-
-        if (expectedOriginId != null && !expectedOriginId.isEmpty()) {
-            Assertions.assertEquals(expectedOriginId, onboarding.getOriginId());
-        }
-
+        Assertions.assertEquals(expectedInstitutionType, onboarding.getInstitutionType().toString());
+        Assertions.assertEquals(expectedOrigin, onboarding.getOrigin());
+        Assertions.assertEquals(expectedOriginId, onboarding.getOriginId());
         final List<MailNotificationEntity> entities = mailNotificationRepository.find(Query.query(Criteria.where("institutionId").is(institutionId)), MailNotificationEntity.class);
         Assertions.assertEquals(1, entities.size());
 

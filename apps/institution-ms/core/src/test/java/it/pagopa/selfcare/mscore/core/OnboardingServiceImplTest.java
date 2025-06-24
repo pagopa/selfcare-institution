@@ -131,9 +131,6 @@ class OnboardingServiceImplTest {
 
         Onboarding onboarding = dummyOnboarding();
         onboarding.setStatus(UtilEnumList.VALID_RELATIONSHIP_STATES.get(0));
-        onboarding.setInstitutionType(InstitutionType.PA);
-        onboarding.setOrigin("IPA");
-        onboarding.setOriginId("xxx");
         Institution institution = new Institution();
         institution.setId("institutionId");
         institution.setOnboarding(List.of(onboarding, dummyOnboarding()));

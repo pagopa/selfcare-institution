@@ -1211,10 +1211,7 @@ Feature: Institution
         "tokenId": "123456789",
         "contractPath": "testContractPath",
         "activatedAt": "2025-02-28T15:00:00Z",
-        "isAggregator": false,
-        "institutionType": "PT",
-        "origin": "SELC",
-        "originId": "xxx"
+        "isAggregator": false
       }
       """
     When I send a POST request to "/institutions/{id}/onboarding"
@@ -1227,7 +1224,7 @@ Feature: Institution
       | prod-io    | ACTIVE  |
       | prod-idpay | DELETED |
     And Count of MailNotification with institutionId "123" is 1
-    And Onboarding for institutionId "123" and productId "prod-io" was saved to db successfully with token "123456789" contract "testContractPath", a module of 4, institutionType "PT", origin "SELC" and originId "xxx"
+    And Onboarding for institutionId "123" and productId "prod-io" was saved to db successfully with token "123456789" contract "testContractPath", a module of 4, institutionType "PA", origin "MOCK" and originId "x1"
 
   @RemoveMockInstitutionAfterScenario
   Scenario: Successfully persistOnboarding with existing productId
@@ -1242,7 +1239,10 @@ Feature: Institution
         "tokenId": "123456789",
         "contractPath": "testContractPath",
         "activatedAt": "2025-02-28T15:00:00Z",
-        "isAggregator": false
+        "isAggregator": false,
+        "institutionType": "PT",
+        "origin": "SELC",
+        "originId": "xxx"
       }
       """
     When I send a POST request to "/institutions/{id}/onboarding"
@@ -1258,7 +1258,7 @@ Feature: Institution
       | prod-pagopa | ACTIVE    |
       | prod-idpay  | DELETED   |
       | prod-pn     | SUSPENDED |
-    And Onboarding for institutionId "123" and productId "prod-pn" was saved to db successfully with token "MOCK_TOKEN" contract "MOCK_CONTRACT", a module of 10, institutionType "", origin "" and originId ""
+    And Onboarding for institutionId "123" and productId "prod-pn" was saved to db successfully with token "MOCK_TOKEN" contract "MOCK_CONTRACT", a module of 10, institutionType "PA", origin "MOCK" and originId "123x"
 
   Scenario: Do not persist PecNotification with PT institution type
     Given User login with username "j.doe" and password "test"
