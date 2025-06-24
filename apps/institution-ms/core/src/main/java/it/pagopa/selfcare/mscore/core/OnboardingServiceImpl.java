@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -118,6 +117,7 @@ public class OnboardingServiceImpl implements OnboardingService {
 
         try {
             //If not exists, persist a new onboarding for product
+            setOnboardingFields(onboarding, institution);
             final Institution institutionUpdated = institutionConnector.findAndAddOnboarding(institutionId, onboarding);
 
             log.trace("persistForUpdate end");
@@ -129,6 +129,29 @@ public class OnboardingServiceImpl implements OnboardingService {
             throw new InvalidRequestException(ONBOARDING_OPERATION_ERROR.getMessage() + " " + e.getMessage(),
                     ONBOARDING_OPERATION_ERROR.getCode());
         }
+    }
+
+    private static void setOnboardingFields(Onboarding onboarding, Institution institution) {
+        //Setting institutionType if not present in request
+        Optional.ofNullable(onboarding.getInstitutionType())
+                .ifPresentOrElse(
+                        value -> {}, // Do nothing if already present
+                        () -> onboarding.setInstitutionType(institution.getInstitutionType())
+                );
+
+        //Setting origin if not present in request
+        Optional.ofNullable(onboarding.getOrigin())
+                .ifPresentOrElse(
+                        value -> {}, // Do nothing if already present
+                        () -> onboarding.setOrigin(institution.getOrigin())
+                );
+
+        //Setting originId if not present in request
+        Optional.ofNullable(onboarding.getOriginId())
+                .ifPresentOrElse(
+                        value -> {}, // Do nothing if already present
+                        () -> onboarding.setOriginId(institution.getOriginId())
+                );
     }
 
     private boolean isMailNotificationEnabled(Institution institution) {

@@ -1,8 +1,8 @@
 package it.pagopa.selfcare.mscore.web.model.onboarding;
 
-import it.pagopa.selfcare.commons.base.utils.InstitutionType;
 import it.pagopa.selfcare.mscore.constant.RelationshipState;
 import it.pagopa.selfcare.mscore.web.model.institution.BillingResponse;
+import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

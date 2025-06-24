@@ -11,6 +11,7 @@ import it.pagopa.selfcare.mscore.connector.dao.model.MailNotificationEntity;
 import it.pagopa.selfcare.mscore.connector.dao.model.inner.OnboardingEntity;
 import it.pagopa.selfcare.mscore.constant.Origin;
 import it.pagopa.selfcare.mscore.constant.RelationshipState;
+import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -95,7 +96,9 @@ public class InstitutionSteps {
     public void createMockInstitutionWithoutActiveOnboardings(String id) {
         final InstitutionEntity entity = new InstitutionEntity();
         entity.setId(id);
+        entity.setInstitutionType(InstitutionType.PA);
         entity.setOrigin(Origin.MOCK);
+        entity.setOriginId("x1");
         entity.setCreatedAt(OffsetDateTime.now());
         entity.setUpdatedAt(OffsetDateTime.now());
         entity.setDigitalAddress("digital.address@test.com");
@@ -114,6 +117,9 @@ public class InstitutionSteps {
         onboardingEntity.setTokenId("MOCK_TOKEN");
         onboardingEntity.setCreatedAt(createdAt);
         onboardingEntity.setUpdatedAt(updatedAt);
+        onboardingEntity.setInstitutionType(InstitutionType.PA);
+        onboardingEntity.setOrigin(Origin.MOCK.getValue());
+        onboardingEntity.setOriginId("123x");
         return onboardingEntity;
     }
 
@@ -137,8 +143,8 @@ public class InstitutionSteps {
         Assertions.assertEquals(expectedCount, count);
     }
 
-    @And("Onboarding for institutionId {string} and productId {string} was saved to db successfully with token {string} contract {string} and a module of {int}")
-    public void checkOnboardingWasSaved(String institutionId, String productId, String expectedToken, String expectedContract, int expectedModule) {
+    @And("Onboarding for institutionId {string} and productId {string} was saved to db successfully with token {string} contract {string}, a module of {int}, institutionType {string}, origin {string} and originId {string}")
+    public void checkOnboardingWasSaved(String institutionId, String productId, String expectedToken, String expectedContract, int expectedModule, String expectedInstitutionType, String expectedOrigin, String expectedOriginId) {
         final InstitutionEntity institution = institutionRepository.findById(institutionId).orElseThrow();
         final List<OnboardingEntity> onboardings = institution.getOnboarding().stream()
                 .filter(o -> o.getProductId().equals(productId) && (o.getStatus().equals(RelationshipState.ACTIVE) || o.getStatus().equals(RelationshipState.SUSPENDED))).toList();
@@ -147,7 +153,9 @@ public class InstitutionSteps {
         final OnboardingEntity onboarding = onboardings.get(0);
         Assertions.assertEquals(expectedToken, onboarding.getTokenId());
         Assertions.assertEquals(expectedContract, onboarding.getContract());
-
+        Assertions.assertEquals(expectedInstitutionType, onboarding.getInstitutionType().toString());
+        Assertions.assertEquals(expectedOrigin, onboarding.getOrigin());
+        Assertions.assertEquals(expectedOriginId, onboarding.getOriginId());
         final List<MailNotificationEntity> entities = mailNotificationRepository.find(Query.query(Criteria.where("institutionId").is(institutionId)), MailNotificationEntity.class);
         Assertions.assertEquals(1, entities.size());
 

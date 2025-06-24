@@ -1,7 +1,7 @@
 package it.pagopa.selfcare.mscore.connector.dao.model.inner;
 
-import it.pagopa.selfcare.commons.base.utils.InstitutionType;
 import it.pagopa.selfcare.mscore.constant.RelationshipState;
+import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import lombok.Data;
 import lombok.experimental.FieldNameConstants;
 import org.springframework.data.mongodb.core.index.Indexed;

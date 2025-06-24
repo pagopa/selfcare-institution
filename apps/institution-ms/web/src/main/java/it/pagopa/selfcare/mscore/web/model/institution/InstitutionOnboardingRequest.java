@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.mscore.web.model.institution;
 
+import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
@@ -17,5 +18,8 @@ public class InstitutionOnboardingRequest {
     private BillingRequest billing;
     private OffsetDateTime activatedAt;
     private Boolean isAggregator;
+    private InstitutionType institutionType;
+    private String origin;
+    private String originId;
 
 }

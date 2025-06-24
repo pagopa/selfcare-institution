@@ -160,6 +160,9 @@ class OnboardingServiceImplTest {
 
         Onboarding onboarding = dummyOnboarding();
         onboarding.setStatus(UtilEnumList.VALID_RELATIONSHIP_STATES.get(0));
+        onboarding.setInstitutionType(InstitutionType.PT);
+        onboarding.setOrigin("SELC");
+        onboarding.setOriginId("123");
         Institution institution = new Institution();
         institution.setId("institutionId");
         institution.setInstitutionType(InstitutionType.PT);
@@ -183,6 +186,9 @@ class OnboardingServiceImplTest {
 
         Onboarding onboarding = dummyOnboarding();
         onboarding.setStatus(UtilEnumList.VALID_RELATIONSHIP_STATES.get(0));
+        onboarding.setInstitutionType(InstitutionType.PG);
+        onboarding.setOriginId("123x");
+        onboarding.setOrigin("012341234");
         Institution institution = new Institution();
         institution.setId("institutionId");
         institution.setOnboarding(List.of(onboarding, dummyOnboarding()));
@@ -263,6 +269,9 @@ class OnboardingServiceImplTest {
         onboardingToPersist.setIsAggregator(true);
         onboardingToPersist.setCreatedAt(OffsetDateTime.of(
                 2025, 3, 13, 0, 0, 0, 0, ZoneOffset.UTC));
+        onboardingToPersist.setInstitutionType(InstitutionType.PA);
+        onboardingToPersist.setOrigin("IPA");
+        onboardingToPersist.setOriginId("123x");
 
         Institution institution = new Institution();
         institution.setId("institutionId");
@@ -295,6 +304,9 @@ class OnboardingServiceImplTest {
         Onboarding actual = captor.getValue();
         assertEquals(billing, actual.getBilling());
         assertEquals(actual.getCreatedAt().getDayOfYear(), LocalDate.of(2025, 3, 13).getDayOfYear());
+        assertEquals(InstitutionType.PA, actual.getInstitutionType());
+        assertEquals("IPA", actual.getOrigin());
+        assertEquals("123x", actual.getOriginId());
         assertEquals(HttpStatus.CREATED.value(), Integer.parseInt(statusCode.toString()));
 
         verify(mailNotificationConnector, times(1)).addMailNotification("institutionId", "productId", "test@junit.pagopa", 17);
