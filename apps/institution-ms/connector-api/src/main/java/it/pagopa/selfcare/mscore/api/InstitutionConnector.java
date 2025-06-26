@@ -30,6 +30,8 @@ public interface InstitutionConnector {
 
     Institution findById(String id);
 
+    Institution findByIdAndProduct(String id, String productId);
+
     Institution findAndUpdateStatus(String id, String tokenId, RelationshipState state);
 
     Institution findAndAddOnboarding(String id, Onboarding onboarding);

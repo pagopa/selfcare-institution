@@ -94,6 +94,29 @@ public class InstitutionConnectorImpl implements InstitutionConnector {
     }
 
     @Override
+    public Institution findByIdAndProduct(String id, String productId) {
+        Institution institutionResponse = findById(id);
+
+        if (productId != null) {
+
+            List<Onboarding> onboardings = Optional.ofNullable(institutionResponse.getOnboarding())
+                    .filter(list -> !list.isEmpty())
+                    .orElseThrow(() -> new ResourceNotFoundException(String.format(INSTITUTION_NOT_FOUND.getMessage(), id, "UNDEFINED"), INSTITUTION_NOT_FOUND.getCode()))
+                    .stream()
+                    .filter(onboarding -> productId.equals(onboarding.getProductId()))
+                    .toList();
+
+            if (onboardings.isEmpty()) {
+                throw new ResourceNotFoundException(String.format(INSTITUTION_NOT_FOUND.getMessage(), id, "UNDEFINED"), INSTITUTION_NOT_FOUND.getCode());
+            }
+
+            institutionResponse.setOnboarding(onboardings);
+        }
+
+        return institutionResponse;
+    }
+
+    @Override
     public Institution findAndUpdateStatus(String institutionId, String tokenId, RelationshipState status) {
         OffsetDateTime now = OffsetDateTime.now();
 

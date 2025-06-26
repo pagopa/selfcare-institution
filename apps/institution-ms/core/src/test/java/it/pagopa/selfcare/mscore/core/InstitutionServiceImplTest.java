@@ -75,12 +75,18 @@ class InstitutionServiceImplTest {
     @Spy
     private TokenMapper tokenMapper = new TokenMapperImpl();
 
+    private CategoryProxyInfo createCategoryProxyInfo() {
+        CategoryProxyInfo dummyCategoryProxyInfo = new CategoryProxyInfo();
+        dummyCategoryProxyInfo.setCode("Code");
+        dummyCategoryProxyInfo.setKind("Kind");
+        dummyCategoryProxyInfo.setName("Name");
+        dummyCategoryProxyInfo.setOrigin("Origin");
 
-    private static final InstitutionProxyInfo dummyInstitutionProxyInfo;
-    private static final CategoryProxyInfo dummyCategoryProxyInfo;
+        return dummyCategoryProxyInfo;
+    }
 
-    static {
-        dummyInstitutionProxyInfo = new InstitutionProxyInfo();
+    private InstitutionProxyInfo createInstitutionProxyInfo() {
+        InstitutionProxyInfo dummyInstitutionProxyInfo = new InstitutionProxyInfo();
         dummyInstitutionProxyInfo.setAddress("42 Main St");
         dummyInstitutionProxyInfo.setAoo("Aoo");
         dummyInstitutionProxyInfo.setCategory("Category");
@@ -94,11 +100,7 @@ class InstitutionServiceImplTest {
         dummyInstitutionProxyInfo.setTaxCode("Tax Code");
         dummyInstitutionProxyInfo.setZipCode("21654");
 
-        dummyCategoryProxyInfo = new CategoryProxyInfo();
-        dummyCategoryProxyInfo.setCode("Code");
-        dummyCategoryProxyInfo.setKind("Kind");
-        dummyCategoryProxyInfo.setName("Name");
-        dummyCategoryProxyInfo.setOrigin("Origin");
+        return dummyInstitutionProxyInfo;
     }
 
 
@@ -122,6 +124,28 @@ class InstitutionServiceImplTest {
                 .thenThrow(new ResourceNotFoundException("An error occurred", "Code"));
         assertThrows(ResourceNotFoundException.class, () -> institutionServiceImpl.retrieveInstitutionById("42"));
         verify(institutionConnector).findById(any());
+    }
+
+    /**
+     * Method under test: {@link InstitutionServiceImpl#retrieveInstitutionByIdAndProduct(String, String)}
+     */
+    @Test
+    void testRetrieveInstitutionByIdAndProduct() {
+        Institution institution = new Institution();
+        when(institutionConnector.findByIdAndProduct(any(), anyString())).thenReturn(institution);
+        assertSame(institution, institutionServiceImpl.retrieveInstitutionByIdAndProduct("42", "productId"));
+        verify(institutionConnector).findByIdAndProduct(any(), anyString());
+    }
+
+    /**
+     * Method under test: {@link InstitutionServiceImpl#retrieveInstitutionByIdAndProduct(String, String)}
+     */
+    @Test
+    void testRetrieveInstitutionByIdAndProduct_withException() {
+        when(institutionConnector.findByIdAndProduct(any(), anyString()))
+                .thenThrow(new ResourceNotFoundException("An error occurred", "Code"));
+        assertThrows(ResourceNotFoundException.class, () -> institutionServiceImpl.retrieveInstitutionByIdAndProduct("42", "productId"));
+        verify(institutionConnector).findByIdAndProduct(any(), anyString());
     }
 
     /**
@@ -175,8 +199,8 @@ class InstitutionServiceImplTest {
         when(institutionConnector.save(any())).thenReturn(institution);
         when(institutionConnector.findByExternalId(any())).thenReturn(Optional.empty());
 
-        when(partyRegistryProxyConnector.getCategory(any(), any())).thenReturn(dummyCategoryProxyInfo);
-        when(partyRegistryProxyConnector.getInstitutionById(any())).thenReturn(dummyInstitutionProxyInfo);
+        when(partyRegistryProxyConnector.getCategory(any(), any())).thenReturn(createCategoryProxyInfo());
+        when(partyRegistryProxyConnector.getInstitutionById(any())).thenReturn(createInstitutionProxyInfo());
         assertSame(institution, institutionServiceImpl.createInstitutionByExternalId("42"));
         verify(institutionConnector).save(any());
         verify(institutionConnector).findByExternalId(any());
@@ -193,8 +217,8 @@ class InstitutionServiceImplTest {
                 .thenThrow(new ResourceConflictException("An error occurred", "START - check institution {} already exists"));
         when(institutionConnector.findByExternalId(any())).thenReturn(Optional.empty());
 
-        when(partyRegistryProxyConnector.getCategory(any(), any())).thenReturn(dummyCategoryProxyInfo);
-        when(partyRegistryProxyConnector.getInstitutionById(any())).thenReturn(dummyInstitutionProxyInfo);
+        when(partyRegistryProxyConnector.getCategory(any(), any())).thenReturn(createCategoryProxyInfo());
+        when(partyRegistryProxyConnector.getInstitutionById(any())).thenReturn(createInstitutionProxyInfo());
         assertThrows(MsCoreException.class, () -> institutionServiceImpl.createInstitutionByExternalId("42"));
         verify(institutionConnector).save(any());
         verify(institutionConnector).findByExternalId(any());
@@ -220,8 +244,8 @@ class InstitutionServiceImplTest {
     @Test
     void testCreateInstitutionByExternalId6() {
 
-        when(partyRegistryProxyConnector.getCategory(any(), any())).thenReturn(dummyCategoryProxyInfo);
-        when(partyRegistryProxyConnector.getInstitutionById(any())).thenReturn(dummyInstitutionProxyInfo);
+        when(partyRegistryProxyConnector.getCategory(any(), any())).thenReturn(createCategoryProxyInfo());
+        when(partyRegistryProxyConnector.getInstitutionById(any())).thenReturn(createInstitutionProxyInfo());
         Institution institution = new Institution();
         when(institutionConnector.save(any())).thenReturn(institution);
         when(institutionConnector.findByExternalId(any())).thenReturn(Optional.empty());
