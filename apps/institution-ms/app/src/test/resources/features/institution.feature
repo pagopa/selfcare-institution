@@ -111,8 +111,8 @@ Feature: Institution
   Scenario: Successfully getInstitutions with origin,originId,productId
     Given User login with username "j.doe" and password "test"
     And The following query params:
-      | origin    | IPA     |
-      | originId  | isticom |
+      | origin    | SELC    |
+      | originId  | 123X |
       | productId | prod-io |
     When I send a GET request to "/institutions"
     Then The status code is 200
@@ -121,13 +121,15 @@ Feature: Institution
     And The response body contains:
       | institutions[0].id                            | fc5466e5-df00-4800-9ad5-aa2e7d9344f9 |
       | institutions[0].taxCode                       | 94076720658                          |
-      | institutions[0].origin                        | IPA                                  |
-      | institutions[0].originId                      | isticom                              |
+      | institutions[0].origin                        | SELC                                 |
+      | institutions[0].originId                      | 123X                                 |
+      | institutions[0].institutionType               | PT                                   |
       | institutions[0].isTest                        | true                                 |
       | institutions[0].onboarding[0].productId       | prod-io                              |
-      | institutions[0].onboarding[0].origin          | IPA                                  |
-      | institutions[0].onboarding[0].originId        | isticom                              |
-      | institutions[0].onboarding[0].institutionType | PA                                   |
+      | institutions[0].onboarding[0].origin          | SELC                                 |
+      | institutions[0].onboarding[0].originId        | 123X                                 |
+      | institutions[0].onboarding[0].institutionType | PT                                   |
+
 
   Scenario: Validation error in getInstitutions without taxCode,origin,originId
     Given User login with username "j.doe" and password "test"

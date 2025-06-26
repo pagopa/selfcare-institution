@@ -366,10 +366,17 @@ public class InstitutionConnectorImpl implements InstitutionConnector {
     @Override
     public List<Institution> findByOriginAndOriginId(String origin, String originId, String productId) {
 
-        CriteriaBuilder criteriaBuilder = CriteriaBuilder.builder()
-                .isIfNotNull(InstitutionEntity.Fields.origin.name(), origin)
-                .isIfNotNull(InstitutionEntity.Fields.originId.name(), originId)
-                .isIfNotNull("onboarding.productId", productId);
+        CriteriaBuilder criteriaBuilder = CriteriaBuilder.builder();
+
+        Optional.ofNullable(productId).ifPresentOrElse(
+                product -> criteriaBuilder
+                        .isIfNotNull("onboarding.origin", origin)
+                        .isIfNotNull("onboarding.originId", originId)
+                        .isIfNotNull("onboarding.productId", product),
+                () -> criteriaBuilder
+                        .isIfNotNull(InstitutionEntity.Fields.origin.name(), origin)
+                        .isIfNotNull(InstitutionEntity.Fields.originId.name(), originId)
+        );
 
         List<InstitutionEntity> institutionEntities = repository.find(Query.query(criteriaBuilder.build()), InstitutionEntity.class);
 
