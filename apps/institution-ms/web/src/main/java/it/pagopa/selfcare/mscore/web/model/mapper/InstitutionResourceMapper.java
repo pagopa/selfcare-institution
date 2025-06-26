@@ -5,6 +5,7 @@ import it.pagopa.selfcare.mscore.model.institution.Institution;
 import it.pagopa.selfcare.mscore.model.institution.InstitutionGeographicTaxonomies;
 import it.pagopa.selfcare.mscore.model.institution.InstitutionUpdate;
 import it.pagopa.selfcare.mscore.web.model.institution.*;
+import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -43,8 +44,11 @@ public interface InstitutionResourceMapper {
     default String setInstitutionType(Institution institution, String productId) {
         return Optional.ofNullable(productId)
                 .filter(id -> !institution.getOnboarding().isEmpty())
-                .map(id -> institution.getOnboarding().get(0).getInstitutionType().name())
-                .orElse(institution.getInstitutionType().name());
+                .flatMap(id -> Optional.ofNullable(institution.getOnboarding().get(0).getInstitutionType())
+                        .map(InstitutionType::name))
+                .or(() -> Optional.ofNullable(institution.getInstitutionType())
+                        .map(InstitutionType::name))
+                .orElse(null);
     }
 
     @Named("setOrigin")
