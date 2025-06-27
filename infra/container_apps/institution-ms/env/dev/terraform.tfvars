@@ -60,7 +60,7 @@ app_settings = [
   },
   {
     name  = "STORAGE_CONTAINER"
-    value = "selc-d-contracts-blob"
+    value = "sc-d-documents-blob"
   },
   {
     name  = "STORAGE_ENDPOINT"
@@ -140,7 +140,7 @@ secrets_names = {
   "STORAGE_APPLICATION_SECRET"               = "contracts-storage-access-key"
   "APPLICATIONINSIGHTS_CONNECTION_STRING"    = "appinsights-connection-string"
   "MONGODB_CONNECTION_URI"                   = "mongodb-connection-string"
-  "BLOB_STORAGE_CONN_STRING"                 = "blob-storage-contract-connection-string"
+  "BLOB_STORAGE_CONN_STRING"                 = "documents-storage-connection-string"
   "STORAGE_CREDENTIAL_SECRET"                = "contracts-storage-access-key"
   "SMTP_USR"                                 = "smtp-usr"
   "SMTP_PSW"                                 = "smtp-psw"
