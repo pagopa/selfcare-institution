@@ -26,7 +26,7 @@ Feature: External
     And The response body contains at path "[0].onboarding" the following list of objects in any order:
       | productId   | tokenId                              | status | origin | originId | institutionType |
       | prod-pagopa | afb6c11d-67f8-44f9-b04f-88d47e0d2fc3 | ACTIVE | IPA    | isticom  | PA              |
-      | prod-io     | 24534011-a806-4137-855c-059ea9b943cd | ACTIVE | IPA    | isticom  | PA              |
+      | prod-io     | 24534011-a806-4137-855c-059ea9b943cd | ACTIVE | SELC   | 123X     | PT              |
 
   Scenario: Bad request while while getting institutions data by ids
     Given User login with username "j.doe" and password "test"

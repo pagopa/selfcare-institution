@@ -104,7 +104,7 @@ public class InstitutionController {
         List<Institution> institutions = institutionService.getInstitutions(taxCode, subunitCode, origin, originId, productId, enableSubunits);
         InstitutionsResponse institutionsResponse = new InstitutionsResponse();
         institutionsResponse.setInstitutions(institutions.stream()
-                .map(institutionResourceMapper::toInstitutionResponse)
+                .map(institution -> institutionResourceMapper.toInstitutionResponseWithType(institution, productId))
                 .toList());
         return ResponseEntity.ok(institutionsResponse);
     }
@@ -431,10 +431,11 @@ public class InstitutionController {
     @ApiOperation(value = "${swagger.mscore.institution}", notes = "${swagger.mscore.institution}")
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<InstitutionResponse> retrieveInstitutionById(@ApiParam("${swagger.mscore.institutions.model.institutionId}")
-                                                                       @PathVariable("id") String id) {
+                                                                       @PathVariable("id") String id,
+                                                                       @RequestParam(value = "productId", required = false) String productId) {
         CustomExceptionMessage.setCustomMessage(GenericError.GET_INSTITUTION_BY_ID_ERROR);
-        Institution institution = institutionService.retrieveInstitutionById(id);
-        InstitutionResponse institutionResponse = institutionResourceMapper.toInstitutionResponse(institution);
+        Institution institution = institutionService.retrieveInstitutionByIdAndProduct(id, productId);
+        InstitutionResponse institutionResponse = institutionResourceMapper.toInstitutionResponseWithType(institution, productId);
         institutionResponse.setLogo(institutionService.getLogo(id));
         return ResponseEntity.ok().body(institutionResponse);
     }

@@ -85,18 +85,31 @@ class InstitutionControllerTest {
     private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
 
 
-    private final static Onboarding onboarding;
-    private final static Billing staticBilling;
+    private static Institution createInstitution() {
+        Onboarding onboarding = createOnboarding();
 
-    private final static Institution staticInstitution;
+        Attributes attribute = new Attributes();
+        attribute.setCode("code");
+        attribute.setDescription("description");
 
-    static {
-        staticBilling = new Billing();
+        Institution institution = new Institution();
+        institution.setId("42");
+        institution.setInstitutionType(InstitutionType.PG);
+        institution.setDescription("description");
+        institution.setOnboarding(List.of(onboarding));
+        institution.setAttributes(List.of(attribute));
+        institution.setIstatCode("istatCode");
+        
+        return  institution;
+    }
+
+    private static Onboarding createOnboarding() {
+        Billing staticBilling = new Billing();
         staticBilling.setVatNumber("example");
         staticBilling.setRecipientCode("example");
         staticBilling.setTaxCodeInvoicing("example");
 
-        onboarding = new Onboarding();
+        Onboarding onboarding = new Onboarding();
         onboarding.setProductId("example");
         onboarding.setStatus(RelationshipState.ACTIVE);
         onboarding.setBilling(staticBilling);
@@ -104,19 +117,10 @@ class InstitutionControllerTest {
         onboarding.setTokenId("tokenId");
         onboarding.setPricingPlan("setPricingPlan");
         onboarding.setIsAggregator(true);
-
-        Attributes attribute = new Attributes();
-        attribute.setCode("code");
-        attribute.setDescription("description");
-
-        staticInstitution = new Institution();
-        staticInstitution.setId("42");
-        staticInstitution.setInstitutionType(InstitutionType.PG);
-        staticInstitution.setDescription("description");
-        staticInstitution.setOnboarding(List.of(onboarding));
-        staticInstitution.setAttributes(List.of(attribute));
-        staticInstitution.setIstatCode("istatCode");
-
+        onboarding.setInstitutionType(InstitutionType.PT);
+        onboarding.setOrigin("origin");
+        onboarding.setOriginId("originId");
+        return onboarding;
     }
 
     @Test
@@ -266,6 +270,8 @@ class InstitutionControllerTest {
     @Test
     void shouldGetOnboardingsInstitutionByProductId() throws Exception {
 
+        Onboarding onboarding = createOnboarding();
+
         when(institutionService.getOnboardingInstitutionByProductId(any(), any()))
                 .thenReturn(List.of(onboarding));
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -278,17 +284,19 @@ class InstitutionControllerTest {
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
                 .andExpect(MockMvcResultMatchers.content()
                         .string(
-                                "{\"onboardings\":[{\"productId\":\"example\",\"tokenId\":\"tokenId\",\"status\":\"ACTIVE\",\"contract\":\"contract\",\"pricingPlan\":\"setPricingPlan\",\"billing\":{\"vatNumber\":\"example\",\"taxCodeInvoicing\":\"example\",\"recipientCode\":\"example\",\"publicServices\":false},\"createdAt\":null,\"updatedAt\":null,\"closedAt\":null,\"isAggregator\":true,\"institutionType\":null,\"origin\":null,\"originId\":null}]}"));
+                                "{\"onboardings\":[{\"productId\":\"example\",\"tokenId\":\"tokenId\",\"status\":\"ACTIVE\",\"contract\":\"contract\",\"pricingPlan\":\"setPricingPlan\",\"billing\":{\"vatNumber\":\"example\",\"taxCodeInvoicing\":\"example\",\"recipientCode\":\"example\",\"publicServices\":false},\"createdAt\":null,\"updatedAt\":null,\"closedAt\":null,\"isAggregator\":true,\"institutionType\":\"PT\",\"origin\":\"origin\",\"originId\":\"originId\"}]}"));
     }
 
     @Test
-    void retrieveInstitutionById() throws Exception {
+    void retrieveInstitutionById_withProductFilter() throws Exception {
         SecurityContext securityContext = Mockito.mock(SecurityContext.class);
         SecurityContextHolder.setContext(securityContext);
-        when(institutionService.retrieveInstitutionById("42")).thenReturn(staticInstitution);
+        when(institutionService.retrieveInstitutionByIdAndProduct("42", "example")).thenReturn(createInstitution());
         when(institutionService.getLogo("42")).thenReturn("logoUrl");
-        staticInstitution.setId("id");
-        MockHttpServletRequestBuilder requestBuilder = get("/institutions/{id}", "42");
+        createInstitution().setId("id");
+        MockHttpServletRequestBuilder requestBuilder = 
+                get("/institutions/{id}", "42")
+                        .param("productId", "example");
         ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(institutionController)
                 .build()
                 .perform(requestBuilder);
@@ -297,18 +305,18 @@ class InstitutionControllerTest {
     }
 
     /**
-     * Method under test: {@link InstitutionController#retrieveInstitutionById(String)}
+     * Method under test: {@link InstitutionController#retrieveInstitutionById(String, String)} (String)}
      */
     @Test
     void testRetrieveInstitutionById() throws Exception {
-        when(institutionService.retrieveInstitutionById(any())).thenReturn(staticInstitution);
+        when(institutionService.retrieveInstitutionByIdAndProduct(any(), eq(null))).thenReturn(createInstitution());
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/institutions/{id}", "42");
         MockMvcBuilders.standaloneSetup(institutionController)
                 .build()
                 .perform(requestBuilder)
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-                .andExpect(MockMvcResultMatchers.content().string("{\"id\":\"42\",\"description\":\"description\",\"institutionType\":\"PG\",\"istatCode\":\"istatCode\",\"attributes\":[{\"origin\":null,\"code\":\"code\",\"description\":\"description\"}],\"onboarding\":[{\"productId\":\"example\",\"tokenId\":\"tokenId\",\"status\":\"ACTIVE\",\"billing\":{\"vatNumber\":\"example\",\"taxCodeInvoicing\":\"example\",\"recipientCode\":\"example\",\"publicServices\":false},\"createdAt\":null,\"updatedAt\":null,\"isAggregator\":true,\"institutionType\":null,\"origin\":null,\"originId\":null}],\"imported\":false,\"delegation\":false}"));
+                .andExpect(MockMvcResultMatchers.content().string("{\"id\":\"42\",\"description\":\"description\",\"institutionType\":\"PG\",\"istatCode\":\"istatCode\",\"attributes\":[{\"origin\":null,\"code\":\"code\",\"description\":\"description\"}],\"onboarding\":[{\"productId\":\"example\",\"tokenId\":\"tokenId\",\"status\":\"ACTIVE\",\"billing\":{\"vatNumber\":\"example\",\"taxCodeInvoicing\":\"example\",\"recipientCode\":\"example\",\"publicServices\":false},\"createdAt\":null,\"updatedAt\":null,\"isAggregator\":true,\"institutionType\":\"PT\",\"origin\":\"origin\",\"originId\":\"originId\"}],\"imported\":false,\"delegation\":false}"));
     }
 
     @Test
@@ -1104,6 +1112,8 @@ class InstitutionControllerTest {
     @Test
     void testRetrieveInstitutionProducts() throws Exception {
 
+        Onboarding onboarding = createOnboarding();
+
         ArrayList<Onboarding> onboardingList = new ArrayList<>();
         onboardingList.add(onboarding);
         when(institutionService.retrieveInstitutionById(any())).thenReturn(new Institution());
@@ -1302,7 +1312,7 @@ class InstitutionControllerTest {
         Integer sizeMock = 2;
 
         // When
-        when(institutionService.getInstitutionsByProductId(any(), any(), any())).thenReturn(List.of(staticInstitution));
+        when(institutionService.getInstitutionsByProductId(any(), any(), any())).thenReturn(List.of(createInstitution()));
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(BASE_URL + "/products/{productId}", productIdMock)
                 .param("page", pageMock.toString())
                 .param("size", sizeMock.toString());
@@ -1314,7 +1324,7 @@ class InstitutionControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
                 .andExpect(MockMvcResultMatchers.content()
-                        .string("{\"items\":[{\"id\":\"42\",\"externalId\":null,\"origin\":null,\"originId\":null,\"description\":\"description\",\"institutionType\":\"PG\",\"digitalAddress\":null,\"address\":null,\"zipCode\":null,\"taxCode\":null,\"onboardings\":{\"example\":{\"productId\":\"example\",\"tokenId\":\"tokenId\",\"status\":\"ACTIVE\",\"contract\":\"contract\",\"pricingPlan\":\"setPricingPlan\",\"billing\":{\"vatNumber\":\"example\",\"taxCodeInvoicing\":\"example\",\"recipientCode\":\"example\",\"publicServices\":false},\"createdAt\":null,\"updatedAt\":null,\"closedAt\":null,\"isAggregator\":true,\"institutionType\":null,\"origin\":null,\"originId\":null}},\"geographicTaxonomies\":null,\"attributes\":[{\"origin\":null,\"code\":\"code\",\"description\":\"description\"}],\"paymentServiceProvider\":null,\"dataProtectionOfficer\":null,\"rea\":null,\"shareCapital\":null,\"businessRegisterPlace\":null,\"supportEmail\":null,\"supportPhone\":null,\"imported\":false,\"subunitCode\":null,\"subunitType\":null,\"aooParentCode\":null,\"createdAt\":null,\"updatedAt\":null}]}"));
+                        .string("{\"items\":[{\"id\":\"42\",\"externalId\":null,\"origin\":null,\"originId\":null,\"description\":\"description\",\"institutionType\":\"PG\",\"digitalAddress\":null,\"address\":null,\"zipCode\":null,\"taxCode\":null,\"onboardings\":{\"example\":{\"productId\":\"example\",\"tokenId\":\"tokenId\",\"status\":\"ACTIVE\",\"contract\":\"contract\",\"pricingPlan\":\"setPricingPlan\",\"billing\":{\"vatNumber\":\"example\",\"taxCodeInvoicing\":\"example\",\"recipientCode\":\"example\",\"publicServices\":false},\"createdAt\":null,\"updatedAt\":null,\"closedAt\":null,\"isAggregator\":true,\"institutionType\":\"PT\",\"origin\":\"origin\",\"originId\":\"originId\"}},\"geographicTaxonomies\":null,\"attributes\":[{\"origin\":null,\"code\":\"code\",\"description\":\"description\"}],\"paymentServiceProvider\":null,\"dataProtectionOfficer\":null,\"rea\":null,\"shareCapital\":null,\"businessRegisterPlace\":null,\"supportEmail\":null,\"supportPhone\":null,\"imported\":false,\"subunitCode\":null,\"subunitType\":null,\"aooParentCode\":null,\"createdAt\":null,\"updatedAt\":null}]}"));
         // Then
         verify(institutionService, times(1))
                 .getInstitutionsByProductId(productIdMock, pageMock, sizeMock);

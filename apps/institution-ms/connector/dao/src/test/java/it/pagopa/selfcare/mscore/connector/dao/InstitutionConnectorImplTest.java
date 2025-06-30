@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.function.Executable;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DuplicateKeyException;
@@ -35,6 +36,7 @@ import java.time.OffsetDateTime;
 import java.util.*;
 
 import static it.pagopa.selfcare.commons.utils.TestUtils.mockInstance;
+import static it.pagopa.selfcare.mscore.constant.CustomError.INSTITUTION_NOT_FOUND;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -104,6 +106,58 @@ class InstitutionConnectorImplTest {
         institutionEntity.setId("507f1f77bcf86cd799439011");
         Optional<Institution> response = institutionConnectorImpl.findByExternalId("id");
         Assertions.assertTrue(response.isEmpty());
+    }
+
+    @Test
+    void findByIdAndProduct() {
+        InstitutionEntity institutionEntity = new InstitutionEntity();
+        institutionEntity.setId("507f1f77bcf86cd799439011");
+
+        OnboardingEntity onboardingEntity = new OnboardingEntity();
+        onboardingEntity.setProductId("productId_1");
+
+        OnboardingEntity onboardingEntity2 = new OnboardingEntity();
+        onboardingEntity2.setProductId("productId_2");
+
+        institutionEntity.setOnboarding(List.of(onboardingEntity, onboardingEntity2));
+
+        when(institutionRepository.findById(any())).thenReturn(Optional.of(institutionEntity));
+
+        Institution response = institutionConnectorImpl.findByIdAndProduct("507f1f77bcf86cd799439011", "productId_1");
+        Assertions.assertEquals(onboardingEntity.getProductId() ,response.getOnboarding().get(0).getProductId());
+    }
+
+    @Test
+    void findByIdAndProduct_NoOnboardings() {
+        InstitutionEntity institutionEntity = new InstitutionEntity();
+        institutionEntity.setId("507f1f77bcf86cd799439011");
+
+        institutionEntity.setOnboarding(Collections.emptyList());
+
+        when(institutionRepository.findById(any())).thenReturn(Optional.of(institutionEntity));
+
+        final Executable executable = () ->  institutionConnectorImpl.findByIdAndProduct("507f1f77bcf86cd799439011", "productId_1");
+
+        final Exception e = assertThrows(ResourceNotFoundException.class, executable);
+        assertEquals(String.format(INSTITUTION_NOT_FOUND.getMessage(), "507f1f77bcf86cd799439011", "UNDEFINED"), e.getMessage());
+    }
+
+    @Test
+    void findByIdAndProduct_NoOnboardingForProduct() {
+        InstitutionEntity institutionEntity = new InstitutionEntity();
+        institutionEntity.setId("507f1f77bcf86cd799439011");
+
+        OnboardingEntity onboardingEntity2 = new OnboardingEntity();
+        onboardingEntity2.setProductId("productId_2");
+
+        institutionEntity.setOnboarding(List.of(onboardingEntity2));
+
+        when(institutionRepository.findById(any())).thenReturn(Optional.of(institutionEntity));
+
+        final Executable executable = () ->  institutionConnectorImpl.findByIdAndProduct("507f1f77bcf86cd799439011", "productId_1");
+
+        final Exception e = assertThrows(ResourceNotFoundException.class, executable);
+        assertEquals(String.format(INSTITUTION_NOT_FOUND.getMessage(), "507f1f77bcf86cd799439011", "UNDEFINED"), e.getMessage());
     }
 
     private Institution dummyInstitution() {
