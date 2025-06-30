@@ -94,6 +94,29 @@ public class InstitutionConnectorImpl implements InstitutionConnector {
     }
 
     @Override
+    public Institution findByIdAndProduct(String id, String productId) {
+        Institution institutionResponse = findById(id);
+
+        if (productId != null) {
+
+            List<Onboarding> onboardings = Optional.ofNullable(institutionResponse.getOnboarding())
+                    .filter(list -> !list.isEmpty())
+                    .orElseThrow(() -> new ResourceNotFoundException(String.format(INSTITUTION_NOT_FOUND.getMessage(), id, "UNDEFINED"), INSTITUTION_NOT_FOUND.getCode()))
+                    .stream()
+                    .filter(onboarding -> productId.equals(onboarding.getProductId()))
+                    .toList();
+
+            if (onboardings.isEmpty()) {
+                throw new ResourceNotFoundException(String.format(INSTITUTION_NOT_FOUND.getMessage(), id, "UNDEFINED"), INSTITUTION_NOT_FOUND.getCode());
+            }
+
+            institutionResponse.setOnboarding(onboardings);
+        }
+
+        return institutionResponse;
+    }
+
+    @Override
     public Institution findAndUpdateStatus(String institutionId, String tokenId, RelationshipState status) {
         OffsetDateTime now = OffsetDateTime.now();
 
@@ -343,12 +366,25 @@ public class InstitutionConnectorImpl implements InstitutionConnector {
     @Override
     public List<Institution> findByOriginAndOriginId(String origin, String originId, String productId) {
 
-        CriteriaBuilder criteriaBuilder = CriteriaBuilder.builder()
-                .isIfNotNull(InstitutionEntity.Fields.origin.name(), origin)
-                .isIfNotNull(InstitutionEntity.Fields.originId.name(), originId)
-                .isIfNotNull("onboarding.productId", productId);
+        Criteria criteria;
 
-        List<InstitutionEntity> institutionEntities = repository.find(Query.query(criteriaBuilder.build()), InstitutionEntity.class);
+        if (productId != null) {
+            Criteria onboardingCriteria = new Criteria().andOperator(
+                    Criteria.where("origin").is(origin),
+                    Criteria.where("originId").is(originId),
+                    Criteria.where("productId").is(productId)
+            );
+            criteria = Criteria.where("onboarding").elemMatch(onboardingCriteria);
+        } else {
+            criteria = new Criteria().andOperator(
+                    Criteria.where(InstitutionEntity.Fields.origin.name()).is(origin),
+                    Criteria.where(InstitutionEntity.Fields.originId.name()).is(originId)
+            );
+        }
+
+        Query query = new Query(criteria);
+
+        List<InstitutionEntity> institutionEntities = repository.find(query, InstitutionEntity.class);
 
         return getInstitutionsWithProductFilter(productId, institutionEntities);
     }

@@ -72,6 +72,11 @@ public class InstitutionServiceImpl implements InstitutionService {
     }
 
     @Override
+    public Institution retrieveInstitutionByIdAndProduct(String id, String productId) {
+        return institutionConnector.findByIdAndProduct(id, productId);
+    }
+
+    @Override
     public Institution retrieveInstitutionByExternalId(String institutionExternalId) {
         Optional<Institution> opt = institutionConnector.findByExternalId(institutionExternalId);
         if (opt.isEmpty()) {

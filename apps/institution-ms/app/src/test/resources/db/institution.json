@@ -74,9 +74,9 @@
         },
         "createdAt": "2024-07-05T14:43:04.672108422Z",
         "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding",
-        "origin": "IPA",
-        "originId": "c_c067",
-        "institutionType": "PA"
+        "origin": "SELC",
+        "originId": "123X",
+        "institutionType": "PT"
       }
     ],
     "geographicTaxonomies": [
@@ -594,9 +594,9 @@
         },
         "createdAt": "2024-06-04T13:39:01.30130241Z",
         "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding",
-        "origin": "IPA",
-        "originId": "isticom",
-        "institutionType": "PA"
+        "origin": "SELC",
+        "originId": "123X",
+        "institutionType": "PT"
       }
     ],
     "geographicTaxonomies": [
