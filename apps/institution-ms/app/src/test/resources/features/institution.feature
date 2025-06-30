@@ -112,7 +112,7 @@ Feature: Institution
     Given User login with username "j.doe" and password "test"
     And The following query params:
       | origin    | SELC    |
-      | originId  | 123X |
+      | originId  | 123X    |
       | productId | prod-io |
     When I send a GET request to "/institutions"
     Then The status code is 200
@@ -1426,13 +1426,35 @@ Feature: Institution
       | prod-interop | cdd3d4bb-bae3-4187-af16-53ec40358267 | ACTIVE | PA              | IPA    | c_c067   |
       | prod-fd      | a3f2d517-b432-4745-ae9b-5bb1f1bcfb79 | ACTIVE | PA              | IPA    | c_c067   |
       | prod-io      | 5eeaf667-e9c1-4150-bb4b-1fce01df6ab9 | ACTIVE | PA              | IPA    | c_c067   |
-      | prod-pagopa  | 6c4fc5c1-65bb-496c-ae0a-547a4c920bd9 | ACTIVE | PA              | IPA    | c_c067   |
+      | prod-pagopa  | 6c4fc5c1-65bb-496c-ae0a-547a4c920bd9 | ACTIVE | PT              | SELC   | 123X     |
     And The response body contains:
       | id              | c9a50656-f345-4c81-84be-5b2474470544                        |
       | logo            | test-logo-url/c9a50656-f345-4c81-84be-5b2474470544/logo.png |
       | origin          | IPA                                                         |
       | originId        | c_c067                                                      |
       | institutionType | PA                                                          |
+      | description     | Comune di Castelbuono                                       |
+      | taxCode         | 00310810825                                                 |
+      | digitalAddress  | comune.castelbuono@pec.it                                   |
+
+  Scenario: Successfully get institution by id with productId filter
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | id | c9a50656-f345-4c81-84be-5b2474470544 |
+    And The following query params:
+      | productId | prod-pagopa |
+    When I send a GET request to "/institutions/{id}"
+    Then The status code is 200
+    And The response body contains the list "onboarding" of size 1
+    And The response body contains at path "onboarding" the following list of objects in any order:
+      | productId    | tokenId                              | status | institutionType | origin | originId |
+      | prod-pagopa  | 6c4fc5c1-65bb-496c-ae0a-547a4c920bd9 | ACTIVE | PT | SELC   | 123X     |
+    And The response body contains:
+      | id              | c9a50656-f345-4c81-84be-5b2474470544                        |
+      | logo            | test-logo-url/c9a50656-f345-4c81-84be-5b2474470544/logo.png |
+      | origin          | SELC                                                        |
+      | originId        | 123X                                                        |
+      | institutionType | PT                                                          |
       | description     | Comune di Castelbuono                                       |
       | taxCode         | 00310810825                                                 |
       | digitalAddress  | comune.castelbuono@pec.it                                   |
@@ -1478,9 +1500,9 @@ Feature: Institution
       | onboardings[0].billing.vatNumber      | 00750840175                          |
       | onboardings[0].billing.recipientCode  | UF7ECB                               |
       | onboardings[0].billing.publicServices | true                                 |
-      | onboardings[0].institutionType        | PA                                   |
-      | onboardings[0].origin                 | IPA                                  |
-      | onboardings[0].originId               | c_c067                               |
+      | onboardings[0].institutionType        | PT                                   |
+      | onboardings[0].origin                 | SELC                                 |
+      | onboardings[0].originId               | 123X                                 |
 
   Scenario: Get onboardings on institution not found
     Given User login with username "j.doe" and password "test"
@@ -1589,7 +1611,7 @@ Feature: Institution
       | prod-io                       | ACTIVE                     | contracts/template/io/2.4.2/io-accordo_di_adesione-v.2.4.2.html | PSP                                 | SELC                       | PSP_15555555555              |
     And The response body contains at path "items" the following list of objects in any order:
       | onboardings.prod-pagopa.productId | onboardings.prod-pagopa.status | onboardings.prod-pagopa.contract | onboardings.prod-pagopa.institutionType | onboardings.prod-pagopa.origin | onboardings.prod-pagopa.originId |
-      | prod-pagopa                       | ACTIVE                         |                                  | PA                                      | IPA                            | c_c067                           |
+      | prod-pagopa                       | ACTIVE                         |                                  | PT                                      | SELC                           | 123X                             |
       | prod-pagopa                       | ACTIVE                         |                                  | PSP                                     | SELC                           | PSP_15555555555                  |
     And The response body contains at path "items" the following list of objects in any order:
       | onboardings.prod-fd.productId | onboardings.prod-fd.status | onboardings.prod-fd.contract                                                                          | onboardings.prod-fd.institutionType | onboardings.prod-fd.origin | onboardings.prod-fd.originId |

@@ -366,19 +366,25 @@ public class InstitutionConnectorImpl implements InstitutionConnector {
     @Override
     public List<Institution> findByOriginAndOriginId(String origin, String originId, String productId) {
 
-        CriteriaBuilder criteriaBuilder = CriteriaBuilder.builder();
+        Criteria criteria;
 
-        Optional.ofNullable(productId).ifPresentOrElse(
-                product -> criteriaBuilder
-                        .isIfNotNull("onboarding.origin", origin)
-                        .isIfNotNull("onboarding.originId", originId)
-                        .isIfNotNull("onboarding.productId", product),
-                () -> criteriaBuilder
-                        .isIfNotNull(InstitutionEntity.Fields.origin.name(), origin)
-                        .isIfNotNull(InstitutionEntity.Fields.originId.name(), originId)
-        );
+        if (productId != null) {
+            Criteria onboardingCriteria = new Criteria().andOperator(
+                    Criteria.where("origin").is(origin),
+                    Criteria.where("originId").is(originId),
+                    Criteria.where("productId").is(productId)
+            );
+            criteria = Criteria.where("onboarding").elemMatch(onboardingCriteria);
+        } else {
+            criteria = new Criteria().andOperator(
+                    Criteria.where(InstitutionEntity.Fields.origin.name()).is(origin),
+                    Criteria.where(InstitutionEntity.Fields.originId.name()).is(originId)
+            );
+        }
 
-        List<InstitutionEntity> institutionEntities = repository.find(Query.query(criteriaBuilder.build()), InstitutionEntity.class);
+        Query query = new Query(criteria);
+
+        List<InstitutionEntity> institutionEntities = repository.find(query, InstitutionEntity.class);
 
         return getInstitutionsWithProductFilter(productId, institutionEntities);
     }
