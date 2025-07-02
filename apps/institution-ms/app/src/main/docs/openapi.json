@@ -157,7 +157,7 @@
         } ]
       },
       "post" : {
-        "tags" : [ "Delegation" ],
+        "tags" : [ "Delegation", "support" ],
         "summary" : "Create an association between institution id and technical partner",
         "description" : "Create an association between institution id and technical partner",
         "operationId" : "createDelegationUsingPOST",
