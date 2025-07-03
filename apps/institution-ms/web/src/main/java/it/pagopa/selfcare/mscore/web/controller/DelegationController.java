@@ -50,6 +50,7 @@ public class DelegationController {
      * * Code: 400, Message: Bad Request, DataType: Problem
      * * Code: 409, Message: Conflict, DataType: Problem
      */
+    @Tags({@Tag(name = "support"), @Tag(name = "Delegation")})
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "${swagger.mscore.delegation.create}", notes = "${swagger.mscore.delegation.create}")
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
