@@ -4,6 +4,7 @@ package it.pagopa.selfcare.mscore.web.model.mapper;
 import it.pagopa.selfcare.mscore.model.institution.Institution;
 import it.pagopa.selfcare.mscore.model.institution.InstitutionGeographicTaxonomies;
 import it.pagopa.selfcare.mscore.model.institution.InstitutionUpdate;
+import it.pagopa.selfcare.mscore.model.institution.Onboarding;
 import it.pagopa.selfcare.mscore.web.model.institution.*;
 import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import org.mapstruct.InjectionStrategy;
@@ -42,29 +43,34 @@ public interface InstitutionResourceMapper {
 
     @Named("setInstitutionType")
     default String setInstitutionType(Institution institution, String productId) {
-        return Optional.ofNullable(productId)
-                .filter(id -> !institution.getOnboarding().isEmpty())
-                .flatMap(id -> Optional.ofNullable(institution.getOnboarding().get(0).getInstitutionType())
-                        .map(InstitutionType::name))
-                .or(() -> Optional.ofNullable(institution.getInstitutionType())
-                        .map(InstitutionType::name))
-                .orElse(null);
+        return findOnboardingByProductId(institution, productId)
+                .map(Onboarding::getInstitutionType)
+                .map(InstitutionType::name)
+                .orElseGet(() -> Optional.ofNullable(institution.getInstitutionType())
+                        .map(InstitutionType::name)
+                        .orElse(null));
     }
 
     @Named("setOrigin")
     default String setOrigin(Institution institution, String productId) {
-        return Optional.ofNullable(productId)
-                .filter(id -> !institution.getOnboarding().isEmpty())
-                .map(id -> institution.getOnboarding().get(0).getOrigin())
+        return findOnboardingByProductId(institution, productId)
+                .map(Onboarding::getOrigin)
                 .orElse(institution.getOrigin());
     }
 
     @Named("setOriginId")
     default String setOriginId(Institution institution, String productId) {
-        return Optional.ofNullable(productId)
-                .filter(id -> !institution.getOnboarding().isEmpty())
-                .map(id -> institution.getOnboarding().get(0).getOriginId())
+        return findOnboardingByProductId(institution, productId)
+                .map(Onboarding::getOriginId)
                 .orElse(institution.getOriginId());
+    }
+
+    private Optional<Onboarding> findOnboardingByProductId(Institution institution, String productId) {
+        return Optional.ofNullable(productId)
+                .flatMap(id -> Optional.ofNullable(institution.getOnboarding())
+                        .flatMap(onboardings -> onboardings.stream()
+                                .filter(ob -> id.equals(ob.getProductId()))
+                                .findFirst()));
     }
 
     InstitutionGeographicTaxonomies toInstitutionGeographicTaxonomies(GeoTaxonomies geoTaxonomies);
