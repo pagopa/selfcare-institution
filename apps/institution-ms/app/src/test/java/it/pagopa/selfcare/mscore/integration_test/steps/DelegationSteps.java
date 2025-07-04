@@ -6,6 +6,7 @@ import it.pagopa.selfcare.mscore.connector.dao.DelegationRepository;
 import it.pagopa.selfcare.mscore.connector.dao.InstitutionRepository;
 import it.pagopa.selfcare.mscore.connector.dao.model.DelegationEntity;
 import it.pagopa.selfcare.mscore.connector.dao.model.InstitutionEntity;
+import it.pagopa.selfcare.mscore.connector.dao.model.inner.OnboardingEntity;
 import it.pagopa.selfcare.mscore.constant.DelegationState;
 import it.pagopa.selfcare.mscore.constant.DelegationType;
 import it.pagopa.selfcare.mscore.constant.Origin;
@@ -16,6 +17,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public class DelegationSteps {
@@ -50,8 +52,12 @@ public class DelegationSteps {
         Optional.ofNullable(mockDelegationId).ifPresent(delegationRepository::deleteById);
     }
 
-    @And("A pair of mock institutions with id {string},{string} and taxcode {string},{string} with subunitCode {string},{string}")
-    public void createPairOfMockInstitutionWithId(String id1, String id2, String taxCode1, String taxCode2, String subCode1, String subCode2) {
+    @And("A pair of mock institutions with id {string},{string} and taxcode {string},{string} with subunitCode {string},{string} with an onboarding on product {string}")
+    public void createPairOfMockInstitutionWithId(String id1, String id2, String taxCode1, String taxCode2, String subCode1, String subCode2, String productId) {
+        final OnboardingEntity onboardingEntity = new OnboardingEntity();
+        onboardingEntity.setProductId(productId);
+        onboardingEntity.setInstitutionType(InstitutionType.PT);
+
         final InstitutionEntity entity1 = new InstitutionEntity();
         entity1.setId(id1);
         entity1.setOrigin(Origin.MOCK);
@@ -60,6 +66,7 @@ public class DelegationSteps {
         entity1.setTaxCode(taxCode1);
         entity1.setInstitutionType(InstitutionType.PA);
         entity1.setSubunitCode(subCode1);
+        entity1.setOnboarding(List.of(onboardingEntity));
         final InstitutionEntity savedEntity1 = institutionRepository.save(entity1);
         mockInstitutionId1 = savedEntity1.getId();
 
@@ -71,6 +78,7 @@ public class DelegationSteps {
         entity2.setTaxCode(taxCode2);
         entity2.setInstitutionType(InstitutionType.GSP);
         entity2.setSubunitCode(subCode2);
+        entity2.setOnboarding(List.of(onboardingEntity));
         final InstitutionEntity savedEntity2 = institutionRepository.save(entity2);
         mockInstitutionId2 = savedEntity2.getId();
     }
@@ -88,8 +96,8 @@ public class DelegationSteps {
         delegation.setInstitutionToName("To Institution");
         delegation.setFromTaxCode(fromInstitution.getTaxCode());
         delegation.setToTaxCode(toInstitution.getTaxCode());
-        delegation.setFromType(fromInstitution.getInstitutionType().name());
-        delegation.setToType(toInstitution.getInstitutionType().name());
+        delegation.setFromType(fromInstitution.getOnboarding().stream().filter(onb -> productId.equals(onb.getProductId())).map(onb -> onb.getInstitutionType().name()).findFirst().orElse(fromInstitution.getInstitutionType().name()));
+        delegation.setToType(toInstitution.getOnboarding().stream().filter(onb -> productId.equals(onb.getProductId())).map(onb -> onb.getInstitutionType().name()).findFirst().orElse(toInstitution.getInstitutionType().name()));
         delegation.setProductId(productId);
         delegation.setStatus(status);
         delegation.setType(delegationType);
@@ -129,16 +137,18 @@ public class DelegationSteps {
         Assertions.assertEquals(delegationState, delegation.getStatus());
     }
 
-    @And("The delegation from institution {string} to institution {string} was saved to db successfully")
-    public void checkCreatedDelegation(String institutionFromId, String institutionToId) {
+    @And("The delegation from institution {string} to institution {string} for product {string} was saved to db successfully")
+    public void checkCreatedDelegation(String institutionFromId, String institutionToId, String productId) {
         final InstitutionEntity fromInstitution = institutionRepository.findById(institutionFromId).orElseThrow();
         final InstitutionEntity toInstitution = institutionRepository.findById(institutionToId).orElseThrow();
         final DelegationEntity delegation = mongoTemplate.findOne(new Query(Criteria.where("from").is(institutionFromId).and("to").is(institutionToId)), DelegationEntity.class);
+        OnboardingEntity onboardingTo = toInstitution.getOnboarding().stream().filter(onb -> onb.getProductId().equals(productId)).findFirst().orElseThrow();
+        OnboardingEntity onboardingFrom = fromInstitution.getOnboarding().stream().filter(onb -> onb.getProductId().equals(productId)).findFirst().orElseThrow();
         Assertions.assertNotNull(delegation);
         Assertions.assertEquals(fromInstitution.getTaxCode(), delegation.getFromTaxCode());
         Assertions.assertEquals(toInstitution.getTaxCode(), delegation.getToTaxCode());
-        Assertions.assertEquals(fromInstitution.getInstitutionType().name(), delegation.getFromType());
-        Assertions.assertEquals(toInstitution.getInstitutionType().name(), delegation.getToType());
+        Assertions.assertEquals(onboardingTo.getInstitutionType().name(), delegation.getFromType());
+        Assertions.assertEquals(onboardingFrom.getInstitutionType().name(), delegation.getToType());
         Assertions.assertEquals(DelegationState.ACTIVE, delegation.getStatus());
     }
 
