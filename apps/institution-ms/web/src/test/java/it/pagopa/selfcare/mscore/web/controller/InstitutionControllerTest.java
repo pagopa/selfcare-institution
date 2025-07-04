@@ -291,7 +291,7 @@ class InstitutionControllerTest {
     void retrieveInstitutionById_withProductFilter() throws Exception {
         SecurityContext securityContext = Mockito.mock(SecurityContext.class);
         SecurityContextHolder.setContext(securityContext);
-        when(institutionService.retrieveInstitutionByIdAndProduct("42", "example")).thenReturn(createInstitution());
+        when(institutionService.retrieveInstitutionById("42")).thenReturn(createInstitution());
         when(institutionService.getLogo("42")).thenReturn("logoUrl");
         createInstitution().setId("id");
         MockHttpServletRequestBuilder requestBuilder = 
@@ -309,7 +309,7 @@ class InstitutionControllerTest {
      */
     @Test
     void testRetrieveInstitutionById() throws Exception {
-        when(institutionService.retrieveInstitutionByIdAndProduct(any(), eq(null))).thenReturn(createInstitution());
+        when(institutionService.retrieveInstitutionById(any())).thenReturn(createInstitution());
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/institutions/{id}", "42");
         MockMvcBuilders.standaloneSetup(institutionController)
                 .build()

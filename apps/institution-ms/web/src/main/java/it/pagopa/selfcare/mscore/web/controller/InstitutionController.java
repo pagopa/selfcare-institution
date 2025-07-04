@@ -434,7 +434,7 @@ public class InstitutionController {
                                                                        @PathVariable("id") String id,
                                                                        @RequestParam(value = "productId", required = false) String productId) {
         CustomExceptionMessage.setCustomMessage(GenericError.GET_INSTITUTION_BY_ID_ERROR);
-        Institution institution = institutionService.retrieveInstitutionByIdAndProduct(id, productId);
+        Institution institution = institutionService.retrieveInstitutionById(id);
         InstitutionResponse institutionResponse = institutionResourceMapper.toInstitutionResponseWithType(institution, productId);
         institutionResponse.setLogo(institutionService.getLogo(id));
         return ResponseEntity.ok().body(institutionResponse);

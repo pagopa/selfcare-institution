@@ -42,28 +42,30 @@ public interface InstitutionResourceMapper {
 
     @Named("setInstitutionType")
     default String setInstitutionType(Institution institution, String productId) {
+        final String parentInstitutionType = Optional.ofNullable(institution.getInstitutionType()).map(InstitutionType::name).orElse(null);
         return Optional.ofNullable(productId)
-                .filter(id -> !institution.getOnboarding().isEmpty())
-                .flatMap(id -> Optional.ofNullable(institution.getOnboarding().get(0).getInstitutionType())
-                        .map(InstitutionType::name))
-                .or(() -> Optional.ofNullable(institution.getInstitutionType())
-                        .map(InstitutionType::name))
-                .orElse(null);
+                .flatMap(pid -> Optional.ofNullable(institution.getOnboarding()))
+                .flatMap(onb -> onb.stream().filter(o -> o.getProductId().equals(productId)).findFirst())
+                .flatMap(o -> Optional.ofNullable(o.getInstitutionType()))
+                .map(InstitutionType::name)
+                .orElse(parentInstitutionType);
     }
 
     @Named("setOrigin")
     default String setOrigin(Institution institution, String productId) {
         return Optional.ofNullable(productId)
-                .filter(id -> !institution.getOnboarding().isEmpty())
-                .map(id -> institution.getOnboarding().get(0).getOrigin())
+                .flatMap(pid -> Optional.ofNullable(institution.getOnboarding()))
+                .flatMap(onb -> onb.stream().filter(o -> o.getProductId().equals(productId)).findFirst())
+                .flatMap(o -> Optional.ofNullable(o.getOrigin()))
                 .orElse(institution.getOrigin());
     }
 
     @Named("setOriginId")
     default String setOriginId(Institution institution, String productId) {
         return Optional.ofNullable(productId)
-                .filter(id -> !institution.getOnboarding().isEmpty())
-                .map(id -> institution.getOnboarding().get(0).getOriginId())
+                .flatMap(pid -> Optional.ofNullable(institution.getOnboarding()))
+                .flatMap(onb -> onb.stream().filter(o -> o.getProductId().equals(productId)).findFirst())
+                .flatMap(o -> Optional.ofNullable(o.getOriginId()))
                 .orElse(institution.getOriginId());
     }
 
