@@ -36,11 +36,11 @@ public class DelegationServiceImpl implements DelegationService {
     public DelegationServiceImpl(DelegationConnector delegationConnector,
                                  MailNotificationService notificationService,
                                  InstitutionService institutionService,
-                                 InstitutionMapper delegationMapper) {
+                                 InstitutionMapper institutionMapper) {
         this.delegationConnector = delegationConnector;
         this.notificationService = notificationService;
         this.institutionService = institutionService;
-        this.institutionMapper = delegationMapper;
+        this.institutionMapper = institutionMapper;
     }
 
     @Override
