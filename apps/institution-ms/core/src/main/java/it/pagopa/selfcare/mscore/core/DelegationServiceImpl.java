@@ -5,6 +5,7 @@ import it.pagopa.selfcare.mscore.constant.CustomError;
 import it.pagopa.selfcare.mscore.constant.DelegationState;
 import it.pagopa.selfcare.mscore.constant.DelegationType;
 import it.pagopa.selfcare.mscore.constant.Order;
+import it.pagopa.selfcare.mscore.core.mapper.InstitutionMapper;
 import it.pagopa.selfcare.mscore.exception.MsCoreException;
 import it.pagopa.selfcare.mscore.exception.ResourceConflictException;
 import it.pagopa.selfcare.mscore.exception.ResourceNotFoundException;
@@ -30,13 +31,16 @@ public class DelegationServiceImpl implements DelegationService {
     private final DelegationConnector delegationConnector;
     private final MailNotificationService notificationService;
     private final InstitutionService institutionService;
+    private final InstitutionMapper institutionMapper;
 
     public DelegationServiceImpl(DelegationConnector delegationConnector,
                                  MailNotificationService notificationService,
-                                 InstitutionService institutionService) {
+                                 InstitutionService institutionService,
+                                 InstitutionMapper institutionMapper) {
         this.delegationConnector = delegationConnector;
         this.notificationService = notificationService;
         this.institutionService = institutionService;
+        this.institutionMapper = institutionMapper;
     }
 
     @Override
@@ -81,10 +85,10 @@ public class DelegationServiceImpl implements DelegationService {
 
     private void setTaxCodesByInstitutionIds(Delegation delegation){
         /*
-            Retrieve both delegator's and partner's institutions to set taxCodeFrom and taxCodeTo
+            Retrieve both delegator's and partner's institutions to set taxCodeFrom, fromType, taxCodeTo and toType
          */
-        Institution institutionTo = institutionService.retrieveInstitutionById(delegation.getTo());
-        Institution institutionFrom = institutionService.retrieveInstitutionById(delegation.getFrom());
+        Institution institutionTo = institutionMapper.toInstitutionFiltered(institutionService.retrieveInstitutionById(delegation.getTo()), delegation.getProductId());
+        Institution institutionFrom = institutionMapper.toInstitutionFiltered(institutionService.retrieveInstitutionById(delegation.getFrom()), delegation.getProductId());
 
         delegation.setToTaxCode(institutionTo.getTaxCode());
         delegation.setBrokerType(institutionTo.getInstitutionType());
@@ -105,6 +109,7 @@ public class DelegationServiceImpl implements DelegationService {
         Institution partner = institutionsTo.stream()
                 .filter(institution -> StringUtils.hasText(delegation.getToSubunitCode()) || !StringUtils.hasText(institution.getSubunitCode()))
                 .findFirst()
+                .map(institution ->  institutionMapper.toInstitutionFiltered(institution, delegation.getProductId()))
                 .orElseThrow(() -> new ResourceNotFoundException(String.format(INSTITUTION_TAX_CODE_NOT_FOUND.getMessage(), delegation.getTo()),
                         INSTITUTION_TAX_CODE_NOT_FOUND.getCode()));
         delegation.setTo(partner.getId());
@@ -119,6 +124,7 @@ public class DelegationServiceImpl implements DelegationService {
         Institution from = institutionsFrom.stream()
                 .filter(institution -> StringUtils.hasText(delegation.getFromSubunitCode()) || !StringUtils.hasText(institution.getSubunitCode()))
                 .findFirst()
+                .map(institution -> institutionMapper.toInstitutionFiltered(institution, delegation.getProductId()))
                 .orElseThrow(() -> new ResourceNotFoundException(String.format(INSTITUTION_TAX_CODE_NOT_FOUND.getMessage(), delegation.getTo()),
                         INSTITUTION_TAX_CODE_NOT_FOUND.getCode()));
         delegation.setFrom(from.getId());
