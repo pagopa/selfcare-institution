@@ -2,13 +2,12 @@ package it.pagopa.selfcare.mscore.connector.dao;
 
 import it.pagopa.selfcare.mscore.api.DelegationConnector;
 import it.pagopa.selfcare.mscore.connector.dao.model.DelegationEntity;
+import it.pagopa.selfcare.mscore.connector.dao.model.DelegationInstitutionEntity;
 import it.pagopa.selfcare.mscore.connector.dao.model.mapper.DelegationEntityMapper;
 import it.pagopa.selfcare.mscore.constant.DelegationState;
+import it.pagopa.selfcare.mscore.constant.DelegationType;
 import it.pagopa.selfcare.mscore.constant.Order;
-import it.pagopa.selfcare.mscore.model.delegation.Delegation;
-import it.pagopa.selfcare.mscore.model.delegation.DelegationWithPagination;
-import it.pagopa.selfcare.mscore.model.delegation.GetDelegationParameters;
-import it.pagopa.selfcare.mscore.model.delegation.PageInfo;
+import it.pagopa.selfcare.mscore.model.delegation.*;
 import it.pagopa.selfcare.mscore.model.institution.Institution;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -17,13 +16,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -31,9 +33,9 @@ import java.util.regex.Pattern;
 @Component
 public class DelegationConnectorImpl implements DelegationConnector {
 
-    public static final String INSTITUTION = "Institution";
-    public static final String INSTITUTIONS = "institutions";
-    public static final String DELEGATIONS = "Delegations";
+    public static final String COLLECTION_INSTITUTION = "Institution";
+    public static final String COLLECTION_DELEGATIONS = "Delegations";
+
     private final DelegationRepository repository;
     private final DelegationEntityMapper delegationMapper;
     private final MongoTemplate mongoTemplate;
@@ -87,6 +89,12 @@ public class DelegationConnectorImpl implements DelegationConnector {
         if (Objects.nonNull(search)) {
             criterias.add(Criteria.where(DelegationEntity.Fields.institutionFromName.name()).regex("(?i)" + Pattern.quote(search)));
         }
+        return criterias;
+    }
+
+    private List<Criteria> getCriterias(String from, String to, String productId, DelegationType type) {
+        final List<Criteria> criterias = getCriterias(from, to, productId, null, null);
+        Optional.ofNullable(type).ifPresent(t -> criterias.add(Criteria.where(DelegationEntity.Fields.type.name()).is(t)));
         return criterias;
     }
 
@@ -175,6 +183,56 @@ public class DelegationConnectorImpl implements DelegationConnector {
         }
         repository.updateMulti(queryTo, updateTo, DelegationEntity.class);
 
+    }
+
+    @Override
+    public List<DelegationInstitution> findDelegators(String institutionId, String productId, DelegationType type, Long cursor, int size) {
+        final List<Criteria> matchCriterias = getCriterias(null, institutionId, productId, type);
+        Optional.ofNullable(cursor).ifPresent(c -> matchCriterias.add(Criteria.where("createdAt")
+                .gt(OffsetDateTime.ofInstant(Instant.ofEpochMilli(c), ZoneId.systemDefault()))));
+
+        // Filter delegations
+        final MatchOperation matchOperation = Aggregation.match(new Criteria().andOperator(matchCriterias));
+
+        // Sort delegations
+        final SortOperation sortOperation = Aggregation.sort(Sort.Direction.ASC, "createdAt");
+
+        // Limit delegations
+        final LimitOperation limitOperation = Aggregation.limit(size);
+
+        // Lookup institutions
+        final LookupOperation lookupOperationFrom = Aggregation.lookup(COLLECTION_INSTITUTION, "from", "_id", "institution");
+        final UnwindOperation unwindOperationFrom = Aggregation.unwind("institution");
+
+        // Aggregate
+        final Aggregation aggregation = Aggregation.newAggregation(matchOperation, sortOperation, limitOperation, lookupOperationFrom, unwindOperationFrom);
+        return mongoTemplate.aggregate(aggregation, COLLECTION_DELEGATIONS, DelegationInstitutionEntity.class).getMappedResults()
+                .stream().map(delegationMapper::convertToDelegationInstitution).toList();
+    }
+
+    @Override
+    public List<DelegationInstitution> findDelegates(String institutionId, String productId, DelegationType type, Long cursor, int size) {
+        final List<Criteria> matchCriterias = getCriterias(institutionId, null, productId, type);
+        Optional.ofNullable(cursor).ifPresent(c -> matchCriterias.add(Criteria.where("createdAt")
+                .gt(OffsetDateTime.ofInstant(Instant.ofEpochMilli(c), ZoneId.systemDefault()))));
+
+        // Filter delegations
+        final MatchOperation matchOperation = Aggregation.match(new Criteria().andOperator(matchCriterias));
+
+        // Sort delegations
+        final SortOperation sortOperation = Aggregation.sort(Sort.Direction.ASC, "createdAt");
+
+        // Limit delegations
+        final LimitOperation limitOperation = Aggregation.limit(size);
+
+        // Lookup institutions
+        final LookupOperation lookupOperationTo = Aggregation.lookup(COLLECTION_INSTITUTION, "to", "_id", "institution");
+        final UnwindOperation unwindOperationTo = Aggregation.unwind("institution");
+
+        // Aggregate
+        final Aggregation aggregation = Aggregation.newAggregation(matchOperation, sortOperation, limitOperation, lookupOperationTo, unwindOperationTo);
+        return mongoTemplate.aggregate(aggregation, COLLECTION_DELEGATIONS, DelegationInstitutionEntity.class).getMappedResults()
+                .stream().map(delegationMapper::convertToDelegationInstitution).toList();
     }
 
 }

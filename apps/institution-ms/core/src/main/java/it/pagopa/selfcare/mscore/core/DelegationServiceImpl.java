@@ -8,9 +8,7 @@ import it.pagopa.selfcare.mscore.constant.Order;
 import it.pagopa.selfcare.mscore.exception.MsCoreException;
 import it.pagopa.selfcare.mscore.exception.ResourceConflictException;
 import it.pagopa.selfcare.mscore.exception.ResourceNotFoundException;
-import it.pagopa.selfcare.mscore.model.delegation.Delegation;
-import it.pagopa.selfcare.mscore.model.delegation.DelegationWithPagination;
-import it.pagopa.selfcare.mscore.model.delegation.GetDelegationParameters;
+import it.pagopa.selfcare.mscore.model.delegation.*;
 import it.pagopa.selfcare.mscore.model.institution.Institution;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -162,4 +160,15 @@ public class DelegationServiceImpl implements DelegationService {
     public DelegationWithPagination getDelegationsV2(GetDelegationParameters delegationParameters) {
         return delegationConnector.findAndCount(delegationParameters);
     }
+
+    @Override
+    public List<DelegationInstitution> getDelegators(String institutionId, String productId, DelegationType type, Long cursor, int size) {
+        return delegationConnector.findDelegators(institutionId, productId, type, cursor, size);
+    }
+
+    @Override
+    public List<DelegationInstitution> getDelegates(String institutionId, String productId, DelegationType type, Long cursor, int size) {
+        return delegationConnector.findDelegates(institutionId, productId, type, cursor, size);
+    }
+
 }

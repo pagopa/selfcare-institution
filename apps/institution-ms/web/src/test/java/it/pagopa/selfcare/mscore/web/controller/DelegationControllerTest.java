@@ -5,6 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pagopa.selfcare.mscore.constant.DelegationType;
 import it.pagopa.selfcare.mscore.core.DelegationService;
 import it.pagopa.selfcare.mscore.model.delegation.Delegation;
+import it.pagopa.selfcare.mscore.model.delegation.DelegationInstitution;
+import it.pagopa.selfcare.mscore.model.institution.Institution;
+import it.pagopa.selfcare.mscore.web.model.delegation.DelegationInstitutionResponse;
 import it.pagopa.selfcare.mscore.web.model.delegation.DelegationRequest;
 import it.pagopa.selfcare.mscore.web.model.delegation.DelegationRequestFromTaxcode;
 import it.pagopa.selfcare.mscore.web.model.delegation.DelegationResponse;
@@ -329,6 +332,78 @@ class DelegationControllerTest {
                 .build()
                 .perform(requestBuilder)
                 .andExpect(MockMvcResultMatchers.status().isNoContent());
+    }
+
+    @Test
+    void testGetDelegatorInstitutions() throws Exception {
+        final DelegationInstitution delInst = new DelegationInstitution();
+        delInst.setId(0L);
+        delInst.setDelegationId("456");
+        final Institution inst = new Institution();
+        inst.setId("456");
+        delInst.setInstitution(inst);
+
+        when(delegationService.getDelegators(anyString(), anyString(), any(), anyLong(), anyInt())).thenReturn(List.of(delInst));
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+                .get("/delegations/delegators/institutionId?productId=productId&type=EA&cursor=123&size=10");
+        MvcResult result =  MockMvcBuilders.standaloneSetup(delegationController)
+                .build()
+                .perform(requestBuilder)
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+                .andReturn();
+
+        final List<DelegationInstitutionResponse> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
+        assertEquals(1, response.size());
+        assertEquals(0L, response.get(0).getId());
+        assertEquals("456", response.get(0).getDelegationId());
+        assertEquals("456", response.get(0).getInstitution().getId());
+    }
+
+    @Test
+    void testGetDelegatorInstitutionsWithBadRequest() throws Exception {
+        MockHttpServletRequestBuilder requestBuilder1 = MockMvcRequestBuilders
+                .get("/delegations/delegators/institutionId?productId=productId&type=X&cursor=123&size=1000");
+        MockMvcBuilders.standaloneSetup(delegationController)
+                .build()
+                .perform(requestBuilder1)
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    void testGetDelegateInstitutions() throws Exception {
+        final DelegationInstitution delInst = new DelegationInstitution();
+        delInst.setId(0L);
+        delInst.setDelegationId("456");
+        final Institution inst = new Institution();
+        inst.setId("456");
+        delInst.setInstitution(inst);
+
+        when(delegationService.getDelegates(anyString(), anyString(), any(), anyLong(), anyInt())).thenReturn(List.of(delInst));
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+                .get("/delegations/delegates/institutionId?productId=productId&type=EA&cursor=123&size=10");
+        MvcResult result =  MockMvcBuilders.standaloneSetup(delegationController)
+                .build()
+                .perform(requestBuilder)
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+                .andReturn();
+
+        final List<DelegationInstitutionResponse> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
+        assertEquals(1, response.size());
+        assertEquals(0L, response.get(0).getId());
+        assertEquals("456", response.get(0).getDelegationId());
+        assertEquals("456", response.get(0).getInstitution().getId());
+    }
+
+    @Test
+    void testGetDelegateInstitutionsWithBadRequest() throws Exception {
+        MockHttpServletRequestBuilder requestBuilder1 = MockMvcRequestBuilders
+                .get("/delegations/delegates/institutionId?productId=productId&type=X&cursor=123&size=1000");
+        MockMvcBuilders.standaloneSetup(delegationController)
+                .build()
+                .perform(requestBuilder1)
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
 }

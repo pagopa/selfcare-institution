@@ -1,17 +1,18 @@
 package it.pagopa.selfcare.mscore.connector.dao;
 
-import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import it.pagopa.selfcare.mscore.connector.dao.model.DelegationEntity;
+import it.pagopa.selfcare.mscore.connector.dao.model.DelegationInstitutionEntity;
+import it.pagopa.selfcare.mscore.connector.dao.model.InstitutionEntity;
 import it.pagopa.selfcare.mscore.connector.dao.model.mapper.DelegationEntityMapper;
 import it.pagopa.selfcare.mscore.connector.dao.model.mapper.DelegationEntityMapperImpl;
-import it.pagopa.selfcare.mscore.connector.dao.model.mapper.DelegationInstitutionMapper;
-import it.pagopa.selfcare.mscore.connector.dao.model.mapper.DelegationInstitutionMapperImpl;
 import it.pagopa.selfcare.mscore.constant.DelegationState;
 import it.pagopa.selfcare.mscore.constant.DelegationType;
 import it.pagopa.selfcare.mscore.constant.Order;
 import it.pagopa.selfcare.mscore.exception.MsCoreException;
 import it.pagopa.selfcare.mscore.model.delegation.*;
 import it.pagopa.selfcare.mscore.model.institution.Institution;
+import it.pagopa.selfcare.onboarding.common.InstitutionType;
+import org.bson.Document;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,9 +27,13 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.test.context.ContextConfiguration;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -46,21 +51,11 @@ class DelegationConnectorImplTest {
     public static final int PAGE_SIZE = 0;
     public static final int MAX_PAGE_SIZE = 100;
     static Institution dummyInstitution;
-    static DelegationInstitution dummyDelegationEntity;
 
     static {
         dummyInstitution = new Institution();
         dummyInstitution.setTaxCode("taxCode");
         dummyInstitution.setInstitutionType(InstitutionType.PT);
-        dummyDelegationEntity = new DelegationInstitution();
-        dummyDelegationEntity.setId("id");
-        dummyDelegationEntity.setProductId("productId");
-        dummyDelegationEntity.setType(DelegationType.PT);
-        dummyDelegationEntity.setTo("To");
-        dummyDelegationEntity.setFrom("From");
-        dummyDelegationEntity.setInstitutionFromName("setInstitutionFromName");
-        dummyDelegationEntity.setInstitutionFromRootName("setInstitutionFromRootName");
-        dummyDelegationEntity.setInstitutions(List.of(dummyInstitution));
     }
 
     @InjectMocks
@@ -74,9 +69,6 @@ class DelegationConnectorImplTest {
 
     @Spy
     private DelegationEntityMapper delegationMapper = new DelegationEntityMapperImpl();
-
-    @Spy
-    private DelegationInstitutionMapper delegationInstitutionMapper = new DelegationInstitutionMapperImpl();
 
     @Test
     void testSaveDelegation() {
@@ -229,21 +221,6 @@ class DelegationConnectorImplTest {
         assertEquals(delegation.getId(), delegationEntity.getId());
     }
 
-    private DelegationInstitution createAggregation(String pattern, String from, String to) {
-        Institution institution = new Institution();
-        institution.setTaxCode("taxCode_" + pattern);
-        institution.setInstitutionType(InstitutionType.PT);
-        DelegationInstitution delegationEntity = new DelegationInstitution();
-        delegationEntity.setId("id_" + pattern);
-        delegationEntity.setProductId("productId");
-        delegationEntity.setType(DelegationType.PT);
-        delegationEntity.setTo(to);
-        delegationEntity.setFrom(from);
-        delegationEntity.setInstitutionFromName("name_" + from);
-        delegationEntity.setInstitutions(List.of(institution));
-        return delegationEntity;
-    }
-
     @Test
     void findAndCount_shouldGetData() {
 
@@ -347,4 +324,69 @@ class DelegationConnectorImplTest {
         verify(delegationRepository, times(1)).updateMulti(any(), any(), any());
 
     }
+
+    @Test
+    void findDelegatorsAndDelegatesTest() {
+        final DelegationInstitutionEntity entity1 = new DelegationInstitutionEntity();
+        entity1.setId("456");
+        entity1.setCreatedAt(OffsetDateTime.of(2024, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC));
+        entity1.setProductId("productId");
+        entity1.setType(DelegationType.EA);
+        final InstitutionEntity instEntity1 = new InstitutionEntity();
+        instEntity1.setId("456");
+        instEntity1.setDigitalAddress("test1@test.com");
+        instEntity1.setDescription("Institution1");
+        entity1.setInstitution(instEntity1);
+
+        final DelegationInstitutionEntity entity2 = new DelegationInstitutionEntity();
+        entity2.setId("789");
+        entity2.setCreatedAt(OffsetDateTime.of(2025, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC));
+        entity2.setProductId("productId");
+        entity2.setType(DelegationType.EA);
+        final InstitutionEntity instEntity2 = new InstitutionEntity();
+        instEntity2.setId("789");
+        instEntity2.setDigitalAddress("test2@test.com");
+        instEntity2.setDescription("Institution2");
+        entity2.setInstitution(instEntity2);
+
+        final AggregationResults<DelegationInstitutionEntity> aggregationResults = new AggregationResults<>(List.of(entity1, entity2), new Document());
+        when(mongoTemplate.aggregate(any(Aggregation.class), anyString(), any(Class.class))).thenReturn(aggregationResults);
+
+        final List<DelegationInstitution> delegators = delegationConnectorImpl.findDelegators("institutionId", "productId", DelegationType.EA, 123L, 100);
+        final List<DelegationInstitution> delegates = delegationConnectorImpl.findDelegates("institutionId", "productId", DelegationType.EA, 123L, 100);
+
+        assertEquals(2, delegators.size());
+        assertEquals(2, delegates.size());
+
+        assertEquals(1704067200000L, delegators.get(0).getId());
+        assertEquals(1704067200000L, delegates.get(0).getId());
+        assertEquals("456", delegators.get(0).getDelegationId());
+        assertEquals("456", delegates.get(0).getDelegationId());
+        assertEquals("456", delegators.get(0).getInstitution().getId());
+        assertEquals("456", delegates.get(0).getInstitution().getId());
+        assertEquals("productId", delegators.get(0).getDelegationProductId());
+        assertEquals("productId", delegates.get(0).getDelegationProductId());
+        assertEquals(DelegationType.EA, delegators.get(0).getDelegationType());
+        assertEquals(DelegationType.EA, delegates.get(0).getDelegationType());
+        assertEquals("test1@test.com", delegators.get(0).getInstitution().getDigitalAddress());
+        assertEquals("test1@test.com", delegates.get(0).getInstitution().getDigitalAddress());
+        assertEquals("Institution1", delegators.get(0).getInstitution().getDescription());
+        assertEquals("Institution1", delegates.get(0).getInstitution().getDescription());
+
+        assertEquals(1735689600000L, delegators.get(1).getId());
+        assertEquals(1735689600000L, delegates.get(1).getId());
+        assertEquals("789", delegators.get(1).getDelegationId());
+        assertEquals("789", delegates.get(1).getDelegationId());
+        assertEquals("789", delegators.get(1).getInstitution().getId());
+        assertEquals("789", delegates.get(1).getInstitution().getId());
+        assertEquals("productId", delegators.get(1).getDelegationProductId());
+        assertEquals("productId", delegates.get(1).getDelegationProductId());
+        assertEquals(DelegationType.EA, delegators.get(1).getDelegationType());
+        assertEquals(DelegationType.EA, delegates.get(1).getDelegationType());
+        assertEquals("test2@test.com", delegators.get(1).getInstitution().getDigitalAddress());
+        assertEquals("test2@test.com", delegates.get(1).getInstitution().getDigitalAddress());
+        assertEquals("Institution2", delegators.get(1).getInstitution().getDescription());
+        assertEquals("Institution2", delegates.get(1).getInstitution().getDescription());
+    }
+
 }

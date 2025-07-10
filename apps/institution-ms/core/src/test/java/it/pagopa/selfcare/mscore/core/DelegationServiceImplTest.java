@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.mscore.core;
 
+import it.pagopa.selfcare.mscore.model.delegation.*;
 import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import it.pagopa.selfcare.mscore.api.DelegationConnector;
 import it.pagopa.selfcare.mscore.constant.DelegationState;
@@ -8,10 +9,6 @@ import it.pagopa.selfcare.mscore.constant.Order;
 import it.pagopa.selfcare.mscore.exception.MsCoreException;
 import it.pagopa.selfcare.mscore.exception.ResourceConflictException;
 import it.pagopa.selfcare.mscore.exception.ResourceNotFoundException;
-import it.pagopa.selfcare.mscore.model.delegation.Delegation;
-import it.pagopa.selfcare.mscore.model.delegation.DelegationWithPagination;
-import it.pagopa.selfcare.mscore.model.delegation.GetDelegationParameters;
-import it.pagopa.selfcare.mscore.model.delegation.PageInfo;
 import it.pagopa.selfcare.mscore.model.institution.Institution;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -440,6 +437,34 @@ class DelegationServiceImplTest {
                 .page(page)
                 .size(size)
                 .build();
+    }
+
+    @Test
+    void getDelegatorsAndDelegatesTest() {
+        final DelegationInstitution delInst = new DelegationInstitution();
+        delInst.setId(0L);
+        delInst.setDelegationId("456");
+        final Institution inst = new Institution();
+        inst.setId("456");
+        delInst.setInstitution(inst);
+
+        when(delegationConnector.findDelegators("institutionId", "productId", DelegationType.EA, 123L, 100)).thenReturn(List.of(delInst));
+        when(delegationConnector.findDelegates("institutionId", "productId", DelegationType.EA, 123L, 100)).thenReturn(List.of(delInst));
+
+        final List<DelegationInstitution> delegators = delegationServiceImpl.getDelegators("institutionId", "productId", DelegationType.EA, 123L, 100);
+        final List<DelegationInstitution> delegates = delegationServiceImpl.getDelegates("institutionId", "productId", DelegationType.EA, 123L, 100);
+
+        verify(delegationConnector, times(1)).findDelegators("institutionId", "productId", DelegationType.EA, 123L, 100);
+        verify(delegationConnector, times(1)).findDelegates("institutionId", "productId", DelegationType.EA, 123L, 100);
+
+        assertEquals(1, delegators.size());
+        assertEquals(1, delegates.size());
+        assertEquals(0L, delegators.get(0).getId());
+        assertEquals(0L, delegates.get(0).getId());
+        assertEquals("456", delegators.get(0).getDelegationId());
+        assertEquals("456", delegates.get(0).getDelegationId());
+        assertEquals("456", delegators.get(0).getInstitution().getId());
+        assertEquals("456", delegates.get(0).getInstitution().getId());
     }
 
 }
