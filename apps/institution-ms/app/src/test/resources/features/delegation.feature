@@ -584,3 +584,176 @@ Feature: Delegation
     When I send a DELETE request to "/delegations/{delegationId}"
     Then The status code is 204
     And The delegation with id "123456" is in state DELETED on db
+
+# GET /delegations/delegators/{institutionId}
+
+  Scenario: Successfully get delegators
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | institutionId | cdaa3a10-8e4e-46ae-a365-c31a3f22b267 |
+    And The following query params:
+      | productId | prod-io |
+      | type      | EA      |
+    When I send a GET request to "/delegations/delegators/{institutionId}"
+    Then The status code is 200
+    And The response body contains the list "" of size 1
+    And The response body contains:
+      | [0].id                         | 1717503095166                        |
+      | [0].delegationId               | 31d012c6-e7cf-4900-a243-b72bf416c522 |
+      | [0].delegationType             | EA                                   |
+      | [0].delegationProductId        | prod-io                              |
+      | [0].institution.id             | bf4dcdb6-f223-4996-bfbc-326b119dd101 |
+      | [0].institution.digitalAddress | test@test.com                        |
+      | [0].institution.description    | Comune di Assisi                     |
+
+  Scenario: Successfully get delegators with cursor
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | institutionId | cdaa3a10-8e4e-46ae-a365-c31a3f22b267 |
+    And The following query params:
+      | productId | prod-io |
+      | size      | 1       |
+    When I send a GET request to "/delegations/delegators/{institutionId}"
+    Then The status code is 200
+    And The response body contains the list "" of size 1
+    And The response body contains:
+      | [0].id                         | 0                        |
+      | [0].delegationId               | 3501880e-1a64-46b1-b9a0-be05d35bb391 |
+      | [0].delegationType             | PT                                   |
+      | [0].delegationProductId        | prod-io                              |
+      | [0].institution.id             | bf4dcdb6-f223-4996-bfbc-326b119dd101 |
+      | [0].institution.digitalAddress | test@test.com                        |
+      | [0].institution.description    | Comune di Assisi                     |
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | institutionId | cdaa3a10-8e4e-46ae-a365-c31a3f22b267 |
+    And The following query params:
+      | productId | prod-io |
+      | size      | 1       |
+      | cursor    | 0       |
+    When I send a GET request to "/delegations/delegators/{institutionId}"
+    Then The status code is 200
+    And The response body contains the list "" of size 1
+    And The response body contains:
+      | [0].id                         | 1717503095166                        |
+      | [0].delegationId               | 31d012c6-e7cf-4900-a243-b72bf416c522 |
+      | [0].delegationType             | EA                                   |
+      | [0].delegationProductId        | prod-io                              |
+      | [0].institution.id             | bf4dcdb6-f223-4996-bfbc-326b119dd101 |
+      | [0].institution.digitalAddress | test@test.com                        |
+      | [0].institution.description    | Comune di Assisi                     |
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | institutionId | cdaa3a10-8e4e-46ae-a365-c31a3f22b267 |
+    And The following query params:
+      | productId | prod-io             |
+      | size      | 1                   |
+      | cursor    | 1717503095166       |
+    When I send a GET request to "/delegations/delegators/{institutionId}"
+    Then The status code is 200
+    And The response body contains the list "" of size 0
+
+  Scenario: Bad request while getting delegators with invalid type
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | institutionId | cdaa3a10-8e4e-46ae-a365-c31a3f22b267 |
+    And The following query params:
+      | productId | prod-io |
+      | type      | X       |
+    When I send a GET request to "/delegations/delegators/{institutionId}"
+    Then The status code is 400
+
+  Scenario: Bad request while getting delegators with invalid size
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | institutionId | cdaa3a10-8e4e-46ae-a365-c31a3f22b267 |
+    And The following query params:
+      | productId | prod-io |
+      | size      | 0       |
+    When I send a GET request to "/delegations/delegators/{institutionId}"
+    Then The status code is 400
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | institutionId | cdaa3a10-8e4e-46ae-a365-c31a3f22b267 |
+    And The following query params:
+      | productId | prod-io |
+      | size      | 101     |
+    When I send a GET request to "/delegations/delegators/{institutionId}"
+    Then The status code is 400
+
+# GET /delegations/delegates/{institutionId}
+
+  Scenario: Successfully get delegates
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | institutionId | bf4dcdb6-f223-4996-bfbc-326b119dd101 |
+    And The following query params:
+      | productId | prod-pagopa |
+      | type      | EA          |
+    When I send a GET request to "/delegations/delegates/{institutionId}"
+    Then The status code is 200
+    And The response body contains the list "" of size 1
+    And The response body contains:
+      | [0].id                         | 1717498895289                        |
+      | [0].delegationId               | 8db995b0-2087-4cfa-b5df-851aadc0247e |
+      | [0].delegationType             | EA                                   |
+      | [0].delegationProductId        | prod-pagopa                          |
+      | [0].institution.id             | c18d0cd5-e8a5-4f40-894b-f1f4252e1294 |
+      | [0].institution.digitalAddress | test@test.com                        |
+      | [0].institution.description    | NTT Data                             |
+
+  Scenario: Successfully get delegates with cursor
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | institutionId | bf4dcdb6-f223-4996-bfbc-326b119dd101 |
+    And The following query params:
+      | productId | prod-pagopa |
+      | size      | 1           |
+    When I send a GET request to "/delegations/delegates/{institutionId}"
+    Then The status code is 200
+    And The response body contains the list "" of size 1
+    And The response body contains:
+      | [0].id                         | 1717498895289                        |
+      | [0].delegationId               | 8db995b0-2087-4cfa-b5df-851aadc0247e |
+      | [0].delegationType             | EA                                   |
+      | [0].delegationProductId        | prod-pagopa                          |
+      | [0].institution.id             | c18d0cd5-e8a5-4f40-894b-f1f4252e1294 |
+      | [0].institution.digitalAddress | test@test.com                        |
+      | [0].institution.description    | NTT Data                             |
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | institutionId | bf4dcdb6-f223-4996-bfbc-326b119dd101 |
+    And The following query params:
+      | productId | prod-pagopa   |
+      | cursor    | 1717498895289 |
+    When I send a GET request to "/delegations/delegates/{institutionId}"
+    Then The status code is 200
+    And The response body contains the list "" of size 0
+
+  Scenario: Bad request while getting delegates with invalid type
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | institutionId | bf4dcdb6-f223-4996-bfbc-326b119dd101 |
+    And The following query params:
+      | productId | prod-pagopa |
+      | type      | X           |
+    When I send a GET request to "/delegations/delegates/{institutionId}"
+    Then The status code is 400
+
+  Scenario: Bad request while getting delegates with invalid size
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | institutionId | bf4dcdb6-f223-4996-bfbc-326b119dd101 |
+    And The following query params:
+      | productId | prod-pagopa |
+      | size      | 0           |
+    When I send a GET request to "/delegations/delegates/{institutionId}"
+    Then The status code is 400
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | institutionId | bf4dcdb6-f223-4996-bfbc-326b119dd101 |
+    And The following query params:
+      | productId | prod-pagopa |
+      | size      | 101         |
+    When I send a GET request to "/delegations/delegates/{institutionId}"
+    Then The status code is 400
