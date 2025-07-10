@@ -1445,16 +1445,32 @@ Feature: Institution
       | productId | prod-pagopa |
     When I send a GET request to "/institutions/{id}"
     Then The status code is 200
-    And The response body contains the list "onboarding" of size 1
-    And The response body contains at path "onboarding" the following list of objects in any order:
-      | productId    | tokenId                              | status | institutionType | origin | originId |
-      | prod-pagopa  | 6c4fc5c1-65bb-496c-ae0a-547a4c920bd9 | ACTIVE | PT | SELC   | 123X     |
+    And The response body contains the list "onboarding" of size 4
     And The response body contains:
       | id              | c9a50656-f345-4c81-84be-5b2474470544                        |
       | logo            | test-logo-url/c9a50656-f345-4c81-84be-5b2474470544/logo.png |
       | origin          | SELC                                                        |
       | originId        | 123X                                                        |
       | institutionType | PT                                                          |
+      | description     | Comune di Castelbuono                                       |
+      | taxCode         | 00310810825                                                 |
+      | digitalAddress  | comune.castelbuono@pec.it                                   |
+
+  Scenario: Successfully get institution by id with productId filter not found
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | id | c9a50656-f345-4c81-84be-5b2474470544 |
+    And The following query params:
+      | productId | prod-x |
+    When I send a GET request to "/institutions/{id}"
+    Then The status code is 200
+    And The response body contains the list "onboarding" of size 4
+    And The response body contains:
+      | id              | c9a50656-f345-4c81-84be-5b2474470544                        |
+      | logo            | test-logo-url/c9a50656-f345-4c81-84be-5b2474470544/logo.png |
+      | origin          | IPA                                                         |
+      | originId        | c_c067                                                      |
+      | institutionType | PA                                                          |
       | description     | Comune di Castelbuono                                       |
       | taxCode         | 00310810825                                                 |
       | digitalAddress  | comune.castelbuono@pec.it                                   |

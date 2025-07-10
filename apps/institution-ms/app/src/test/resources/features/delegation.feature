@@ -7,7 +7,7 @@ Feature: Delegation
   @RemoveCreatedDelegationAfterScenario
   Scenario: Successfully create delegation
     Given User login with username "j.doe" and password "test"
-    And A pair of mock institutions with id "123","456" and taxcode "112233","445566" with subunitCode "",""
+    And A pair of mock institutions with id "123","456" and taxcode "112233","445566" with subunitCode "","" with an onboarding on product "prod-io"
     And The following request body:
       """
         {
@@ -31,12 +31,14 @@ Feature: Delegation
       | brokerId            | 456                   |
       | brokerName          | To Institution        |
       | status              | ACTIVE                |
+      | institutionType     | PT                    |
+      | brokerType          | PT                    |
     And The response body contains field "id"
     And The response body contains field "createdAt"
     And The response body contains field "updatedAt"
     And The delegation flag for institution "123" is false on db
     And The delegation flag for institution "456" is true on db
-    And The delegation from institution "123" to institution "456" was saved to db successfully
+    And The delegation from institution "123" to institution "456" for product "prod-io" was saved to db successfully
 
   Scenario: Institution (FROM) not found while creating delegation
     Given User login with username "j.doe" and password "test"
@@ -82,7 +84,7 @@ Feature: Delegation
   @RemoveCreatedDelegationAfterScenario
   Scenario: Conflict while creating delegation
     Given User login with username "j.doe" and password "test"
-    And A pair of mock institutions with id "123","456" and taxcode "112233","445566" with subunitCode "",""
+    And A pair of mock institutions with id "123","456" and taxcode "112233","445566" with subunitCode "","" with an onboarding on product "prod-pagopa"
     And A mock delegation with id "123456" of type EA with productId "prod-pagopa" for institution with id "123" and "456" with status ACTIVE
     And The following request body:
       """
@@ -106,7 +108,7 @@ Feature: Delegation
   @RemoveCreatedDelegationAfterScenario
   Scenario: Successfully enable deleted delegation while creating delegation
     Given User login with username "j.doe" and password "test"
-    And A pair of mock institutions with id "123","456" and taxcode "112233","445566" with subunitCode "",""
+    And A pair of mock institutions with id "123","456" and taxcode "112233","445566" with subunitCode "","" with an onboarding on product "prod-pagopa"
     And A mock delegation with id "123456" of type EA with productId "prod-pagopa" for institution with id "123" and "456" with status DELETED
     And The following request body:
       """
@@ -134,7 +136,7 @@ Feature: Delegation
     And The response body contains field "id"
     And The delegation flag for institution "123" is false on db
     And The delegation flag for institution "456" is true on db
-    And The delegation from institution "123" to institution "456" was saved to db successfully
+    And The delegation from institution "123" to institution "456" for product "prod-pagopa" was saved to db successfully
 
   Scenario: Bad request while creating delegation with missing from field
     Given User login with username "j.doe" and password "test"
@@ -261,7 +263,7 @@ Feature: Delegation
   @RemoveCreatedDelegationAfterScenario
   Scenario: Successfully create delegation from taxcode
     Given User login with username "j.doe" and password "test"
-    And A pair of mock institutions with id "123","456" and taxcode "112233","445566" with subunitCode "S1","S2"
+    And A pair of mock institutions with id "123","456" and taxcode "112233","445566" with subunitCode "S1","S2" with an onboarding on product "prod-io"
     And The following request body:
       """
         {
@@ -290,7 +292,7 @@ Feature: Delegation
     And The response body contains field "updatedAt"
     And The delegation flag for institution "123" is false on db
     And The delegation flag for institution "456" is true on db
-    And The delegation from institution "123" to institution "456" was saved to db successfully
+    And The delegation from institution "123" to institution "456" for product "prod-io" was saved to db successfully
 
   Scenario: Institution (fromTaxCode) not found while creating delegation from taxcode
     Given User login with username "j.doe" and password "test"
@@ -334,7 +336,7 @@ Feature: Delegation
   @RemoveCreatedDelegationAfterScenario
   Scenario: Conflict while creating delegation from taxcode
     Given User login with username "j.doe" and password "test"
-    And A pair of mock institutions with id "123","456" and taxcode "112233","445566" with subunitCode "S1","S2"
+    And A pair of mock institutions with id "123","456" and taxcode "112233","445566" with subunitCode "S1","S2" with an onboarding on product "prod-pagopa"
     And A mock delegation with id "123456" of type EA with productId "prod-pagopa" for institution with id "123" and "456" with status ACTIVE
     And The following request body:
       """
@@ -359,7 +361,7 @@ Feature: Delegation
   @RemoveCreatedDelegationAfterScenario
   Scenario: Successfully enable deleted delegation while creating delegation from taxcode
     Given User login with username "j.doe" and password "test"
-    And A pair of mock institutions with id "123","456" and taxcode "112233","445566" with subunitCode "S1","S2"
+    And A pair of mock institutions with id "123","456" and taxcode "112233","445566" with subunitCode "S1","S2" with an onboarding on product "prod-pagopa"
     And A mock delegation with id "123456" of type EA with productId "prod-pagopa" for institution with id "123" and "456" with status DELETED
     And The following request body:
       """
@@ -388,7 +390,7 @@ Feature: Delegation
     And The response body contains field "id"
     And The delegation flag for institution "123" is false on db
     And The delegation flag for institution "456" is true on db
-    And The delegation from institution "123" to institution "456" was saved to db successfully
+    And The delegation from institution "123" to institution "456" for product "prod-pagopa" was saved to db successfully
 
   Scenario: Bad request while creating delegation from taxcode with missing fromTaxCode field
     Given User login with username "j.doe" and password "test"
@@ -551,7 +553,7 @@ Feature: Delegation
   @RemoveCreatedDelegationAfterScenario
   Scenario: Successfully delete delegation by id
     Given User login with username "j.doe" and password "test"
-    And A pair of mock institutions with id "123","456" and taxcode "112233","445566" with subunitCode "S1","S2"
+    And A pair of mock institutions with id "123","456" and taxcode "112233","445566" with subunitCode "S1","S2" with an onboarding on product "prod-pagopa"
     And A mock delegation with id "123456" of type EA with productId "prod-pagopa" for institution with id "123" and "456" with status ACTIVE
     And The following path params:
       | delegationId | 123456 |
@@ -564,7 +566,7 @@ Feature: Delegation
   @RemovePairOfMockInstitutionAfterScenario
   Scenario: Not found delegationId while deleting delegation
     Given User login with username "j.doe" and password "test"
-    And A pair of mock institutions with id "123","456" and taxcode "112233","445566" with subunitCode "S1","S2"
+    And A pair of mock institutions with id "123","456" and taxcode "112233","445566" with subunitCode "S1","S2" with an onboarding on product "prod-io"
     And The following path params:
       | delegationId | 123456 |
     When I send a DELETE request to "/delegations/{delegationId}"
