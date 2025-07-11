@@ -167,7 +167,7 @@ public class DelegationController {
                                                                                         @ApiParam("${swagger.mscore.page.size}")
                                                                                         @RequestParam(name = "size", required = false, defaultValue = "100") @Min(1) @Max(100) Integer size) {
         return ResponseEntity.status(HttpStatus.OK).body(delegationService.getDelegators(institutionId, productId, type, cursor, size)
-                .stream().map(delegationMapper::toDelegationInstitutionResponse).toList());
+                .stream().map(d -> delegationMapper.toDelegationInstitutionResponse(d, productId)).toList());
     }
 
     /**
@@ -194,7 +194,7 @@ public class DelegationController {
                                                                                        @ApiParam("${swagger.mscore.page.size}")
                                                                                        @RequestParam(name = "size", required = false, defaultValue = "100") @Min(1) @Max(100) Integer size) {
         return ResponseEntity.status(HttpStatus.OK).body(delegationService.getDelegates(institutionId, productId, type, cursor, size)
-                .stream().map(delegationMapper::toDelegationInstitutionResponse).toList());
+                .stream().map(d -> delegationMapper.toDelegationInstitutionResponse(d, productId)).toList());
     }
 
 }

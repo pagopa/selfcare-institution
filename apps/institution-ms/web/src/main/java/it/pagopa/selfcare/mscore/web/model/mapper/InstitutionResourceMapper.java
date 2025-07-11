@@ -6,10 +6,7 @@ import it.pagopa.selfcare.mscore.model.institution.InstitutionGeographicTaxonomi
 import it.pagopa.selfcare.mscore.model.institution.InstitutionUpdate;
 import it.pagopa.selfcare.mscore.web.model.institution.*;
 import it.pagopa.selfcare.onboarding.common.InstitutionType;
-import org.mapstruct.InjectionStrategy;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Named;
+import org.mapstruct.*;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
@@ -22,12 +19,13 @@ public interface InstitutionResourceMapper {
     @Mapping(target = "rootParent", source = ".", qualifiedByName = "setRootParent")
     InstitutionResponse toInstitutionResponse(Institution institution);
 
+    @Named("toInstitutionResponseWithType")
     @Mapping(target = "aooParentCode", source = "institution.paAttributes.aooParentCode")
     @Mapping(target = "rootParent", source = "institution", qualifiedByName = "setRootParent")
-    @Mapping(target = "institutionType", expression = "java(setInstitutionType(institution, productId))")
-    @Mapping(target = "origin", expression = "java(setOrigin(institution, productId))")
-    @Mapping(target = "originId", expression = "java(setOriginId(institution, productId))")
-    InstitutionResponse toInstitutionResponseWithType(Institution institution, String productId);
+    @Mapping(target = "institutionType", source = "institution", qualifiedByName = "setInstitutionType")
+    @Mapping(target = "origin", source = "institution", qualifiedByName = "setOrigin")
+    @Mapping(target = "originId", source = "institution", qualifiedByName = "setOriginId")
+    InstitutionResponse toInstitutionResponseWithType(Institution institution, @Context String productId);
 
     @Named("setRootParent")
     static RootParentResponse setRootParent(Institution institution) {
@@ -41,7 +39,7 @@ public interface InstitutionResourceMapper {
     }
 
     @Named("setInstitutionType")
-    default String setInstitutionType(Institution institution, String productId) {
+    default String setInstitutionType(Institution institution, @Context String productId) {
         final String parentInstitutionType = Optional.ofNullable(institution.getInstitutionType()).map(InstitutionType::name).orElse(null);
         return Optional.ofNullable(productId)
                 .flatMap(pid -> Optional.ofNullable(institution.getOnboarding()))
@@ -52,7 +50,7 @@ public interface InstitutionResourceMapper {
     }
 
     @Named("setOrigin")
-    default String setOrigin(Institution institution, String productId) {
+    default String setOrigin(Institution institution, @Context String productId) {
         return Optional.ofNullable(productId)
                 .flatMap(pid -> Optional.ofNullable(institution.getOnboarding()))
                 .flatMap(onb -> onb.stream().filter(o -> o.getProductId().equals(productId)).findFirst())
@@ -61,7 +59,7 @@ public interface InstitutionResourceMapper {
     }
 
     @Named("setOriginId")
-    default String setOriginId(Institution institution, String productId) {
+    default String setOriginId(Institution institution, @Context String productId) {
         return Optional.ofNullable(productId)
                 .flatMap(pid -> Optional.ofNullable(institution.getOnboarding()))
                 .flatMap(onb -> onb.stream().filter(o -> o.getProductId().equals(productId)).findFirst())

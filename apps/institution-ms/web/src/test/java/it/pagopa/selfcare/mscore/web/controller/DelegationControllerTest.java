@@ -7,12 +7,13 @@ import it.pagopa.selfcare.mscore.core.DelegationService;
 import it.pagopa.selfcare.mscore.model.delegation.Delegation;
 import it.pagopa.selfcare.mscore.model.delegation.DelegationInstitution;
 import it.pagopa.selfcare.mscore.model.institution.Institution;
+import it.pagopa.selfcare.mscore.model.institution.Onboarding;
 import it.pagopa.selfcare.mscore.web.model.delegation.DelegationInstitutionResponse;
 import it.pagopa.selfcare.mscore.web.model.delegation.DelegationRequest;
 import it.pagopa.selfcare.mscore.web.model.delegation.DelegationRequestFromTaxcode;
 import it.pagopa.selfcare.mscore.web.model.delegation.DelegationResponse;
-import it.pagopa.selfcare.mscore.web.model.mapper.DelegationMapper;
-import it.pagopa.selfcare.mscore.web.model.mapper.DelegationMapperImpl;
+import it.pagopa.selfcare.mscore.web.model.mapper.*;
+import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -48,8 +49,12 @@ class DelegationControllerTest {
     @Mock
     private DelegationService delegationService;
 
+    private final InstitutionUpdateMapper institutionUpdateMapper = new InstitutionUpdateMapperImpl();
+    private final OnboardingResourceMapper onboardingResourceMapper = new OnboardingResourceMapperImpl(institutionUpdateMapper);
+    private final InstitutionResourceMapper institutionResourceMapper = new InstitutionResourceMapperImpl(onboardingResourceMapper);
+
     @Spy
-    private DelegationMapper delegationResourceMapper = new DelegationMapperImpl();
+    private final DelegationMapper delegationResourceMapper = new DelegationMapperImpl(institutionResourceMapper);
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -343,9 +348,28 @@ class DelegationControllerTest {
         inst.setId("456");
         delInst.setInstitution(inst);
 
-        when(delegationService.getDelegators(anyString(), anyString(), any(), anyLong(), anyInt())).thenReturn(List.of(delInst));
+        final DelegationInstitution delInstWithOnboarding = new DelegationInstitution();
+        delInstWithOnboarding.setId(100L);
+        delInstWithOnboarding.setDelegationId("789");
+        delInstWithOnboarding.setDelegationProductId("prod-test");
+        final Institution instWithOnboarding = new Institution();
+        instWithOnboarding.setId("789");
+        final Onboarding onboarding1 = new Onboarding();
+        onboarding1.setProductId("prod-test-x");
+        onboarding1.setInstitutionType(InstitutionType.PSP);
+        onboarding1.setOrigin("origin-1");
+        onboarding1.setOriginId("origin-id-1");
+        final Onboarding onboarding2 = new Onboarding();
+        onboarding2.setProductId("prod-test");
+        onboarding2.setInstitutionType(InstitutionType.PA);
+        onboarding2.setOrigin("origin-2");
+        onboarding2.setOriginId("origin-id-2");
+        instWithOnboarding.setOnboarding(List.of(onboarding1, onboarding2));
+        delInstWithOnboarding.setInstitution(instWithOnboarding);
+
+        when(delegationService.getDelegators(anyString(), anyString(), any(), anyLong(), anyInt())).thenReturn(List.of(delInst, delInstWithOnboarding));
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
-                .get("/delegations/delegators/institutionId?productId=productId&type=EA&cursor=123&size=10");
+                .get("/delegations/delegators/institutionId?productId=prod-test&type=EA&cursor=123&size=10");
         MvcResult result =  MockMvcBuilders.standaloneSetup(delegationController)
                 .build()
                 .perform(requestBuilder)
@@ -354,10 +378,21 @@ class DelegationControllerTest {
                 .andReturn();
 
         final List<DelegationInstitutionResponse> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
-        assertEquals(1, response.size());
+        assertEquals(2, response.size());
+
         assertEquals(0L, response.get(0).getId());
         assertEquals("456", response.get(0).getDelegationId());
         assertEquals("456", response.get(0).getInstitution().getId());
+        assertNull(response.get(0).getInstitution().getInstitutionType());
+        assertNull(response.get(0).getInstitution().getOrigin());
+        assertNull(response.get(0).getInstitution().getOriginId());
+
+        assertEquals(100L, response.get(1).getId());
+        assertEquals("789", response.get(1).getDelegationId());
+        assertEquals("789", response.get(1).getInstitution().getId());
+        assertEquals("PA", response.get(1).getInstitution().getInstitutionType());
+        assertEquals("origin-2", response.get(1).getInstitution().getOrigin());
+        assertEquals("origin-id-2", response.get(1).getInstitution().getOriginId());
     }
 
     @Test
@@ -379,9 +414,28 @@ class DelegationControllerTest {
         inst.setId("456");
         delInst.setInstitution(inst);
 
-        when(delegationService.getDelegates(anyString(), anyString(), any(), anyLong(), anyInt())).thenReturn(List.of(delInst));
+        final DelegationInstitution delInstWithOnboarding = new DelegationInstitution();
+        delInstWithOnboarding.setId(100L);
+        delInstWithOnboarding.setDelegationId("789");
+        delInstWithOnboarding.setDelegationProductId("prod-test");
+        final Institution instWithOnboarding = new Institution();
+        instWithOnboarding.setId("789");
+        final Onboarding onboarding1 = new Onboarding();
+        onboarding1.setProductId("prod-test-x");
+        onboarding1.setInstitutionType(InstitutionType.PSP);
+        onboarding1.setOrigin("origin-1");
+        onboarding1.setOriginId("origin-id-1");
+        final Onboarding onboarding2 = new Onboarding();
+        onboarding2.setProductId("prod-test");
+        onboarding2.setInstitutionType(InstitutionType.PA);
+        onboarding2.setOrigin("origin-2");
+        onboarding2.setOriginId("origin-id-2");
+        instWithOnboarding.setOnboarding(List.of(onboarding1, onboarding2));
+        delInstWithOnboarding.setInstitution(instWithOnboarding);
+
+        when(delegationService.getDelegates(anyString(), anyString(), any(), anyLong(), anyInt())).thenReturn(List.of(delInst, delInstWithOnboarding));
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
-                .get("/delegations/delegates/institutionId?productId=productId&type=EA&cursor=123&size=10");
+                .get("/delegations/delegates/institutionId?productId=prod-test-x&type=EA&cursor=123&size=10");
         MvcResult result =  MockMvcBuilders.standaloneSetup(delegationController)
                 .build()
                 .perform(requestBuilder)
@@ -390,10 +444,21 @@ class DelegationControllerTest {
                 .andReturn();
 
         final List<DelegationInstitutionResponse> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
-        assertEquals(1, response.size());
+        assertEquals(2, response.size());
+
         assertEquals(0L, response.get(0).getId());
         assertEquals("456", response.get(0).getDelegationId());
         assertEquals("456", response.get(0).getInstitution().getId());
+        assertNull(response.get(0).getInstitution().getInstitutionType());
+        assertNull(response.get(0).getInstitution().getOrigin());
+        assertNull(response.get(0).getInstitution().getOriginId());
+
+        assertEquals(100L, response.get(1).getId());
+        assertEquals("789", response.get(1).getDelegationId());
+        assertEquals("789", response.get(1).getInstitution().getId());
+        assertEquals("PSP", response.get(1).getInstitution().getInstitutionType());
+        assertEquals("origin-1", response.get(1).getInstitution().getOrigin());
+        assertEquals("origin-id-1", response.get(1).getInstitution().getOriginId());
     }
 
     @Test
