@@ -74,7 +74,7 @@ app_settings = [
 
   {
     name  = "STORAGE_CREDENTIAL_ID"
-    value = "selcdcontractsstorage"
+    value = "scdweuardocumentsst01"
   },
   {
     name  = "STORAGE_TEMPLATE_URL"
@@ -137,11 +137,9 @@ app_settings = [
 ]
 
 secrets_names = {
-  "STORAGE_APPLICATION_SECRET"               = "contracts-storage-access-key"
   "APPLICATIONINSIGHTS_CONNECTION_STRING"    = "appinsights-connection-string"
   "MONGODB_CONNECTION_URI"                   = "mongodb-connection-string"
   "BLOB_STORAGE_CONN_STRING"                 = "documents-storage-connection-string"
-  "STORAGE_CREDENTIAL_SECRET"                = "contracts-storage-access-key"
   "SMTP_USR"                                 = "smtp-usr"
   "SMTP_PSW"                                 = "smtp-psw"
   "ONBOARDING_INSTITUTION_ALTERNATIVE_EMAIL" = "party-test-institution-email"

@@ -16,7 +16,6 @@ public class AzureStorageConfig {
     private String connectionString;
     private String accountName;
     private String endpointSuffix;
-    private String accountKey;
 
     private String container;
     private String contractPath;
