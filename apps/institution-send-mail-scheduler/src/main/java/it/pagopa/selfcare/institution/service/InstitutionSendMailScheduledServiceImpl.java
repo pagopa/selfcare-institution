@@ -146,7 +146,7 @@ public class InstitutionSendMailScheduledServiceImpl implements InstitutionSendM
 
     private String getUsersListPlaceholder(String prefix, Map<String, Integer> usersCount) {
         return String.format("%s<ul>%s</ul>", prefix, String.join("", usersCount.entrySet().stream()
-                .map(e -> String.format("<li><strong>%d</strong> utenti per il prodotto <strong>%s</strong></li>",
+                .map(e -> String.format("<li>%d utenti per il prodotto %s</li>",
                         e.getValue(), Optional.ofNullable(productService.getProduct(e.getKey())).map(Product::getTitle).orElse("")))
                 .toList()));
     }

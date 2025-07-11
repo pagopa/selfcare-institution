@@ -41,11 +41,11 @@ app_settings = [
   },
   {
     name  = "MAIL_TEMPLATE_DELEGATION_NOTIFICATION_PATH"
-    value = "contracts/template/mail/delegation-notification/1.0.0.json"
+    value = "contracts/template/mail/delegation-notification/1.0.1.json"
   },
   {
     name  = "MAIL_TEMPLATE_DELEGATION_USER_NOTIFICATION_PATH"
-    value = "contracts/template/mail/delegation-notification/user-1.0.0.json"
+    value = "contracts/template/mail/delegation-notification/user-1.0.1.json"
   },
   {
     name  = "STORAGE_CONTAINER"
