@@ -2,7 +2,6 @@ package it.pagopa.selfcare.mscore.connector.azure_storage;
 
 import com.microsoft.azure.storage.CloudStorageAccount;
 import com.microsoft.azure.storage.StorageCredentials;
-import com.microsoft.azure.storage.StorageCredentialsAccountAndKey;
 import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.*;
 import it.pagopa.selfcare.mscore.api.FileStorageConnector;
@@ -22,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
+import java.security.InvalidKeyException;
 
 import static it.pagopa.selfcare.mscore.constant.GenericError.*;
 
@@ -34,15 +34,15 @@ class AzureBlobClient implements FileStorageConnector {
     private final CloudBlobClient blobClient;
     private final AzureStorageConfig azureStorageConfig;
 
-    AzureBlobClient(AzureStorageConfig azureStorageConfig) throws URISyntaxException {
+    AzureBlobClient(AzureStorageConfig azureStorageConfig) throws URISyntaxException, InvalidKeyException, StorageException {
         log.trace("AzureBlobClient.AzureBlobClient");
         this.azureStorageConfig = azureStorageConfig;
         final CloudStorageAccount storageAccount = buildStorageAccount();
         this.blobClient = storageAccount.createCloudBlobClient();
     }
 
-    private CloudStorageAccount buildStorageAccount() throws URISyntaxException {
-        StorageCredentials storageCredentials = new StorageCredentialsAccountAndKey(azureStorageConfig.getAccountName(), azureStorageConfig.getAccountKey());
+    private CloudStorageAccount buildStorageAccount() throws URISyntaxException, InvalidKeyException, StorageException {
+        StorageCredentials storageCredentials = StorageCredentials.tryParseCredentials(azureStorageConfig.getConnectionString());
         return new CloudStorageAccount(storageCredentials,
                 true,
                 azureStorageConfig.getEndpointSuffix(),
