@@ -639,6 +639,22 @@
         "origin": "IPA",
         "originId": "isticom",
         "institutionType": "PA"
+      },
+      {
+        "productId": "prod-io",
+        "tokenId": "afb6c11d-67f8-44f9-b04f-88d47e0d2fc3",
+        "status": "ACTIVE",
+        "billing": {
+          "vatNumber": "94076720658",
+          "recipientCode": "isticom",
+          "publicServices": false
+        },
+        "createdAt": "2017-12-22T00:00:00Z",
+        "updatedAt": "2024-02-24T12:56:40.645708542Z",
+        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding",
+        "origin": "testorigin",
+        "originId": "testoriginid",
+        "institutionType": "PSP"
       }
     ]
   },
