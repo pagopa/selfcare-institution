@@ -605,5 +605,93 @@
         "desc": "ROMA - PROVINCIA"
       }
     ]
+  },
+  {
+    "_id": "bf4dcdb6-f223-4996-bfbc-326b119dd101",
+    "externalId": "00313820540",
+    "origin": "IPA",
+    "originId": "isticom",
+    "description": "Comune di Assisi",
+    "institutionType": "PA",
+    "digitalAddress": "test@test.com",
+    "address": "Via Roma, 1",
+    "zipCode": "00000",
+    "taxCode": "00313820540",
+    "istatCode": "065078",
+    "imported": false,
+    "isTest": true,
+    "createdAt": "2023-11-10T11:45:21.226522053Z",
+    "_class": "it.pagopa.selfcare.mscore.connector.dao.model.InstitutionEntity",
+    "updatedAt": "2024-06-04T13:39:01.379003912Z",
+    "onboarding": [
+      {
+        "productId": "prod-pagopa",
+        "tokenId": "afb6c11d-67f8-44f9-b04f-88d47e0d2fc3",
+        "status": "ACTIVE",
+        "billing": {
+          "vatNumber": "94076720658",
+          "recipientCode": "isticom",
+          "publicServices": false
+        },
+        "createdAt": "2017-12-22T00:00:00Z",
+        "updatedAt": "2024-02-24T12:56:40.645708542Z",
+        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding",
+        "origin": "IPA",
+        "originId": "isticom",
+        "institutionType": "PA"
+      },
+      {
+        "productId": "prod-io",
+        "tokenId": "afb6c11d-67f8-44f9-b04f-88d47e0d2fc3",
+        "status": "ACTIVE",
+        "billing": {
+          "vatNumber": "94076720658",
+          "recipientCode": "isticom",
+          "publicServices": false
+        },
+        "createdAt": "2017-12-22T00:00:00Z",
+        "updatedAt": "2024-02-24T12:56:40.645708542Z",
+        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding",
+        "origin": "testorigin",
+        "originId": "testoriginid",
+        "institutionType": "PSP"
+      }
+    ]
+  },
+  {
+    "_id": "c18d0cd5-e8a5-4f40-894b-f1f4252e1294",
+    "externalId": "12399999890",
+    "origin": "IPA",
+    "originId": "isticom",
+    "description": "NTT Data",
+    "institutionType": "PT",
+    "digitalAddress": "test@test.com",
+    "address": "Via Roma, 1",
+    "zipCode": "00000",
+    "taxCode": "12399999890",
+    "istatCode": "065078",
+    "imported": false,
+    "isTest": true,
+    "createdAt": "2023-11-10T11:45:21.226522053Z",
+    "_class": "it.pagopa.selfcare.mscore.connector.dao.model.InstitutionEntity",
+    "updatedAt": "2024-06-04T13:39:01.379003912Z",
+    "onboarding": [
+      {
+        "productId": "prod-pagopa",
+        "tokenId": "afb6c11d-67f8-44f9-b04f-88d47e0d2fc3",
+        "status": "ACTIVE",
+        "billing": {
+          "vatNumber": "94076720658",
+          "recipientCode": "isticom",
+          "publicServices": false
+        },
+        "createdAt": "2017-12-22T00:00:00Z",
+        "updatedAt": "2024-02-24T12:56:40.645708542Z",
+        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding",
+        "origin": "IPA",
+        "originId": "isticom",
+        "institutionType": "PT"
+      }
+    ]
   }
 ]
