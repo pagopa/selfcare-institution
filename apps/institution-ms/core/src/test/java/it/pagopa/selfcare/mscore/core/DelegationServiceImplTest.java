@@ -473,8 +473,21 @@ class DelegationServiceImplTest {
         inst.setId("456");
         delInst.setInstitution(inst);
 
-        when(delegationConnector.findDelegators("institutionId", "productId", DelegationType.EA, 123L, 100)).thenReturn(List.of(delInst));
-        when(delegationConnector.findDelegates("institutionId", "productId", DelegationType.EA, 123L, 100)).thenReturn(List.of(delInst));
+        final DelegationInstitution delInstWithOnboarding = new DelegationInstitution();
+        delInstWithOnboarding.setId(100L);
+        delInstWithOnboarding.setDelegationId("789");
+        delInstWithOnboarding.setDelegationProductId("prod-test");
+        final Institution instWithOnboarding = new Institution();
+        instWithOnboarding.setId("789");
+        final Onboarding onboarding1 = new Onboarding();
+        onboarding1.setProductId("prod-test-x");
+        final Onboarding onboarding2 = new Onboarding();
+        onboarding2.setProductId("prod-test");
+        instWithOnboarding.setOnboarding(List.of(onboarding1, onboarding2));
+        delInstWithOnboarding.setInstitution(instWithOnboarding);
+
+        when(delegationConnector.findDelegators("institutionId", "productId", DelegationType.EA, 123L, 100)).thenReturn(List.of(delInst, delInstWithOnboarding));
+        when(delegationConnector.findDelegates("institutionId", "productId", DelegationType.EA, 123L, 100)).thenReturn(List.of(delInst, delInstWithOnboarding));
 
         final List<DelegationInstitution> delegators = delegationServiceImpl.getDelegators("institutionId", "productId", DelegationType.EA, 123L, 100);
         final List<DelegationInstitution> delegates = delegationServiceImpl.getDelegates("institutionId", "productId", DelegationType.EA, 123L, 100);
@@ -484,12 +497,16 @@ class DelegationServiceImplTest {
 
         assertEquals(1, delegators.size());
         assertEquals(1, delegates.size());
-        assertEquals(0L, delegators.get(0).getId());
-        assertEquals(0L, delegates.get(0).getId());
-        assertEquals("456", delegators.get(0).getDelegationId());
-        assertEquals("456", delegates.get(0).getDelegationId());
-        assertEquals("456", delegators.get(0).getInstitution().getId());
-        assertEquals("456", delegates.get(0).getInstitution().getId());
+        assertEquals(100L, delegators.get(0).getId());
+        assertEquals(100L, delegates.get(0).getId());
+        assertEquals("789", delegators.get(0).getDelegationId());
+        assertEquals("789", delegates.get(0).getDelegationId());
+        assertEquals("789", delegators.get(0).getInstitution().getId());
+        assertEquals("789", delegates.get(0).getInstitution().getId());
+        assertEquals(1, delegators.get(0).getInstitution().getOnboarding().size());
+        assertEquals(1, delegates.get(0).getInstitution().getOnboarding().size());
+        assertEquals("prod-test", delegators.get(0).getInstitution().getOnboarding().get(0).getProductId());
+        assertEquals("prod-test", delegates.get(0).getInstitution().getOnboarding().get(0).getProductId());
     }
 
 }
