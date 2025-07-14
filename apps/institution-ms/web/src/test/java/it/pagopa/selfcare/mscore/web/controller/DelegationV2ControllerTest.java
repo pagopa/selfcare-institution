@@ -11,8 +11,7 @@ import it.pagopa.selfcare.mscore.model.delegation.GetDelegationParameters;
 import it.pagopa.selfcare.mscore.model.delegation.PageInfo;
 import it.pagopa.selfcare.mscore.web.model.delegation.DelegationResponse;
 import it.pagopa.selfcare.mscore.web.model.delegation.DelegationWithPaginationResponse;
-import it.pagopa.selfcare.mscore.web.model.mapper.DelegationMapper;
-import it.pagopa.selfcare.mscore.web.model.mapper.DelegationMapperImpl;
+import it.pagopa.selfcare.mscore.web.model.mapper.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -45,8 +44,12 @@ class DelegationV2ControllerTest {
     @Mock
     private DelegationService delegationService;
 
+    private final InstitutionUpdateMapper institutionUpdateMapper = new InstitutionUpdateMapperImpl();
+    private final OnboardingResourceMapper onboardingResourceMapper = new OnboardingResourceMapperImpl(institutionUpdateMapper);
+    private final InstitutionResourceMapper institutionResourceMapper = new InstitutionResourceMapperImpl(onboardingResourceMapper);
+
     @Spy
-    private DelegationMapper delegationResourceMapper = new DelegationMapperImpl();
+    private DelegationMapper delegationResourceMapper = new DelegationMapperImpl(institutionResourceMapper);
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 

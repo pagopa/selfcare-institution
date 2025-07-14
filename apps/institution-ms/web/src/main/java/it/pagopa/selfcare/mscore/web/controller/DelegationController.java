@@ -1,33 +1,39 @@
-    package it.pagopa.selfcare.mscore.web.controller;
+package it.pagopa.selfcare.mscore.web.controller;
 
-    import io.swagger.annotations.Api;
-    import io.swagger.annotations.ApiOperation;
-    import io.swagger.annotations.ApiParam;
-    import io.swagger.v3.oas.annotations.tags.Tag;
-    import io.swagger.v3.oas.annotations.tags.Tags;
-    import it.pagopa.selfcare.mscore.constant.GenericError;
-    import it.pagopa.selfcare.mscore.constant.Order;
-    import it.pagopa.selfcare.mscore.core.DelegationService;
-    import it.pagopa.selfcare.mscore.exception.InvalidRequestException;
-    import it.pagopa.selfcare.mscore.model.delegation.Delegation;
-    import it.pagopa.selfcare.mscore.web.model.delegation.DelegationRequest;
-    import it.pagopa.selfcare.mscore.web.model.delegation.DelegationRequestFromTaxcode;
-    import it.pagopa.selfcare.mscore.web.model.delegation.DelegationResponse;
-    import it.pagopa.selfcare.mscore.web.model.mapper.DelegationMapper;
-    import it.pagopa.selfcare.mscore.web.util.CustomExceptionMessage;
-    import lombok.extern.slf4j.Slf4j;
-    import org.springframework.http.HttpStatus;
-    import org.springframework.http.MediaType;
-    import org.springframework.http.ResponseEntity;
-    import org.springframework.web.bind.annotation.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.tags.Tags;
+import it.pagopa.selfcare.mscore.constant.DelegationType;
+import it.pagopa.selfcare.mscore.constant.GenericError;
+import it.pagopa.selfcare.mscore.constant.Order;
+import it.pagopa.selfcare.mscore.core.DelegationService;
+import it.pagopa.selfcare.mscore.exception.InvalidRequestException;
+import it.pagopa.selfcare.mscore.model.delegation.Delegation;
+import it.pagopa.selfcare.mscore.web.model.delegation.DelegationInstitutionResponse;
+import it.pagopa.selfcare.mscore.web.model.delegation.DelegationRequest;
+import it.pagopa.selfcare.mscore.web.model.delegation.DelegationRequestFromTaxcode;
+import it.pagopa.selfcare.mscore.web.model.delegation.DelegationResponse;
+import it.pagopa.selfcare.mscore.web.model.mapper.DelegationMapper;
+import it.pagopa.selfcare.mscore.web.util.CustomExceptionMessage;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
-    import javax.validation.Valid;
-    import java.util.List;
-    import java.util.Objects;
-    import java.util.Optional;
+import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/delegations", produces = MediaType.APPLICATION_JSON_VALUE)
+@Validated
 @Api(tags = "Delegation")
 @Slf4j
 public class DelegationController {
@@ -136,4 +142,59 @@ public class DelegationController {
         delegationService.deleteDelegationByDelegationId(delegationId);
         return ResponseEntity.noContent().build();
     }
+
+    /**
+     * The function returns the delegators of an institution with the details of each
+     *
+     * @param institutionId institutionId of the delegate
+     * @param productId productId of the delegation to find
+     * @param type type of the delegation to find
+     * @param cursor id of the last returned element from where to continue to get another list of results
+     * @param size maximum size of the returned list
+     * @return list of the delegators
+     */
+    @Tags({@Tag(name = "external-v2"), @Tag(name = "Delegation")})
+    @ApiOperation(value = "${swagger.mscore.delegation.delegators}", notes = "${swagger.mscore.delegation.delegators}")
+    @GetMapping(value = "/delegators/{institutionId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<DelegationInstitutionResponse>> getDelegatorInstitutions(@ApiParam("${swagger.mscore.institutions.model.institutionId}")
+                                                                                        @PathVariable("institutionId") String institutionId,
+                                                                                        @ApiParam("${swagger.mscore.institutions.model.productId}")
+                                                                                        @RequestParam(name = "productId", required = false) String productId,
+                                                                                        @ApiParam("${swagger.mscore.delegation.model.type}")
+                                                                                        @RequestParam(name = "type", required = false) DelegationType type,
+                                                                                        @ApiParam("${swagger.mscore.page.cursor}")
+                                                                                        @RequestParam(name = "cursor", required = false) Long cursor,
+                                                                                        @ApiParam("${swagger.mscore.page.size}")
+                                                                                        @RequestParam(name = "size", required = false, defaultValue = "100") @Min(1) @Max(100) Integer size) {
+        return ResponseEntity.status(HttpStatus.OK).body(delegationService.getDelegators(institutionId, productId, type, cursor, size)
+                .stream().map(d -> delegationMapper.toDelegationInstitutionResponse(d, productId)).toList());
+    }
+
+    /**
+     * The function returns the delegates of an institutions with the details of each
+     *
+     * @param institutionId institutionId of the delegator
+     * @param productId productId of delegation to find
+     * @param type type of delegation to find
+     * @param cursor id of the last returned element from where to continue to get another list of results
+     * @param size maximum size of the returned list
+     * @return list of the delegates
+     */
+    @Tags({@Tag(name = "external-v2"), @Tag(name = "Delegation")})
+    @ApiOperation(value = "${swagger.mscore.delegation.delegates}", notes = "${swagger.mscore.delegation.delegates}")
+    @GetMapping(value = "/delegates/{institutionId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<DelegationInstitutionResponse>> getDelegateInstitutions(@ApiParam("${swagger.mscore.institutions.model.institutionId}")
+                                                                                       @PathVariable("institutionId") String institutionId,
+                                                                                       @ApiParam("${swagger.mscore.institutions.model.productId}")
+                                                                                       @RequestParam(name = "productId", required = false) String productId,
+                                                                                       @ApiParam("${swagger.mscore.delegation.model.type}")
+                                                                                       @RequestParam(name = "type", required = false) DelegationType type,
+                                                                                       @ApiParam("${swagger.mscore.page.cursor}")
+                                                                                       @RequestParam(name = "cursor", required = false) Long cursor,
+                                                                                       @ApiParam("${swagger.mscore.page.size}")
+                                                                                       @RequestParam(name = "size", required = false, defaultValue = "100") @Min(1) @Max(100) Integer size) {
+        return ResponseEntity.status(HttpStatus.OK).body(delegationService.getDelegates(institutionId, productId, type, cursor, size)
+                .stream().map(d -> delegationMapper.toDelegationInstitutionResponse(d, productId)).toList());
+    }
+
 }

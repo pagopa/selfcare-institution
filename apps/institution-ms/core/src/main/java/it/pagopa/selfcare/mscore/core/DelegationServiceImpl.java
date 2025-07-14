@@ -10,14 +10,17 @@ import it.pagopa.selfcare.mscore.exception.MsCoreException;
 import it.pagopa.selfcare.mscore.exception.ResourceConflictException;
 import it.pagopa.selfcare.mscore.exception.ResourceNotFoundException;
 import it.pagopa.selfcare.mscore.model.delegation.Delegation;
+import it.pagopa.selfcare.mscore.model.delegation.DelegationInstitution;
 import it.pagopa.selfcare.mscore.model.delegation.DelegationWithPagination;
 import it.pagopa.selfcare.mscore.model.delegation.GetDelegationParameters;
 import it.pagopa.selfcare.mscore.model.institution.Institution;
+import it.pagopa.selfcare.mscore.model.institution.Onboarding;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -168,4 +171,34 @@ public class DelegationServiceImpl implements DelegationService {
     public DelegationWithPagination getDelegationsV2(GetDelegationParameters delegationParameters) {
         return delegationConnector.findAndCount(delegationParameters);
     }
+
+    @Override
+    public List<DelegationInstitution> getDelegators(String institutionId, String productId, DelegationType type, Long cursor, int size) {
+        final List<DelegationInstitution> delegators = delegationConnector.findDelegators(institutionId, productId, type, cursor, size);
+        return removeOnboardingsFromDelegationInstitutions(delegators);
+    }
+
+    @Override
+    public List<DelegationInstitution> getDelegates(String institutionId, String productId, DelegationType type, Long cursor, int size) {
+        final List<DelegationInstitution> delegates = delegationConnector.findDelegates(institutionId, productId, type, cursor, size);
+        return removeOnboardingsFromDelegationInstitutions(delegates);
+    }
+
+    /**
+     * Return only the delegations with onboardings where productId == delegationProductId
+     *
+     * @param delegations list of delegators or delegates
+     * @return list of valid delegations with only the relative onboarding
+     */
+    private List<DelegationInstitution> removeOnboardingsFromDelegationInstitutions(List<DelegationInstitution> delegations) {
+        return delegations.stream().map(d -> {
+            final String delegationProductId = Optional.ofNullable(d.getDelegationProductId()).orElse("");
+            final List<Onboarding> filteredOnboardings = Optional.ofNullable(d.getInstitution().getOnboarding())
+                    .map(lo -> lo.stream().filter(o -> delegationProductId.equals(o.getProductId())).toList())
+                    .orElse(new ArrayList<>());
+            d.getInstitution().setOnboarding(filteredOnboardings);
+            return d;
+        }).filter(d -> !d.getInstitution().getOnboarding().isEmpty()).toList();
+    }
+
 }

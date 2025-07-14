@@ -1647,7 +1647,7 @@ Feature: Institution
       | size | 4 |
     When I send a GET request to "/institutions/products/{productId}"
     Then The status code is 200
-    And The response body contains the list "items" of size 3
+    And The response body contains the list "items" of size 4
 
   Scenario: Get institutions with non existent productId
     Given User login with username "j.doe" and password "test"
@@ -1666,11 +1666,12 @@ Feature: Institution
       | institutionType | PA      |
     When I send a GET request to "/institutions/{productId}/brokers/{institutionType}"
     Then The status code is 200
-    And The response body contains the list "" of size 3
+    And The response body contains the list "" of size 4
     And The response body contains at path "taxCode" the following list of values in any order:
       | 85000870064 |
       | 00310810825 |
       | 94076720658 |
+      | 00313820540 |
 
   Scenario: Get institutions brokers with bad productId
     Given User login with username "j.doe" and password "test"
