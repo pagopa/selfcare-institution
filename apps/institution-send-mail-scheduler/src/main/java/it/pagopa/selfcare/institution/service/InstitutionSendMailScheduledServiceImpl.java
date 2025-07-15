@@ -100,7 +100,7 @@ public class InstitutionSendMailScheduledServiceImpl implements InstitutionSendM
 
     private Uni<Integer> retrieveMailNotificationListAndSendMail(List<ReactivePanacheMongoEntityBase> query) {
         return Multi.createFrom().iterable(query)
-                .onItem().transform(entityBase -> (MailNotification) entityBase)
+                .onItem().transform(MailNotification.class::cast)
                 .onItem().transformToUniAndMerge(this::constructAndSendMail)
                 .onFailure().invoke(throwable -> log.error("Error during send scheduled mail", throwable))
                 .filter(isMailSent -> isMailSent)
