@@ -53,11 +53,11 @@ app_settings = [
   },
   {
     name  = "MAIL_TEMPLATE_NOTIFICATION_PATH"
-    value = "contracts/template/mail/institution-user-list-notification/1.0.2.json"
+    value = "contracts/template/mail/institution-user-list-notification/1.0.1.json"
   },
   {
     name  = "MAIL_TEMPLATE_FIRST_NOTIFICATION_PATH"
-    value = "contracts/template/mail/institution-user-list-first-notification/1.0.2.json"
+    value = "contracts/template/mail/institution-user-list-first-notification/1.0.1.json"
   },
   {
     name  = "STORAGE_CONTAINER_PRODUCT"
