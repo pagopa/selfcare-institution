@@ -92,8 +92,8 @@ class InstitutionSendMailScheduledServiceImplTest {
 
         final Map<String, String> expectedMailParameters = getExpectedMailParameters(
                 institutionId,
-                "Utenti aggiunti questo mese: <ul><li><strong>2</strong> utenti per il prodotto <strong>product-title-1</strong></li><li><strong>1</strong> utenti per il prodotto <strong>product-title-2</strong></li></ul>",
-                "Utenti rimossi questo mese: <ul><li><strong>1</strong> utenti per il prodotto <strong>product-title-1</strong></li></ul>"
+                "Utenti aggiunti questo mese: <ul><li>2 utenti per il prodotto product-title-1</li><li>1 utenti per il prodotto product-title-2</li></ul>",
+                "Utenti rimossi questo mese: <ul><li>1 utenti per il prodotto product-title-1</li></ul>"
         );
 
         Uni<Void> result = service.retrieveInstitutionFromMailNotificationAndSendMail();
