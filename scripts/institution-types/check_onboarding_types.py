@@ -8,65 +8,81 @@ MONGO_HOST = os.getenv("MONGO_HOST")
 MONGO_BATCH_SIZE = 100
 INSTITUTION_DB = "selcMsCore"
 INSTITUTION_COLLECTION = "Institution"
+ONBOARDING_DB = "selcOnboarding"
+ONBOARDINGS_COLLECTION = "onboardings"
 
 class AnsiColors:
     WARNING = '\033[93m'
     ERROR = '\033[91m'
     ENDC = '\033[0m'
 
-def checkInstitutionTypes(institutionDoc):
+def getInstitutionOnboardingTypes(institutionDoc):
+    institutionOnboardingTypes = {}
     institutionId = institutionDoc["_id"]
     if "onboarding" not in institutionDoc:
         print(AnsiColors.WARNING, f"Institution {institutionId} without onboarding node", AnsiColors.ENDC)
-        return
-    institutionType = institutionDoc["institutionType"] if "institutionType" in institutionDoc else None
-    origin = institutionDoc["origin"] if "origin" in institutionDoc else None
-    originId = institutionDoc["originId"] if "originId" in institutionDoc else None
-    onboardingCounter = 0
-    isValidInstitution = True
+        return {}
     for onboarding in institutionDoc["onboarding"]:
-        onboardingInstitutionType = onboarding["institutionType"] if "institutionType" in onboarding else None
-        onboardingOrigin = onboarding["origin"] if "origin" in onboarding else None
-        onboardingOriginId = onboarding["originId"] if "originId" in onboarding else None
+        if "tokenId" not in onboarding:
+            print(AnsiColors.WARNING, f"Institution {institutionId} without tokenId in onboarding node", AnsiColors.ENDC)
+            continue
+        tokenId = onboarding["tokenId"]
+        institutionType = onboarding["institutionType"] if "institutionType" in onboarding else None
+        origin = onboarding["origin"] if "origin" in onboarding else None
+        originId = onboarding["originId"] if "originId" in onboarding else None
+        institutionOnboardingTypes[tokenId] = { "institutionType": institutionType, "origin": origin, "originId": originId }
+    return institutionOnboardingTypes
+
+def checkOnboardingTypes(onboardingsCollection, institutionOnboardingTypes):
+    diffCounter = 0
+    for onboarding in onboardingsCollection.find({"_id": {"$in": list(institutionOnboardingTypes.keys())}}):
+        tokenId = onboarding["_id"]
+        productId = onboarding["productId"] if "productId" in onboarding else None
+        if "institution" not in onboarding:
+            print(AnsiColors.WARNING, f"Onboarding {tokenId} without institution node", AnsiColors.ENDC)
+            continue
+        institution = onboarding["institution"]
+        institutionId = institution["id"] if "id" in institution else None
+        institutionType = institution["institutionType"] if "institutionType" in institution else None
+        origin = institution["origin"] if "origin" in institution else None
+        originId = institution["originId"] if "originId" in institution else None
         diff = []
-        if institutionType != onboardingInstitutionType:
+        if institutionType != institutionOnboardingTypes[tokenId]["institutionType"]:
             diff.append("institutionType")
-        if origin != onboardingOrigin:
+        if origin != institutionOnboardingTypes[tokenId]["origin"]:
             diff.append("origin")
-        if originId != onboardingOriginId:
+        if originId != institutionOnboardingTypes[tokenId]["originId"]:
             diff.append("originId")
         if diff:
-            print(AnsiColors.ERROR, f"Institution {institutionId} has onboarding[{onboardingCounter}] with different {diff}", AnsiColors.ENDC)
-            isValidInstitution = False
-        onboardingCounter += 1
-    return isValidInstitution
+            print(AnsiColors.ERROR, f"Onboarding {tokenId} with institutionId {institutionId} and productId {productId} with different {diff}", AnsiColors.ENDC)
+            diffCounter += 1
+    return diffCounter
 
 def main():
     client = MongoClient(MONGO_HOST)
-    db = client[INSTITUTION_DB]
-    institutionCollection = db[INSTITUTION_COLLECTION]
+    institutionDB = client[INSTITUTION_DB]
+    institutionCollection = institutionDB[INSTITUTION_COLLECTION]
+    onboardingDB = client[ONBOARDING_DB]
+    onboardingsCollection = onboardingDB[ONBOARDINGS_COLLECTION]
 
     totalInstitutionCount = institutionCollection.count_documents({})
     checkedInstitutionCount = 0
-    validInstitutionCount = 0
-    invalidInstitutionCount = 0
-    skippedInstitutionCount = 0
+    totalOnboardingCount = 0
+    invalidOnboardingCount = 0
 
+    institutionOnboardingTypes = {}
     for institutionDoc in institutionCollection.find({}, batch_size=MONGO_BATCH_SIZE):
-        check = checkInstitutionTypes(institutionDoc)
-        if check is True:
-            validInstitutionCount += 1
-        elif check is False:
-            invalidInstitutionCount += 1
-        elif check is None:
-            skippedInstitutionCount += 1
+        institutionOnboardingTypes = institutionOnboardingTypes | getInstitutionOnboardingTypes(institutionDoc)
+        totalOnboardingCount += len(institutionOnboardingTypes)
+        if len(institutionOnboardingTypes) >= MONGO_BATCH_SIZE:
+            invalidOnboardingCount += checkOnboardingTypes(onboardingsCollection, institutionOnboardingTypes)
+            institutionOnboardingTypes = {}
         checkedInstitutionCount += 1
         print(f"Checked {checkedInstitutionCount} / {totalInstitutionCount}", end="\r")
 
     print("\n")
-    print(f"Valid Institutions: {validInstitutionCount} / {totalInstitutionCount}")
-    print(f"Invalid Institutions: {invalidInstitutionCount} / {totalInstitutionCount}")
-    print(f"Skipped Institutions (without onboarding node): {skippedInstitutionCount} / {totalInstitutionCount}")
+    print(f"Total Onboardings: {totalOnboardingCount}")
+    print(f"Invalid Onboardings: {invalidOnboardingCount} / {totalOnboardingCount}")
     client.close()
 
 if __name__ == '__main__':
