@@ -1,0 +1,69 @@
+#!/usr/bin/env python3
+
+import os
+import re
+from dotenv import load_dotenv
+from pymongo import MongoClient
+
+# Carica variabili d'ambiente
+load_dotenv(dotenv_path=".env", override=True)
+MONGO_HOST = os.getenv("MONGO_HOST")
+DB_NAME = "selcMsCore"
+COLLECTION_NAME = "Delegations"
+BATCH_SIZE = 100
+
+# Regex ISO 8601 con microsecondi opzionali e supporto per Z o offset
+ISO8601_REGEX = re.compile(
+    r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,9})?(Z|[+-]\d{2}:\d{2})$"
+)
+
+def is_valid_iso8601(value):
+    return isinstance(value, str) and ISO8601_REGEX.match(value)
+
+def main():
+    client = MongoClient(MONGO_HOST)
+    db = client[DB_NAME]
+    collection = db[COLLECTION_NAME]
+
+    total = 0
+    valid = 0
+    missing = []
+    malformed = []
+
+    cursor = collection.find({}, {"_id": 1, "createdAt": 1}).batch_size(BATCH_SIZE)
+
+    for doc in cursor:
+        total += 1
+        doc_id = doc["_id"]
+        created_at = doc.get("createdAt")
+
+        if created_at is None:
+            missing.append(doc_id)
+        elif not is_valid_iso8601(created_at):
+            malformed.append(doc_id)
+        else:
+            valid += 1
+
+    print(f"\n--- Check completed ---")
+    print(f"Total documents: {total}")
+    print(f"Valid dates: {valid}")
+    print(f"Missing dates: {len(missing)}")
+    print(f"Invalid dates: {len(malformed)}")
+
+    if missing:
+        print("\nDocuments without 'createdAt':")
+        for _id in missing:
+            print(f" - {_id}")
+
+    if malformed:
+        print("\nDocuments with invalid 'createdAt':")
+        for _id in malformed:
+            print(f" - {_id}")
+
+    client.close()
+
+if __name__ == '__main__':
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\n Manual interruption detected. Exiting.")
