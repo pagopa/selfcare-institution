@@ -7,7 +7,7 @@
 
 - Python 3.6 or higher
 - MongoDB
-- Required Python packages: `python-dotenv`, `pymongo`, `python-dateutil`
+- Required Python packages: `pymongo`, `python-dateutil`
 
 ## Steps
 
