@@ -42,17 +42,33 @@ def checkOnboardingTypes(onboardingsCollection, institutionOnboardingTypes):
             print(AnsiColors.WARNING, f"Onboarding {tokenId} without institution node", AnsiColors.ENDC)
             continue
         institution = onboarding["institution"]
-        institutionId = institution["id"] if "id" in institution else None
+        if "id" not in institution:
+            print(AnsiColors.WARNING, f"Onboarding {tokenId} without institutionId", AnsiColors.ENDC)
+            continue
+        institutionId = institution["id"]
         institutionType = institution["institutionType"] if "institutionType" in institution else None
         origin = institution["origin"] if "origin" in institution else None
         originId = institution["originId"] if "originId" in institution else None
         diff = []
-        if institutionType != institutionOnboardingTypes[tokenId]["institutionType"]:
-            diff.append("institutionType")
-        if origin != institutionOnboardingTypes[tokenId]["origin"]:
-            diff.append("origin")
-        if originId != institutionOnboardingTypes[tokenId]["originId"]:
-            diff.append("originId")
+        # institutionType
+        if institutionType:
+            if institutionType != institutionOnboardingTypes[tokenId]["institutionType"]:
+                diff.append("institutionType")
+        else:
+            print(AnsiColors.WARNING, f"Onboarding {tokenId} without institutionType", AnsiColors.ENDC)
+        # origin
+        if origin:
+            if origin != institutionOnboardingTypes[tokenId]["origin"]:
+                diff.append("origin")
+        else:
+            print(AnsiColors.WARNING, f"Onboarding {tokenId} without origin", AnsiColors.ENDC)
+        # originId
+        if originId:
+            if originId != institutionOnboardingTypes[tokenId]["originId"]:
+                diff.append("originId")
+        else:
+            print(AnsiColors.WARNING, f"Onboarding {tokenId} without originId", AnsiColors.ENDC)
+        # diff
         if diff:
             print(AnsiColors.ERROR, f"Onboarding {tokenId} with institutionId {institutionId} and productId {productId} with different {diff}", AnsiColors.ENDC)
             diffCounter += 1
@@ -79,6 +95,10 @@ def main():
             institutionOnboardingTypes = {}
         checkedInstitutionCount += 1
         print(f"Checked {checkedInstitutionCount} / {totalInstitutionCount}", end="\r")
+
+    if len(institutionOnboardingTypes) > 0:
+        invalidOnboardingCount += checkOnboardingTypes(onboardingsCollection, institutionOnboardingTypes)
+        institutionOnboardingTypes = {}
 
     print("\n")
     print(f"Total Onboardings: {totalOnboardingCount}")
