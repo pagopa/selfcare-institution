@@ -4,7 +4,6 @@ import os
 import re
 from pymongo import MongoClient
 
-# Carica variabili d'ambiente
 MONGO_HOST = os.getenv("MONGO_HOST")
 DB_NAME = "selcMsCore"
 COLLECTION_NAME = "Delegations"
@@ -37,8 +36,10 @@ def main():
 
         if created_at is None:
             missing.append(doc_id)
+            print(f"\nDocument without 'createdAt': {doc_id}")
         elif not is_valid_iso8601(created_at):
             malformed.append(doc_id)
+            print(f"\nDocument with invalid 'createdAt': {doc_id}")
         else:
             valid += 1
 
@@ -47,16 +48,6 @@ def main():
     print(f"Valid dates: {valid}")
     print(f"Missing dates: {len(missing)}")
     print(f"Invalid dates: {len(malformed)}")
-
-    if missing:
-        print("\nDocuments without 'createdAt':")
-        for _id in missing:
-            print(f" - {_id}")
-
-    if malformed:
-        print("\nDocuments with invalid 'createdAt':")
-        for _id in malformed:
-            print(f" - {_id}")
 
     client.close()
 

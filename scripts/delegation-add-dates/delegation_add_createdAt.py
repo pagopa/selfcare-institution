@@ -16,8 +16,8 @@ START_DATE = datetime(2024, 1, 1, 0, 0, 0, 0)
 DATE_INCREMENT = timedelta(seconds=5)
 
 class AnsiColors:
+    WARNING = '\033[93m'
     ERROR = '\033[91m'
-    SUCCESS = '\033[92m'
     ENDC = '\033[0m'
 
 def format_date_string(dt):
@@ -66,15 +66,8 @@ def main():
     delegation_collection = db[DELEGATION_COLLECTION]
     institution_collection = db[INSTITUTION_COLLECTION]
 
-    cursor = delegation_collection.find({"createdAt": {"$exists": False}}, batch_size=MONGO_BATCH_SIZE)
-    totalDelegationsCount = delegation_collection.count_documents({})
-    delegations = list(cursor)
+    totalDelegationsCount = delegation_collection.count_documents({"createdAt": {"$exists": False}})
 
-    institution_ids = list({d["from"] for d in delegations})
-    institutions = list(institution_collection.find({"_id": {"$in": institution_ids}}))
-    onboarding_map, fallback_map = build_institution_maps(institutions)
-
-    updateBatch = []
     current_date = START_DATE
     bulkCounters = {
         "countInserted": 0,
@@ -84,38 +77,51 @@ def main():
         "countRemoved": 0
     }
     doc_count = 0
+    batch_count = 0
 
-    for doc in delegations:
-        doc_id = doc["_id"]
-        inst_id = doc["from"]
-        product_id = doc.get("productId")
+    while True:
+        delegations = list(delegation_collection.find(
+            {"createdAt": {"$exists": False}}
+        ).limit(MONGO_BATCH_SIZE))
 
-        createdAt = onboarding_map.get((inst_id, product_id)) or fallback_map.get(inst_id)
-        used_fallback = False
-        if not createdAt:
-            createdAt = current_date
-            current_date += DATE_INCREMENT
-            used_fallback = True
+        if not delegations:
+            break
 
-        if used_fallback:
-            print(AnsiColors.ERROR + f"[{doc_id}] No dates found in institution, using start date with increment." + AnsiColors.ENDC)
+        batch_count += 1
+        print(f"\nBatch {batch_count} - Processing {len(delegations)} delegations")
 
-        createdAt_str = format_date_string(createdAt)
-        update = UpdateOne({"_id": doc_id}, {"$set": {"createdAt": createdAt_str}})
-        updateBatch.append(update)
-        doc_count += 1
+        institution_ids = list({d["from"] for d in delegations})
+        institutions = list(institution_collection.find({"_id": {"$in": institution_ids}}))
+        onboarding_map, fallback_map = build_institution_maps(institutions)
 
-        if len(updateBatch) >= MONGO_BATCH_SIZE:
+        updateBatch = []
+
+        for doc in delegations:
+            doc_id = doc["_id"]
+            inst_id = doc["from"]
+            product_id = doc.get("productId")
+
+            createdAt = onboarding_map.get((inst_id, product_id)) or fallback_map.get(inst_id)
+
+            if not createdAt:
+                createdAt = current_date
+                current_date += DATE_INCREMENT
+                print(AnsiColors.WARNING + f"[{doc_id}] No dates found in institution, using fallback." + AnsiColors.ENDC)
+
+            createdAt_str = format_date_string(createdAt)
+            update = UpdateOne({"_id": doc_id}, {"$set": {"createdAt": createdAt_str}})
+            updateBatch.append(update)
+            doc_count += 1
+
+        if updateBatch:
             result = bulkWrite(updateBatch, delegation_collection)
-            updateBatch = []
             bulkCounters = dict(Counter(bulkCounters) + Counter(result))
-            print(f"{doc_count} / {totalDelegationsCount} - {bulkCounters}", end="\r")
 
-    if updateBatch:
-        result = bulkWrite(updateBatch, delegation_collection)
-        bulkCounters = dict(Counter(bulkCounters) + Counter(result))
+    print("\nSynchronization completed.")
+    print(f"Total documents: {totalDelegationsCount}")
+    print(f"Total processed: {doc_count}")
+    print(f"Summary: {bulkCounters}")
 
-    print(f"{doc_count} / {totalDelegationsCount} - {bulkCounters}")
     client.close()
 
 if __name__ == '__main__':

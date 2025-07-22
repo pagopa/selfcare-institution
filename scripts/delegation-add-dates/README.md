@@ -12,8 +12,8 @@
 ## Steps
 
 1. Connects to the MongoDB database. (local, dev, uat, prod)
-2. Set MONGO_HOST environment variable
-3. Run `pyhton delegation_add_createdAt.py` in selfcare-institution/scripts/delegation-add-createdAt
-4. Run `pyhton check_valid_dates.py` in selfcare-institution/scripts/delegation-add-createdAt
+2. Export the `MONGO_HOST` environment variable with the connection string of the target mongo database
+3. Run `python delegation_add_createdAt.py` in selfcare-institution/scripts/delegation-add-createdAt
+4. Run `python check_valid_dates.py` in selfcare-institution/scripts/delegation-add-createdAt
 
 
