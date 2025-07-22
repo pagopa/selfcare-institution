@@ -79,13 +79,11 @@ def main():
     doc_count = 0
     batch_count = 0
 
-    while True:
-        delegations = list(delegation_collection.find(
-            {"createdAt": {"$exists": False}}
-        ).limit(MONGO_BATCH_SIZE))
+    delegations = list(delegation_collection.find(
+        {"createdAt": {"$exists": False}}
+    ).limit(MONGO_BATCH_SIZE))
 
-        if not delegations:
-            break
+    while delegations:
 
         batch_count += 1
         print(f"\nBatch {batch_count} - Processing {len(delegations)} delegations")
@@ -116,6 +114,11 @@ def main():
         if updateBatch:
             result = bulkWrite(updateBatch, delegation_collection)
             bulkCounters = dict(Counter(bulkCounters) + Counter(result))
+
+        #Fetch next batch
+        delegations = list(delegation_collection.find(
+            {"createdAt": {"$exists": False}}
+        ).limit(MONGO_BATCH_SIZE))
 
     print("\nSynchronization completed.")
     print(f"Total documents: {totalDelegationsCount}")
