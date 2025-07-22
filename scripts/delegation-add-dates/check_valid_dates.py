@@ -2,11 +2,9 @@
 
 import os
 import re
-from dotenv import load_dotenv
 from pymongo import MongoClient
 
 # Carica variabili d'ambiente
-load_dotenv(dotenv_path=".env", override=True)
 MONGO_HOST = os.getenv("MONGO_HOST")
 DB_NAME = "selcMsCore"
 COLLECTION_NAME = "Delegations"

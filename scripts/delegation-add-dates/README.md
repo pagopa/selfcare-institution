@@ -12,7 +12,7 @@
 ## Steps
 
 1. Connects to the MongoDB database. (local, dev, uat, prod)
-2. Create a .env file in the root directory of the project and add the environment variables inside .env.example
+2. Set MONGO_HOST environment variable
 3. Run `pyhton delegation_add_createdAt.py` in selfcare-institution/scripts/delegation-add-createdAt
 4. Run `pyhton check_valid_dates.py` in selfcare-institution/scripts/delegation-add-createdAt
 

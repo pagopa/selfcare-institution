@@ -1,9 +1,6 @@
 import os
-from dotenv import load_dotenv
 from pymongo import MongoClient
 
-# Load variables from .env
-load_dotenv(dotenv_path=".env", override=True)
 HOST = os.getenv('MONGO_HOST')
 
 # Set DB configurations

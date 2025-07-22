@@ -19,6 +19,6 @@ Python script to update contract field in Institution collection.
 ## Steps
 
 1. Connects to the MongoDB database. (local, dev, uat, prod)
-2. Create a .env file in the root directory of the project and add the environment variables inside .env.example
+2. Set MONGO_HOST environment variable
 3. Run `pyhton update_contract.py` in selfcare-institution/scripts/institution-contract
 
