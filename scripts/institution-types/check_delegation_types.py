@@ -78,8 +78,8 @@ def checkDelegationTypes(delegInstDoc):
     elif not "onboarding" in toInst:
         print(AnsiColors.WARNING, f"Delegation {delegationId} without relative onboarding in toInstitution", AnsiColors.ENDC)
         return None
-    onboardingFrom = next((o for o in fromInst["onboarding"] if o["productId"] == productId), None)
-    onboardingTo = next((o for o in toInst["onboarding"] if o["productId"] == productId), None)
+    onboardingFrom = next((o for o in fromInst["onboarding"] if o["productId"] == productId and o["status"] not in ["REJECTED", "DELETED"]), None)
+    onboardingTo = next((o for o in toInst["onboarding"] if o["productId"] == productId and o["status"] not in ["REJECTED", "DELETED"]), None)
     if not onboardingFrom and not onboardingTo:
         print(AnsiColors.WARNING, f"Delegation {delegationId} with productId {productId} without relative onboarding", AnsiColors.ENDC)
         return None
