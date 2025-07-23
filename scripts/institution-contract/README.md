@@ -6,7 +6,7 @@ Python script to update contract field in Institution collection.
 
 - Python 3.6 or higher
 - MongoDB
-- Required Python packages: `pymongo`, `python-dateutil`
+- Required Python packages: `pymongo`
 
 ## Setup
 

@@ -24,8 +24,8 @@ def main():
 
     total = 0
     valid = 0
-    missing = []
-    malformed = []
+    missing = 0
+    malformed = 0
 
     cursor = collection.find({}, {"_id": 1, "createdAt": 1}).batch_size(BATCH_SIZE)
 
@@ -35,10 +35,10 @@ def main():
         created_at = doc.get("createdAt")
 
         if created_at is None:
-            missing.append(doc_id)
+            missing += 1
             print(f"\nDocument without 'createdAt': {doc_id}")
         elif not is_valid_iso8601(created_at):
-            malformed.append(doc_id)
+            malformed += 1
             print(f"\nDocument with invalid 'createdAt': {doc_id}")
         else:
             valid += 1
@@ -46,8 +46,8 @@ def main():
     print(f"\n--- Check completed ---")
     print(f"Total documents: {total}")
     print(f"Valid dates: {valid}")
-    print(f"Missing dates: {len(missing)}")
-    print(f"Invalid dates: {len(malformed)}")
+    print(f"Missing dates: {missing}")
+    print(f"Invalid dates: {malformed}")
 
     client.close()
 
