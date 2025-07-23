@@ -69,11 +69,11 @@ def getInstitutionTypesUpdateBatch(tokens, onboardingsCollection):
         else:
             print(AnsiColors.WARNING, f"Onboarding {tokenId} without originId", AnsiColors.ENDC)
         # add update operation
-        updateBatch.append(UpdateOne({"_id": institutionId}, {"$set": fieldsToSet}, array_filters=[{"elem.productId": productId}]))
+        updateBatch.append(UpdateOne({"_id": institutionId}, {"$set": fieldsToSet}, array_filters=[{"elem.productId": productId, "elem.tokenId": tokenId}]))
         # add update operations for every testEnvProductIds
         testEnvProductIds = onboarding["testEnvProductIds"] if "testEnvProductIds" in onboarding else []
         for testProductId in testEnvProductIds:
-            updateBatch.append(UpdateOne({"_id": institutionId}, {"$set": fieldsToSet}, array_filters=[{"elem.productId": testProductId}]))
+            updateBatch.append(UpdateOne({"_id": institutionId}, {"$set": fieldsToSet}, array_filters=[{"elem.productId": testProductId, "elem.tokenId": tokenId}]))
     return updateBatch
 
 def bulkWrite(updateBatch, institutionCollection):

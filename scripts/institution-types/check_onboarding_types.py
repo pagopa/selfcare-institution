@@ -26,18 +26,28 @@ def getInstitutionOnboardingTypes(institutionDoc):
         if "tokenId" not in onboarding:
             print(AnsiColors.WARNING, f"Institution {institutionId} without tokenId in onboarding node", AnsiColors.ENDC)
             continue
+        if "productId" not in onboarding:
+            print(AnsiColors.WARNING, f"Institution {institutionId} without productId in onboarding node", AnsiColors.ENDC)
+            continue
         tokenId = onboarding["tokenId"]
+        productId = onboarding["productId"]
         institutionType = onboarding["institutionType"] if "institutionType" in onboarding else None
         origin = onboarding["origin"] if "origin" in onboarding else None
         originId = onboarding["originId"] if "originId" in onboarding else None
-        institutionOnboardingTypes[tokenId] = { "institutionType": institutionType, "origin": origin, "originId": originId }
+        institutionOnboardingTypes[(tokenId, productId)] = { "institutionType": institutionType, "origin": origin, "originId": originId }
     return institutionOnboardingTypes
 
 def checkOnboardingTypes(onboardingsCollection, institutionOnboardingTypes):
     diffCounter = 0
-    for onboarding in onboardingsCollection.find({"_id": {"$in": list(institutionOnboardingTypes.keys())}}):
+    tokens = [k[0] for k in institutionOnboardingTypes.keys()]
+    for onboarding in onboardingsCollection.find({"_id": {"$in": tokens}}):
         tokenId = onboarding["_id"]
-        productId = onboarding["productId"] if "productId" in onboarding else None
+        if "productId" not in onboarding:
+            print(AnsiColors.WARNING, f"Onboarding {tokenId} without productId", AnsiColors.ENDC)
+            continue
+        productId = onboarding["productId"]
+        testEnvProductIds = onboarding["testEnvProductIds"] if "testEnvProductIds" in onboarding else []
+        productsToCheck = [productId] + testEnvProductIds
         if "institution" not in onboarding:
             print(AnsiColors.WARNING, f"Onboarding {tokenId} without institution node", AnsiColors.ENDC)
             continue
@@ -49,29 +59,33 @@ def checkOnboardingTypes(onboardingsCollection, institutionOnboardingTypes):
         institutionType = institution["institutionType"] if "institutionType" in institution else None
         origin = institution["origin"] if "origin" in institution else None
         originId = institution["originId"] if "originId" in institution else None
-        diff = []
-        # institutionType
-        if institutionType:
-            if institutionType != institutionOnboardingTypes[tokenId]["institutionType"]:
-                diff.append("institutionType")
-        else:
-            print(AnsiColors.WARNING, f"Onboarding {tokenId} without institutionType", AnsiColors.ENDC)
-        # origin
-        if origin:
-            if origin != institutionOnboardingTypes[tokenId]["origin"]:
-                diff.append("origin")
-        else:
-            print(AnsiColors.WARNING, f"Onboarding {tokenId} without origin", AnsiColors.ENDC)
-        # originId
-        if originId:
-            if originId != institutionOnboardingTypes[tokenId]["originId"]:
-                diff.append("originId")
-        else:
-            print(AnsiColors.WARNING, f"Onboarding {tokenId} without originId", AnsiColors.ENDC)
-        # diff
-        if diff:
-            print(AnsiColors.ERROR, f"Onboarding {tokenId} with institutionId {institutionId} and productId {productId} with different {diff}", AnsiColors.ENDC)
-            diffCounter += 1
+        for p in productsToCheck:
+            if (tokenId, p) not in institutionOnboardingTypes:
+                print(AnsiColors.WARNING, f"Not found ({tokenId, p}): tokenId is associated to the right onboarding?", AnsiColors.ENDC)
+                continue
+            diff = []
+            # institutionType
+            if institutionType:
+                if institutionType != institutionOnboardingTypes[(tokenId, p)]["institutionType"]:
+                    diff.append("institutionType")
+            else:
+                print(AnsiColors.WARNING, f"Onboarding {tokenId} without institutionType", AnsiColors.ENDC)
+            # origin
+            if origin:
+                if origin != institutionOnboardingTypes[(tokenId, p)]["origin"]:
+                    diff.append("origin")
+            else:
+                print(AnsiColors.WARNING, f"Onboarding {tokenId} without origin", AnsiColors.ENDC)
+            # originId
+            if originId:
+                if originId != institutionOnboardingTypes[(tokenId, p)]["originId"]:
+                    diff.append("originId")
+            else:
+                print(AnsiColors.WARNING, f"Onboarding {tokenId} without originId", AnsiColors.ENDC)
+            # diff
+            if diff:
+                print(AnsiColors.ERROR, f"Onboarding {tokenId} with institutionId {institutionId} and productId {productId} with different {diff}", AnsiColors.ENDC)
+                diffCounter += 1
     return diffCounter
 
 def main():
