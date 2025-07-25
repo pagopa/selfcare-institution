@@ -11,41 +11,74 @@ MONGO_HOST = os.getenv("MONGO_HOST")
 MONGO_BATCH_SIZE = 100
 INSTITUTION_DB = "selcMsCore"
 INSTITUTION_COLLECTION = "Institution"
+ONBOARDING_DB = "selcOnboarding"
+ONBOARDINGS_COLLECTION = "onboardings"
 
 class AnsiColors:
     WARNING = '\033[93m'
     ERROR = '\033[91m'
     ENDC = '\033[0m'
 
-def getInstitutionTypesUpdate(institutionDoc, institutionCollection):
+def getTokens(institutionDoc):
+    tokens = {}
     institutionId = institutionDoc["_id"]
     if "onboarding" not in institutionDoc:
         print(AnsiColors.WARNING, f"Institution {institutionId} without onboarding node", AnsiColors.ENDC)
-        return None
-    institutionType = institutionDoc["institutionType"] if "institutionType" in institutionDoc else None
-    origin = institutionDoc["origin"] if "origin" in institutionDoc else None
-    originId = institutionDoc["originId"] if "originId" in institutionDoc else None
-    fieldsToSet = {}
-    fieldsToUnset = {}
-    # institutionType
-    if institutionType:
-        fieldsToSet["onboarding.$[].institutionType"] = institutionType
-    else:
-        fieldsToUnset["onboarding.$[].institutionType"] = ""
-    # origin
-    if origin:
-        fieldsToSet["onboarding.$[].origin"] = origin
-    else:
-        fieldsToUnset["onboarding.$[].origin"] = ""
-    # originId
-    if originId:
-        fieldsToSet["onboarding.$[].originId"] = originId
-    else:
-        fieldsToUnset["onboarding.$[].originId"] = ""
-    # return update operation
-    return UpdateOne({"_id": institutionId}, {"$set": fieldsToSet, "$unset": fieldsToUnset})
+        return tokens
+    for onboarding in institutionDoc["onboarding"]:
+        if "tokenId" not in onboarding:
+            print(AnsiColors.WARNING, f"Institution {institutionId} without tokenId in onboarding node", AnsiColors.ENDC)
+            continue
+        tokenId = onboarding["tokenId"]
+        tokens[tokenId] = tokenId
+    return tokens
+
+def getInstitutionTypesUpdateBatch(tokens, onboardingsCollection):
+    updateBatch = []
+    for onboarding in onboardingsCollection.find({"_id": {"$in": list(tokens)}}):
+        tokenId = onboarding["_id"]
+        if "productId" not in onboarding:
+            print(AnsiColors.WARNING, f"Onboarding {tokenId} without productId", AnsiColors.ENDC)
+            continue
+        if "institution" not in onboarding:
+            print(AnsiColors.WARNING, f"Onboarding {tokenId} without institution node", AnsiColors.ENDC)
+            continue
+        productId = onboarding["productId"]
+        institution = onboarding["institution"]
+        if "id" not in institution:
+            print(AnsiColors.WARNING, f"Onboarding {tokenId} without institutionId", AnsiColors.ENDC)
+            continue
+        institutionId = institution["id"]
+        institutionType = institution["institutionType"] if "institutionType" in institution else None
+        origin = institution["origin"] if "origin" in institution else None
+        originId = institution["originId"] if "originId" in institution else None
+        fieldsToSet = {}
+        # institutionType
+        if institutionType:
+            fieldsToSet["onboarding.$[elem].institutionType"] = institutionType
+        else:
+            print(AnsiColors.WARNING, f"Onboarding {tokenId} without institutionType", AnsiColors.ENDC)
+        # origin
+        if origin:
+            fieldsToSet["onboarding.$[elem].origin"] = origin
+        else:
+            print(AnsiColors.WARNING, f"Onboarding {tokenId} without origin", AnsiColors.ENDC)
+        # originId
+        if originId:
+            fieldsToSet["onboarding.$[elem].originId"] = originId
+        else:
+            print(AnsiColors.WARNING, f"Onboarding {tokenId} without originId", AnsiColors.ENDC)
+        # add update operation
+        updateBatch.append(UpdateOne({"_id": institutionId}, {"$set": fieldsToSet}, array_filters=[{"elem.productId": productId, "elem.tokenId": tokenId}]))
+        # add update operations for every testEnvProductIds
+        testEnvProductIds = onboarding["testEnvProductIds"] if "testEnvProductIds" in onboarding else []
+        for testProductId in testEnvProductIds:
+            updateBatch.append(UpdateOne({"_id": institutionId}, {"$set": fieldsToSet}, array_filters=[{"elem.productId": testProductId, "elem.tokenId": tokenId}]))
+    return updateBatch
 
 def bulkWrite(updateBatch, institutionCollection):
+    if not updateBatch:
+        return { "countInserted": 0, "countUpserted": 0, "countMatched": 0, "countModified": 0, "countRemoved": 0 }
     try:
         result = institutionCollection.bulk_write(updateBatch, ordered=False)
         return { "countInserted": result.inserted_count, "countUpserted": result.upserted_count, "countMatched": result.matched_count, "countModified": result.modified_count, "countRemoved": result.deleted_count }
@@ -56,27 +89,30 @@ def bulkWrite(updateBatch, institutionCollection):
 
 def main():
     client = MongoClient(MONGO_HOST)
-    db = client[INSTITUTION_DB]
-    institutionCollection = db[INSTITUTION_COLLECTION]
+    institutionDB = client[INSTITUTION_DB]
+    institutionCollection = institutionDB[INSTITUTION_COLLECTION]
+    onboardingDB = client[ONBOARDING_DB]
+    onboardingsCollection = onboardingDB[ONBOARDINGS_COLLECTION]
 
     totalInstitutionCount = institutionCollection.count_documents({})
     checkedInstitutionCount = 0
     bulkCounters = { "countInserted": 0, "countUpserted": 0, "countMatched": 0, "countModified": 0, "countRemoved": 0 }
 
-    updateBatch = []
+    tokens = {}
     for institutionDoc in institutionCollection.find({}, batch_size=MONGO_BATCH_SIZE):
-        update = getInstitutionTypesUpdate(institutionDoc, institutionCollection)
+        tokens = tokens | getTokens(institutionDoc)
         checkedInstitutionCount += 1
-        if update:
-            updateBatch.append(update)
-        if len(updateBatch) >= MONGO_BATCH_SIZE:
+        if len(tokens) >= MONGO_BATCH_SIZE:
+            updateBatch = getInstitutionTypesUpdateBatch(tokens, onboardingsCollection)
             result = bulkWrite(updateBatch, institutionCollection)
-            updateBatch = []
+            tokens = {}
             bulkCounters = dict(Counter(bulkCounters) + Counter(result))
             print(f"{checkedInstitutionCount} / {totalInstitutionCount} - {bulkCounters}", end="\r")
 
-    if len(updateBatch) > 0:
+    if len(tokens) > 0:
+        updateBatch = getInstitutionTypesUpdateBatch(tokens, onboardingsCollection)
         result = bulkWrite(updateBatch, institutionCollection)
+        tokens = {}
         bulkCounters = dict(Counter(bulkCounters) + Counter(result))
 
     print(f"{checkedInstitutionCount} / {totalInstitutionCount} - {bulkCounters}")
