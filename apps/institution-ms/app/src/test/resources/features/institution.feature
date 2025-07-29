@@ -910,7 +910,7 @@ Feature: Institution
     And The following request body:
       """
       {
-        "taxCode": "123456789",
+        "taxCode": "98765432100",
         "supportEmail": "test@pec.it",
         "legalForm": "legal2"
       }
@@ -918,11 +918,11 @@ Feature: Institution
     When I send a POST request to "/institutions"
     Then The status code is 201
     And The response body contains:
-      | taxCode      | 123456789      |
-      | origin       | SELC           |
-      | originId     | SELC_123456789 |
-      | supportEmail | test@pec.it    |
-      | legalForm    | legal2         |
+      | taxCode      | 98765432100      |
+      | origin       | SELC             |
+      | originId     | SELC_98765432100 |
+      | supportEmail | test@pec.it      |
+      | legalForm    | legal2           |
     And The response body contains field "id"
 
 # POST /institutions/insert/{externalId} (deprecated)
