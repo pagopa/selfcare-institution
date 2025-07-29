@@ -3625,6 +3625,9 @@
           "istatCode" : {
             "type" : "string"
           },
+          "legalForm" : {
+            "type" : "string"
+          },
           "onboarding" : {
             "type" : "array",
             "items" : {
@@ -3730,6 +3733,9 @@
             "type" : "boolean"
           },
           "istatCode" : {
+            "type" : "string"
+          },
+          "legalForm" : {
             "type" : "string"
           },
           "logo" : {

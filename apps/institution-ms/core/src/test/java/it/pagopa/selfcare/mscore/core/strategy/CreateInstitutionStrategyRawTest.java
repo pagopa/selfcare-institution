@@ -38,22 +38,26 @@ class CreateInstitutionStrategyRawTest {
         institution.setOrigin("CUSTOM");
         institution.setOriginId("CUSTOM_taxCode");
         institution.setIstatCode("CUSTOM_istatCode");
+        institution.setLegalForm("CUSTOM_legalForm");
         when(institutionConnector.findByTaxCodeAndSubunitCode("taxCode", null, null)).thenReturn(Collections.emptyList());
         when(institutionConnector.save(institution)).thenReturn(institution);
         Institution response = strategy.createInstitution(CreateInstitutionStrategyInput.builder().taxCode("taxCode").build());
         Assertions.assertEquals("CUSTOM", response.getOrigin());
         Assertions.assertEquals("CUSTOM_taxCode", response.getOriginId());
         Assertions.assertEquals("CUSTOM_istatCode", response.getIstatCode());
+        Assertions.assertEquals("CUSTOM_legalForm", response.getLegalForm());
     }
 
     @Test
     void createInstitutionStrategyRawWithDefaultOriginAndOriginId() {
         institution.setIstatCode("CUSTOM_istatCode");
+        institution.setLegalForm("CUSTOM_legalForm");
         when(institutionConnector.findByTaxCodeAndSubunitCode("taxCode", null, null)).thenReturn(Collections.emptyList());
         when(institutionConnector.save(institution)).thenReturn(institution);
         Institution response = strategy.createInstitution(CreateInstitutionStrategyInput.builder().taxCode("taxCode").build());
         Assertions.assertEquals("SELC", response.getOrigin());
         Assertions.assertEquals("SELC_taxCode", response.getOriginId());
         Assertions.assertEquals("CUSTOM_istatCode", response.getIstatCode());
+        Assertions.assertEquals("CUSTOM_legalForm", response.getLegalForm());
     }
 }

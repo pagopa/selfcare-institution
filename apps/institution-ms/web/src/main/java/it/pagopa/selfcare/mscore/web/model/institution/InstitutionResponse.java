@@ -49,5 +49,6 @@ public class InstitutionResponse {
     private boolean delegation;
     private String logo;
     private Boolean isTest;
+    private String legalForm;
 
 }

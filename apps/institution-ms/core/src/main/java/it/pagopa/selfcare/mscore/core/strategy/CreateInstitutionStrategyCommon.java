@@ -34,12 +34,19 @@ public class CreateInstitutionStrategyCommon {
         }
         setIstatCode(strategyInput, toSavedOrUpdate);
         setContacts(strategyInput, toSavedOrUpdate);
+        setLegalForm(strategyInput, toSavedOrUpdate);
         toSavedOrUpdate.setUpdatedAt(OffsetDateTime.now());
     }
 
     protected static void setIstatCode(CreateInstitutionStrategyInput strategyInput, Institution toSavedOrUpdate) {
         if (strategyInput.getIstatCode() != null) {
             toSavedOrUpdate.setIstatCode(strategyInput.getIstatCode());
+        }
+    }
+
+    protected static void setLegalForm(CreateInstitutionStrategyInput strategyInput, Institution toSavedOrUpdate) {
+        if (strategyInput.getLegalForm() != null) {
+            toSavedOrUpdate.setLegalForm(strategyInput.getLegalForm());
         }
     }
 

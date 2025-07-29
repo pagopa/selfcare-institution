@@ -39,5 +39,6 @@ public class InstitutionRequest {
     private OffsetDateTime updatedAt;
     private boolean delegation;
     private String istatCode;
+    private String legalForm;
 
 }

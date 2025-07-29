@@ -153,6 +153,7 @@ public class InstitutionServiceImpl implements InstitutionService {
                                 .orElse(null))
                         .supportEmail(institution.getSupportEmail())
                         .supportPhone(institution.getSupportPhone())
+                        .legalForm(institution.getLegalForm())
                         .build());
     }
 
