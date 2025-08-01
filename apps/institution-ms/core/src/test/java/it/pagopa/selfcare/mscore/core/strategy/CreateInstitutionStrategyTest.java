@@ -307,6 +307,7 @@ class CreateInstitutionStrategyTest {
                 .thenReturn(List.of());
 
         Institution institution = TestUtils.dummyInstitutionGsp();
+        institution.setLegalForm("legalForm");
 
         //When
         Institution actual = strategyFactory.createInstitutionStrategy(institution)
@@ -326,6 +327,7 @@ class CreateInstitutionStrategyTest {
         assertThat(actual.getInstitutionType()).isEqualTo(InstitutionType.GSP);
         assertThat(actual.getSubunitType()).isNull();
         assertThat(actual.getIstatCode()).isEqualTo(institution.getIstatCode());
+        assertThat(actual.getLegalForm()).isEqualTo(institution.getLegalForm());
 
         verify(institutionConnector).save(any());
         verify(institutionConnector).findByTaxCodeAndSubunitCode(anyString(), any(), eq(null));

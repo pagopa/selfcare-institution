@@ -58,5 +58,6 @@ public class InstitutionEntity {
     private PaAttributesEntity paAttributes;
     private boolean delegation;
     private Boolean isTest;
+    private String legalForm;
 
 }

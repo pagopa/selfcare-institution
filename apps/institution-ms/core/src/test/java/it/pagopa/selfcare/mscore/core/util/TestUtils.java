@@ -42,11 +42,37 @@ public class TestUtils {
         ArrayList<Attributes> attributes = new ArrayList<>();
         PaymentServiceProvider paymentServiceProvider = new PaymentServiceProvider();
 
-        return new Institution("42", "42", Origin.SELC.name(), "START - setupCommonData",
-                "The characteristics of someone or something", institutionType, "42 Main St", "42 Main St", "21654",
-                "TaxCode","ivass", "city", "county", "country", "istatCode", billing, onboarding, geographicTaxonomies, attributes, paymentServiceProvider,
-                new DataProtectionOfficer(), null, null, "START - setupCommonData", "START - setupCommonData",
-                "START - setupCommonData", true, OffsetDateTime.now(), OffsetDateTime.now(), null, null, null, null, new PaAttributes(),false,null);
+        return Institution.builder()
+                .id("42")
+                .externalId("42")
+                .origin(Origin.SELC.getValue())
+                .originId("originId")
+                .description("institutionDescription")
+                .institutionType(institutionType)
+                .digitalAddress("institution@test.test")
+                .address("42 Main St")
+                .zipCode("21654")
+                .taxCode("01234567890")
+                .ivassCode("ivass")
+                .city("city")
+                .country("county")
+                .county("country")
+                .istatCode("istatCode")
+                .billing(billing)
+                .onboarding(onboarding)
+                .geographicTaxonomies(geographicTaxonomies)
+                .attributes(attributes)
+                .paymentServiceProvider(paymentServiceProvider)
+                .dataProtectionOfficer(new DataProtectionOfficer())
+                .businessRegisterPlace("place")
+                .supportEmail("test@test.test")
+                .supportPhone("0000000000")
+                .imported(true)
+                .createdAt(OffsetDateTime.now())
+                .updatedAt(OffsetDateTime.now())
+                .paAttributes(new PaAttributes())
+                .delegation(false)
+                .build();
     }
 
     public static OnboardingRequest dummyOnboardingRequest(Billing billing, Contract contract, InstitutionUpdate institutionUpdate){

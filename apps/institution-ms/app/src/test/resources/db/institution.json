@@ -10,6 +10,7 @@
     "address": "Via Sant' Anna, 25",
     "zipCode": "90013",
     "taxCode": "00310810825",
+    "legalForm": "legalFormTest",
     "onboarding": [
       {
         "productId": "prod-interop",
@@ -316,6 +317,7 @@
     "address": "Via San Pietro, 10",
     "zipCode": "84014",
     "taxCode": "94076720658",
+    "legalForm": "legalFormTest2",
     "geographicTaxonomies": [],
     "attributes": [
       {

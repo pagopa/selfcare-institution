@@ -1,14 +1,14 @@
 package it.pagopa.selfcare.mscore.web;
 
-import it.pagopa.selfcare.mscore.web.model.institution.InstitutionPut;
-import it.pagopa.selfcare.mscore.web.model.institution.OnboardingPut;
-import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import it.pagopa.selfcare.mscore.constant.Origin;
 import it.pagopa.selfcare.mscore.model.institution.Billing;
 import it.pagopa.selfcare.mscore.model.institution.DataProtectionOfficer;
 import it.pagopa.selfcare.mscore.model.institution.Institution;
 import it.pagopa.selfcare.mscore.model.institution.PaymentServiceProvider;
+import it.pagopa.selfcare.mscore.web.model.institution.InstitutionPut;
 import it.pagopa.selfcare.mscore.web.model.institution.InstitutionRequest;
+import it.pagopa.selfcare.mscore.web.model.institution.OnboardingPut;
+import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import org.junit.jupiter.params.provider.Arguments;
 
 import java.util.ArrayList;
@@ -165,6 +165,7 @@ public class TestUtils {
         institution.setZipCode("21654");
         institution.setShareCapital("Share Capital");
         institution.setRea("Rea");
+        institution.setLegalForm("legalForm");
 
         return institution;
     }

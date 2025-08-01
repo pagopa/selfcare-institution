@@ -3,6 +3,7 @@ package it.pagopa.selfcare.mscore.model.institution;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Institution {
 
@@ -51,5 +53,6 @@ public class Institution {
     private PaAttributes paAttributes;
     private boolean delegation;
     private Boolean isTest;
+    private String legalForm;
 
 }

@@ -22,6 +22,8 @@ Feature: Institution
       | UF5D7W |
     And The response body contains at path "institutions.isTest" the following list of values in any order:
       | true |
+    And The response body contains at path "institutions.legalForm" the following list of values in any order:
+      | legalFormTest2 |
     And The response body contains the list "institutions[0].onboarding" of size 1
     And The response body contains the list "institutions[1].onboarding" of size 1
     And The response body contains:
@@ -88,6 +90,7 @@ Feature: Institution
       | institutions[0].id                      | b4705659-3a01-430a-a19b-7bdb4e340223 |
       | institutions[0].taxCode                 | 94076720658                          |
       | institutions[0].subunitCode             | UF5D7W                               |
+      | institutions[0].legalForm               | legalFormTest2                       |
       | institutions[0].onboarding[0].productId | prod-io                              |
       | institutions[0].onboarding[0].origin    | IPA                                  |
       | institutions[0].onboarding[0].originId  | UF5D7W                               |
@@ -882,6 +885,46 @@ Feature: Institution
       | supportEmail | test@pec.it    |
     And The response body contains field "id"
 
+  @RemoveInstitutionIdAfterScenario
+  Scenario: Successfully create and update raw institution with legalForm
+    # CREATE
+    Given User login with username "j.doe" and password "test"
+    And The following request body:
+      """
+      {
+        "taxCode": "98765432100",
+        "legalForm": "legal"
+      }
+      """
+    When I send a POST request to "/institutions"
+    Then The status code is 201
+    And The response body contains:
+      | taxCode   | 98765432100      |
+      | origin    | SELC             |
+      | originId  | SELC_98765432100 |
+      | legalForm | legal            |
+    And The response body contains field "id"
+    And The response body doesn't contain field "supportEmail"
+    # UPDATE
+    Given User login with username "j.doe" and password "test"
+    And The following request body:
+      """
+      {
+        "taxCode": "98765432100",
+        "supportEmail": "test@pec.it",
+        "legalForm": "legal2"
+      }
+      """
+    When I send a POST request to "/institutions"
+    Then The status code is 201
+    And The response body contains:
+      | taxCode      | 98765432100      |
+      | origin       | SELC             |
+      | originId     | SELC_98765432100 |
+      | supportEmail | test@pec.it      |
+      | legalForm    | legal2           |
+    And The response body contains field "id"
+
 # POST /institutions/insert/{externalId} (deprecated)
 
 # POST /institutions/pg
@@ -1436,6 +1479,7 @@ Feature: Institution
       | description     | Comune di Castelbuono                                       |
       | taxCode         | 00310810825                                                 |
       | digitalAddress  | comune.castelbuono@pec.it                                   |
+      | legalForm       | legalFormTest                                               |
 
   Scenario: Successfully get institution by id with productId filter
     Given User login with username "j.doe" and password "test"
@@ -1455,6 +1499,7 @@ Feature: Institution
       | description     | Comune di Castelbuono                                       |
       | taxCode         | 00310810825                                                 |
       | digitalAddress  | comune.castelbuono@pec.it                                   |
+      | legalForm       | legalFormTest                                               |
 
   Scenario: Successfully get institution by id with productId filter not found
     Given User login with username "j.doe" and password "test"
@@ -1474,6 +1519,7 @@ Feature: Institution
       | description     | Comune di Castelbuono                                       |
       | taxCode         | 00310810825                                                 |
       | digitalAddress  | comune.castelbuono@pec.it                                   |
+      | legalForm       | legalFormTest                                               |
 
   Scenario: Get institution by id not found
     Given User login with username "j.doe" and password "test"

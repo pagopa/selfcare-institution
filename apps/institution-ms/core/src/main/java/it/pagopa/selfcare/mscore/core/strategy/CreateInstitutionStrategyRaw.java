@@ -38,6 +38,7 @@ public class CreateInstitutionStrategyRaw extends CreateInstitutionStrategyCommo
             institution.setCreatedAt(OffsetDateTime.now());
             setContacts(strategyInput, institution);
             setIstatCode(strategyInput, institution);
+            setLegalForm(strategyInput, institution);
         } else {
             institution = institutions.get(0);
             setUpdatedFields(strategyInput, institution);

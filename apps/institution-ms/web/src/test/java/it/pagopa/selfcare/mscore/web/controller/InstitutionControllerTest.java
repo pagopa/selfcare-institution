@@ -497,6 +497,7 @@ class InstitutionControllerTest {
 
         InstitutionRequest institution = TestUtils.createSimpleInstitutionRequest();
         Institution response = TestUtils.createSimpleInstitutionPA();
+        response.setLegalForm("legalForm");
 
         when(institutionService.createInstitution(any())).thenReturn(response);
 
@@ -509,7 +510,8 @@ class InstitutionControllerTest {
                 .build()
                 .perform(requestBuilder);
         actualPerformResult.andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(MockMvcResultMatchers.content().contentType("application/json"));
+                .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.legalForm").value("legalForm"));
     }
 
     /**
