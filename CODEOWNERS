@@ -1,7 +1,7 @@
 # see https://help.github.com/en/articles/about-code-owners#example-of-a-codeowners-file
 
 # Default owner
-* @pagopa/selfcare-contributors @giulia-tremolada
+* @pagopa/selfcare-contributors @giulia-tremolada @duffizipierluigi
 
 # Code owner for the applications
 /apps/user-ms/*   @pagopa/selfcare-contributors
