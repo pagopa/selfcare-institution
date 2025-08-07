@@ -154,7 +154,7 @@ public class DelegationController {
      * @return list of the delegators
      */
     @Tags({@Tag(name = "external-v2"), @Tag(name = "Delegation")})
-    @ApiOperation(value = "${swagger.mscore.delegation.delegators}", notes = "${swagger.mscore.delegation.delegators}")
+    @ApiOperation(value = "${swagger.mscore.delegation.delegators}", notes = "${swagger.mscore.delegation.delegators.notes}")
     @GetMapping(value = "/delegators/{institutionId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<DelegationInstitutionResponse>> getDelegatorInstitutions(@ApiParam("${swagger.mscore.institutions.model.institutionId}")
                                                                                         @PathVariable("institutionId") String institutionId,
@@ -181,7 +181,7 @@ public class DelegationController {
      * @return list of the delegates
      */
     @Tags({@Tag(name = "external-v2"), @Tag(name = "Delegation")})
-    @ApiOperation(value = "${swagger.mscore.delegation.delegates}", notes = "${swagger.mscore.delegation.delegates}")
+    @ApiOperation(value = "${swagger.mscore.delegation.delegates}", notes = "${swagger.mscore.delegation.delegates.notes}")
     @GetMapping(value = "/delegates/{institutionId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<DelegationInstitutionResponse>> getDelegateInstitutions(@ApiParam("${swagger.mscore.institutions.model.institutionId}")
                                                                                        @PathVariable("institutionId") String institutionId,
