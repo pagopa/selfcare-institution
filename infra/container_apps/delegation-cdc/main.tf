@@ -1,17 +1,15 @@
 terraform {
-  required_version = ">= 1.6.0"
+  required_version = ">= 1.9.0"
 
   backend "azurerm" {}
 }
 
 provider "azurerm" {
   features {}
-  skip_provider_registration = true
-
 }
 
 module "container_app_delegation_cdc" {
-  source = "github.com/pagopa/selfcare-commons//infra/terraform-modules/container_app_microservice?ref=main"
+  source = "github.com/pagopa/selfcare-commons//infra/terraform-modules/container_app_microservice?ref=v1.1.0"
 
   is_pnpg = var.is_pnpg
 
@@ -25,6 +23,9 @@ module "container_app_delegation_cdc" {
   app_settings                   = var.app_settings
   secrets_names                  = var.secrets_names
   workload_profile_name          = var.workload_profile_name
+
+  user_assigned_identity_id           = data.azurerm_user_assigned_identity.cae_identity.id
+  user_assigned_identity_principal_id = data.azurerm_user_assigned_identity.cae_identity.principal_id
 
   probes = [
     {
@@ -63,4 +64,9 @@ module "container_app_delegation_cdc" {
   ]
 
   tags = var.tags
+}
+
+data "azurerm_user_assigned_identity" "cae_identity" {
+  name                = "${local.container_app_environment_name}-managed_identity"
+  resource_group_name = local.ca_resource_group_name
 }
