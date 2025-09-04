@@ -18,15 +18,7 @@ public class BulkInstitution {
     private String externalId;
 
     @NotNull
-    private String origin;
-
-    @NotNull
-    private String originId;
-
-    @NotNull
     private String description;
-
-    private String institutionType;
 
     @NotNull
     private String digitalAddress;

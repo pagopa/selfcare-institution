@@ -14,7 +14,6 @@ import it.pagopa.selfcare.mscore.exception.ResourceNotFoundException;
 import it.pagopa.selfcare.mscore.model.AreaOrganizzativaOmogenea;
 import it.pagopa.selfcare.mscore.model.UnitaOrganizzativa;
 import it.pagopa.selfcare.mscore.model.institution.*;
-import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -143,8 +142,6 @@ class CreateInstitutionStrategyTest {
 
         Institution institution = new Institution();
         institution.setId("id");
-        institution.setOrigin(origin);
-        institution.setOriginId(originId);
         institution.setIstatCode("42");
 
         when(institutionConnector.findByOriginAndOriginId(any(), any(), eq(null))). thenReturn(List.of(institution));
@@ -251,7 +248,6 @@ class CreateInstitutionStrategyTest {
         assertThat(actual.getTaxCode()).isEqualTo(institution.getTaxCode());
         assertThat(actual.getSubunitCode()).isNull();
         assertThat(actual.getSubunitType()).isNull();
-        assertThat(actual.getInstitutionType()).isEqualTo(InstitutionType.SA);
         assertThat(actual.getSubunitType()).isNull();
         assertThat(actual.getSupportPhone()).isEqualTo(SUPPORT_PHONE);
         assertThat(actual.getSupportEmail()).isEqualTo(SUPPORT_EMAIL);
@@ -289,7 +285,6 @@ class CreateInstitutionStrategyTest {
         assertThat(actual.getTaxCode()).isEqualTo(institution.getTaxCode());
         assertThat(actual.getSubunitCode()).isNull();
         assertThat(actual.getSubunitType()).isNull();
-        assertThat(actual.getInstitutionType()).isEqualTo(InstitutionType.AS);
         assertThat(actual.getSubunitType()).isNull();
         assertThat(actual.getIstatCode()).isEqualTo(institution.getIstatCode());
 
@@ -324,7 +319,6 @@ class CreateInstitutionStrategyTest {
         assertThat(actual.getTaxCode()).isEqualTo(institution.getTaxCode());
         assertThat(actual.getSubunitCode()).isNull();
         assertThat(actual.getSubunitType()).isNull();
-        assertThat(actual.getInstitutionType()).isEqualTo(InstitutionType.GSP);
         assertThat(actual.getSubunitType()).isNull();
         assertThat(actual.getIstatCode()).isEqualTo(institution.getIstatCode());
         assertThat(actual.getLegalForm()).isEqualTo(institution.getLegalForm());
@@ -359,8 +353,6 @@ class CreateInstitutionStrategyTest {
                         .build());
 
         //Then
-        assertThat(actual.getInstitutionType()).isEqualTo(InstitutionType.PA);
-        assertThat(actual.getOriginId()).isEqualTo(dummyAreaOrganizzativaOmogenea.getId());
         assertThat(actual.getDescription()).isEqualTo(dummyAreaOrganizzativaOmogenea.getDenominazioneAoo());
         assertThat(actual.getDigitalAddress()).isEqualTo(dummyInstitutionProxyInfo.getDigitalAddress());
         assertThat(actual.getAddress()).isEqualTo(dummyAreaOrganizzativaOmogenea.getIndirizzo());
@@ -408,10 +400,8 @@ class CreateInstitutionStrategyTest {
                         .build());
 
         //Then
-        assertThat(actual.getOriginId()).isEqualTo(dummyUnitaOrganizzativa.getId());
         assertThat(actual.getDescription()).isEqualTo(dummyUnitaOrganizzativa.getDescrizioneUo());
 
-        assertThat(actual.getInstitutionType()).isEqualTo(InstitutionType.PA);
         assertThat(actual.getDigitalAddress()).isEqualTo(dummyInstitutionProxyInfo.getDigitalAddress());
         assertThat(actual.getAddress()).isEqualTo(dummyUnitaOrganizzativa.getIndirizzo());
         assertThat(actual.getZipCode()).isEqualTo(dummyUnitaOrganizzativa.getCAP());
@@ -486,10 +476,8 @@ class CreateInstitutionStrategyTest {
                         .build());
 
         //Then
-        assertThat(actual.getOriginId()).isEqualTo(dummyUnitaOrganizzativa.getId());
         assertThat(actual.getDescription()).isEqualTo(dummyUnitaOrganizzativa.getDescrizioneUo());
 
-        assertThat(actual.getInstitutionType()).isEqualTo(InstitutionType.PA);
         assertThat(actual.getDigitalAddress()).isEqualTo(dummyInstitutionProxyInfo.getDigitalAddress());
         assertThat(actual.getAddress()).isEqualTo(dummyUnitaOrganizzativa.getIndirizzo());
         assertThat(actual.getZipCode()).isEqualTo(dummyUnitaOrganizzativa.getCAP());
@@ -531,10 +519,8 @@ class CreateInstitutionStrategyTest {
                         .build());
 
         //Then
-        assertThat(actual.getOriginId()).isEqualTo(dummyUnitaOrganizzativa.getId());
         assertThat(actual.getDescription()).isEqualTo(dummyUnitaOrganizzativa.getDescrizioneUo());
 
-        assertThat(actual.getInstitutionType()).isEqualTo(InstitutionType.PA);
         assertThat(actual.getDigitalAddress()).isEqualTo(dummyInstitutionProxyInfo.getDigitalAddress());
         assertThat(actual.getAddress()).isEqualTo(dummyUnitaOrganizzativa.getIndirizzo());
         assertThat(actual.getZipCode()).isEqualTo(dummyUnitaOrganizzativa.getCAP());
@@ -613,7 +599,6 @@ class CreateInstitutionStrategyTest {
                         .build());
 
         //Then
-        assertThat(actual.getOriginId()).isEqualTo(dummyUnitaOrganizzativa.getId());
         assertThat(actual.getDescription()).isEqualTo(dummyUnitaOrganizzativa.getDescrizioneUo());
 
         assertThat(actual.getDigitalAddress()).isEqualTo(dummyUnitaOrganizzativa.getMail1());
@@ -659,9 +644,7 @@ class CreateInstitutionStrategyTest {
         assertThat(actual.getTaxCode()).isEqualTo(institution.getTaxCode());
         assertThat(actual.getSubunitCode()).isNull();
         assertThat(actual.getSubunitType()).isNull();
-        assertThat(actual.getInstitutionType()).isEqualTo(InstitutionType.PG);
         assertThat(actual.getSubunitType()).isNull();
-        assertThat(actual.getOrigin()).isEqualTo(Origin.INFOCAMERE.getValue());
 
         verify(institutionConnector).save(any());
     }
@@ -695,9 +678,7 @@ class CreateInstitutionStrategyTest {
         assertThat(actual.getTaxCode()).isEqualTo(institution.getTaxCode());
         assertThat(actual.getSubunitCode()).isNull();
         assertThat(actual.getSubunitType()).isNull();
-        assertThat(actual.getInstitutionType()).isEqualTo(institution.getInstitutionType());
         assertThat(actual.getSubunitType()).isNull();
-        assertThat(actual.getOrigin()).isEqualTo(institution.getOrigin());
 
         verify(institutionConnector).save(any());
     }
@@ -724,9 +705,7 @@ class CreateInstitutionStrategyTest {
         assertThat(actual.getTaxCode()).isEqualTo(institution.getTaxCode());
         assertThat(actual.getSubunitCode()).isNull();
         assertThat(actual.getSubunitType()).isNull();
-        assertThat(actual.getInstitutionType()).isEqualTo(InstitutionType.PG);
         assertThat(actual.getSubunitType()).isNull();
-        assertThat(actual.getOriginId()).isEqualTo(institution.getTaxCode());
 
         verify(institutionConnector).save(any());
     }

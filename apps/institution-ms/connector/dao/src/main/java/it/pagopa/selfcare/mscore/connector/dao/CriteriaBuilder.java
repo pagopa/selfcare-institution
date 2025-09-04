@@ -47,4 +47,15 @@ public class CriteriaBuilder {
         }
         return this;
     }
+
+    public CriteriaBuilder is(@NonNull String key, @NonNull Object value) {
+        if (first) {
+            criteria = Criteria.where(key).is(value);
+            first = false;
+        } else {
+            criteria = criteria.and(key).is(value);
+        }
+        return this;
+    }
+
 }

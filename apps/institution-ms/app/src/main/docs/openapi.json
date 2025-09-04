@@ -2901,15 +2901,6 @@
           "id" : {
             "type" : "string"
           },
-          "institutionType" : {
-            "type" : "string"
-          },
-          "origin" : {
-            "type" : "string"
-          },
-          "originId" : {
-            "type" : "string"
-          },
           "products" : {
             "type" : "object",
             "additionalProperties" : {

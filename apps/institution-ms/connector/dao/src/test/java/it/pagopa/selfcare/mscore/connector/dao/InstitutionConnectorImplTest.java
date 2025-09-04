@@ -8,7 +8,6 @@ import it.pagopa.selfcare.mscore.connector.dao.model.inner.PaymentServiceProvide
 import it.pagopa.selfcare.mscore.connector.dao.model.mapper.InstitutionEntityMapper;
 import it.pagopa.selfcare.mscore.connector.dao.model.mapper.InstitutionEntityMapperImpl;
 import it.pagopa.selfcare.mscore.connector.dao.utils.TestUtils;
-import it.pagopa.selfcare.mscore.constant.Origin;
 import it.pagopa.selfcare.mscore.constant.RelationshipState;
 import it.pagopa.selfcare.mscore.constant.SearchMode;
 import it.pagopa.selfcare.mscore.exception.InvalidRequestException;
@@ -508,8 +507,6 @@ class InstitutionConnectorImplTest {
         onboardingEntityMock.setProductId(productIdMock);
         updatedInstitutionMock.setOnboarding(List.of(onboardingEntityMock));
         updatedInstitutionMock.setId(institutionIdMock);
-        updatedInstitutionMock.setInstitutionType(InstitutionType.PA);
-        updatedInstitutionMock.setOrigin(Origin.IPA);
         when(institutionRepository.findAndModify(any(), any(), any(), any()))
                 .thenReturn(updatedInstitutionMock);
         // When
@@ -717,10 +714,7 @@ class InstitutionConnectorImplTest {
         institutionEntity.setGeographicTaxonomies(new ArrayList<>());
         institutionEntity.setId("42");
         institutionEntity.setImported(true);
-        institutionEntity.setInstitutionType(InstitutionType.PA);
         institutionEntity.setOnboarding(List.of(onboardingEntity));
-        institutionEntity.setOrigin(Origin.MOCK);
-        institutionEntity.setOriginId("42");
         institutionEntity.setPaymentServiceProvider(serviceProviderEntity);
         institutionEntity.setRea("Rea");
         institutionEntity.setShareCapital("Share Capital");

@@ -25,7 +25,7 @@ public interface InstitutionService {
 
     List<Institution> getInstitutions(String taxCode, String subunitCode);
 
-    Institution createInstitutionFromIpa(String taxCode, InstitutionPaSubunitType subunitType, String subunitCode, List<InstitutionGeographicTaxonomies> geographicTaxonomies, InstitutionType institutionType, String supportEmail, String supportPhone);
+    Institution createInstitutionFromIpa(String taxCode, InstitutionPaSubunitType subunitType, String subunitCode, List<InstitutionGeographicTaxonomies> geographicTaxonomies, String supportEmail, String supportPhone);
 
     Institution createInstitutionFromPda(Institution institution, String injectionInstitutionType);
 
@@ -33,7 +33,7 @@ public interface InstitutionService {
 
     Institution createInstitutionFromAnac(Institution institution);
 
-    Institution createInstitutionFromIvass(Institution institution);
+    Institution createInstitutionFromIvass(Institution institution, String originId);
 
     Institution createInstitutionFromInfocamere(Institution institution);
 

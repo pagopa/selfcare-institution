@@ -191,9 +191,6 @@ Feature: Institution
     And The response body contains:
       | externalId                   | 00297110389                           |
       | taxCode                      | 00297110389                           |
-      | origin                       | IPA                                   |
-      | originId                     | c_d548                                |
-      | institutionType              | PA                                    |
       | istatCode                    | 038008                                |
       | digitalAddress               | comune.ferrara@cert.comune.fe.it      |
       | zipCode                      | 44121                                 |
@@ -236,9 +233,6 @@ Feature: Institution
     And The response body contains:
       | externalId                   | 00297110389                           |
       | taxCode                      | 00297110389                           |
-      | origin                       | IPA                                   |
-      | originId                     | c_d548                                |
-      | institutionType              | PA                                    |
       | istatCode                    | 038008                                |
       | digitalAddress               | comune.ferrara@cert.comune.fe.it      |
       | zipCode                      | 44121                                 |
@@ -290,9 +284,6 @@ Feature: Institution
     And The response body contains:
       | externalId                   | 00297110389_A46A529                   |
       | taxCode                      | 00297110389                           |
-      | origin                       | IPA                                   |
-      | originId                     | A46A529                               |
-      | institutionType              | PA                                    |
       | istatCode                    | 038008                                |
       | digitalAddress               | comune.ferrara@cert.comune.fe.it      |
       | zipCode                      | 44121                                 |
@@ -327,7 +318,6 @@ Feature: Institution
             "desc": "second geo"
           }
         ],
-        "institutionType": "PA",
         "subunitCode": "A46A529",
         "subunitType": "AOO",
         "supportEmail": "updatedsupportmail@test.com",
@@ -341,9 +331,6 @@ Feature: Institution
     And The response body contains:
       | externalId                   | 00297110389_A46A529                   |
       | taxCode                      | 00297110389                           |
-      | origin                       | IPA                                   |
-      | originId                     | A46A529                               |
-      | institutionType              | PA                                    |
       | istatCode                    | 038008                                |
       | digitalAddress               | comune.ferrara@cert.comune.fe.it      |
       | zipCode                      | 44121                                 |
@@ -385,7 +372,6 @@ Feature: Institution
             "desc": "second geo"
           }
         ],
-        "institutionType": "PA",
         "subunitCode": "3QOOYF",
         "subunitType": "UO",
         "supportEmail": "supportmail@test.com",
@@ -399,9 +385,6 @@ Feature: Institution
     And The response body contains:
       | externalId                   | 00297110389_3QOOYF                         |
       | taxCode                      | 00297110389                                |
-      | origin                       | IPA                                        |
-      | originId                     | 3QOOYF                                     |
-      | institutionType              | PA                                         |
       | istatCode                    | 038008                                     |
       | digitalAddress               | personale@cert.comune.fe.it                |
       | zipCode                      | 44121                                      |
@@ -450,9 +433,6 @@ Feature: Institution
     And The response body contains:
       | externalId                   | 00297110389_3QOOYF                         |
       | taxCode                      | 00297110389                                |
-      | origin                       | IPA                                        |
-      | originId                     | 3QOOYF                                     |
-      | institutionType              | PA                                         |
       | istatCode                    | 038008                                     |
       | digitalAddress               | personale@cert.comune.fe.it                |
       | zipCode                      | 44121                                      |
@@ -544,8 +524,6 @@ Feature: Institution
     And The response body contains:
       | taxCode   | 06068501219 |
       | istatCode | 06068501219 |
-      | origin    | ANAC        |
-      | originId  | 06068501219 |
     And The response body contains field "id"
 
   Scenario: TaxCode not found from ANAC
@@ -575,8 +553,6 @@ Feature: Institution
     And The response body contains:
       | taxCode   | 06068501219 |
       | istatCode | 06068501219 |
-      | origin    | ANAC        |
-      | originId  | 06068501219 |
     And The response body contains field "id"
     And The response body doesn't contain field "supportEmail"
     # UPDATE
@@ -594,8 +570,6 @@ Feature: Institution
     And The response body contains:
       | taxCode      | 06068501219 |
       | istatCode    | 06068501220 |
-      | origin       | ANAC        |
-      | originId     | 06068501219 |
       | supportEmail | test@pec.it |
     And The response body contains field "id"
 
@@ -616,8 +590,6 @@ Feature: Institution
     And The response body contains:
       | taxCode   | 00409920584 |
       | istatCode | 06068501219 |
-      | origin    | IVASS       |
-      | originId  | A044S       |
     And The response body contains field "id"
 
   Scenario: originId not found from IVASS
@@ -647,8 +619,6 @@ Feature: Institution
     And The response body contains:
       | taxCode   | 00409920584 |
       | istatCode | 06068501219 |
-      | origin    | IVASS       |
-      | originId  | A044S       |
     And The response body contains field "id"
     And The response body doesn't contain field "supportEmail"
     # UPDATE
@@ -666,8 +636,6 @@ Feature: Institution
     And The response body contains:
       | taxCode      | 00409920584 |
       | istatCode    | 06068501220 |
-      | origin       | IVASS       |
-      | originId     | A044S       |
       | supportEmail | test@pec.it |
     And The response body contains field "id"
 
@@ -688,9 +656,6 @@ Feature: Institution
     Then The status code is 201
     And The response body contains:
       | taxCode         | 123456789 |
-      | origin          | IPA       |
-      | originId        | c_d548    |
-      | institutionType | PA        |
     And The response body contains field "id"
 
   @RemoveInstitutionIdAfterScenario
@@ -710,9 +675,6 @@ Feature: Institution
     And The response body contains:
       | taxCode         | 01501320442 |
       | istatCode       | 06068501219 |
-      | origin          | INFOCAMERE  |
-      | originId        | 01501320442 |
-      | institutionType | PG          |
     And The response body contains field "id"
 
   Scenario: Not found while creating institution from pda
@@ -764,8 +726,6 @@ Feature: Institution
     And The response body contains:
       | taxCode   | 01501320442 |
       | istatCode | 06068501219 |
-      | origin    | INFOCAMERE  |
-      | originId  | 01501320442 |
     And The response body contains field "id"
 
   @RemoveInstitutionIdAfterScenario
@@ -781,8 +741,6 @@ Feature: Institution
     Then The status code is 201
     And The response body contains:
       | taxCode  | 123456789 |
-      | origin   | ADE       |
-      | originId | 123456789 |
     And The response body contains field "id"
 
   @RemoveInstitutionIdAfterScenario
@@ -801,8 +759,6 @@ Feature: Institution
     And The response body contains:
       | taxCode   | 01501320442 |
       | istatCode | 06068501219 |
-      | origin    | INFOCAMERE  |
-      | originId  | 01501320442 |
     And The response body contains field "id"
     And The response body doesn't contain field "description"
     # UPDATE
@@ -820,8 +776,6 @@ Feature: Institution
     And The response body contains:
       | taxCode     | 01501320442      |
       | istatCode   | 06068501220      |
-      | origin      | INFOCAMERE       |
-      | originId    | 01501320442      |
       | description | test description |
     And The response body contains field "id"
 
@@ -844,9 +798,7 @@ Feature: Institution
     Then The status code is 201
     And The response body contains:
       | taxCode   | 123456789      |
-      | istatCode | 06068501219 |
-      | origin    | SELC           |
-      | originId  | SELC_123456789 |
+      | istatCode | 06068501219    |
     And The response body contains field "id"
 
   @RemoveInstitutionIdAfterScenario
@@ -863,8 +815,6 @@ Feature: Institution
     Then The status code is 201
     And The response body contains:
       | taxCode  | 123456789      |
-      | origin   | SELC           |
-      | originId | SELC_123456789 |
     And The response body contains field "id"
     And The response body doesn't contain field "supportEmail"
     # UPDATE
@@ -880,8 +830,6 @@ Feature: Institution
     Then The status code is 201
     And The response body contains:
       | taxCode      | 123456789      |
-      | origin       | SELC           |
-      | originId     | SELC_123456789 |
       | supportEmail | test@pec.it    |
     And The response body contains field "id"
 
@@ -900,8 +848,6 @@ Feature: Institution
     Then The status code is 201
     And The response body contains:
       | taxCode   | 98765432100      |
-      | origin    | SELC             |
-      | originId  | SELC_98765432100 |
       | legalForm | legal            |
     And The response body contains field "id"
     And The response body doesn't contain field "supportEmail"
@@ -919,8 +865,6 @@ Feature: Institution
     Then The status code is 201
     And The response body contains:
       | taxCode      | 98765432100      |
-      | origin       | SELC             |
-      | originId     | SELC_98765432100 |
       | supportEmail | test@pec.it      |
       | legalForm    | legal2           |
     And The response body contains field "id"
@@ -946,9 +890,6 @@ Feature: Institution
     And The response body contains:
       | taxCode         | 0987654321          |
       | istatCode       | 06068501219         |
-      | origin          | ADE                 |
-      | originId        | 0987654321          |
-      | institutionType | PG                  |
       | description     | Test PG Institution |
     And The response body contains field "id"
 
@@ -969,9 +910,6 @@ Feature: Institution
     And The response body contains:
       | taxCode         | 01501320442 |
       | istatCode       | 06068501219 |
-      | origin          | INFOCAMERE  |
-      | originId        | 01501320442 |
-      | institutionType | PG          |
       | zipCode         | 00121       |
       | description     | test0       |
     And The response body contains field "id"
@@ -1013,8 +951,6 @@ Feature: Institution
     Then The status code is 201
     And The response body contains:
       | externalId      | 00310810825 |
-      | institutionType | PA          |
-      | origin          | IPA         |
       | taxCode         | 00310810825 |
 
   Scenario: Not found user taxCode creating pg institution
@@ -1256,7 +1192,10 @@ Feature: Institution
         "tokenId": "123456789",
         "contractPath": "testContractPath",
         "activatedAt": "2025-02-28T15:00:00Z",
-        "isAggregator": false
+        "isAggregator": false,
+        "institutionType": "PA",
+        "origin": "MOCK",
+        "originId": "x1"
       }
       """
     When I send a POST request to "/institutions/{id}/onboarding"
@@ -1473,9 +1412,6 @@ Feature: Institution
     And The response body contains:
       | id              | c9a50656-f345-4c81-84be-5b2474470544                        |
       | logo            | test-logo-url/c9a50656-f345-4c81-84be-5b2474470544/logo.png |
-      | origin          | IPA                                                         |
-      | originId        | c_c067                                                      |
-      | institutionType | PA                                                          |
       | description     | Comune di Castelbuono                                       |
       | taxCode         | 00310810825                                                 |
       | digitalAddress  | comune.castelbuono@pec.it                                   |
@@ -1513,9 +1449,6 @@ Feature: Institution
     And The response body contains:
       | id              | c9a50656-f345-4c81-84be-5b2474470544                        |
       | logo            | test-logo-url/c9a50656-f345-4c81-84be-5b2474470544/logo.png |
-      | origin          | IPA                                                         |
-      | originId        | c_c067                                                      |
-      | institutionType | PA                                                          |
       | description     | Comune di Castelbuono                                       |
       | taxCode         | 00310810825                                                 |
       | digitalAddress  | comune.castelbuono@pec.it                                   |
@@ -1712,12 +1645,10 @@ Feature: Institution
       | institutionType | PA      |
     When I send a GET request to "/institutions/{productId}/brokers/{institutionType}"
     Then The status code is 200
-    And The response body contains the list "" of size 4
+    And The response body contains the list "" of size 2
     And The response body contains at path "taxCode" the following list of values in any order:
       | 85000870064 |
       | 00310810825 |
-      | 94076720658 |
-      | 00313820540 |
 
   Scenario: Get institutions brokers with bad productId
     Given User login with username "j.doe" and password "test"

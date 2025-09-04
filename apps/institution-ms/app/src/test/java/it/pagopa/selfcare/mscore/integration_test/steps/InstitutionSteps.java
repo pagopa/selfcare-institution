@@ -69,7 +69,6 @@ public class InstitutionSteps {
     public void createMockInstitutionWithId(String id) {
         final InstitutionEntity entity = new InstitutionEntity();
         entity.setId(id);
-        entity.setOrigin(Origin.MOCK);
         entity.setCreatedAt(OffsetDateTime.now());
         entity.setUpdatedAt(OffsetDateTime.now());
         entity.setOnboarding(List.of(
@@ -96,9 +95,6 @@ public class InstitutionSteps {
     public void createMockInstitutionWithoutActiveOnboardings(String id) {
         final InstitutionEntity entity = new InstitutionEntity();
         entity.setId(id);
-        entity.setInstitutionType(InstitutionType.PA);
-        entity.setOrigin(Origin.MOCK);
-        entity.setOriginId("x1");
         entity.setCreatedAt(OffsetDateTime.now());
         entity.setUpdatedAt(OffsetDateTime.now());
         entity.setDigitalAddress("digital.address@test.com");

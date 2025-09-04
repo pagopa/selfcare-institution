@@ -11,7 +11,6 @@ import it.pagopa.selfcare.mscore.constant.Order;
 import it.pagopa.selfcare.mscore.exception.MsCoreException;
 import it.pagopa.selfcare.mscore.model.delegation.*;
 import it.pagopa.selfcare.mscore.model.institution.Institution;
-import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import org.bson.Document;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -55,7 +54,6 @@ class DelegationConnectorImplTest {
     static {
         dummyInstitution = new Institution();
         dummyInstitution.setTaxCode("taxCode");
-        dummyInstitution.setInstitutionType(InstitutionType.PT);
     }
 
     @InjectMocks

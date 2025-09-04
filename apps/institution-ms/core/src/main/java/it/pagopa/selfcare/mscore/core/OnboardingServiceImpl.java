@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -85,7 +86,7 @@ public class OnboardingServiceImpl implements OnboardingService {
 
         Institution institution = persistAndGetInstitution(institutionId, productId, onboarding, httpStatus);
 
-        if (isMailNotificationEnabled(institution)) {
+        if (isMailNotificationEnabled(institution, productId)) {
             mailNotificationConnector.addMailNotification(institutionId, productId, institution.getDigitalAddress(),
                         calculateModuleDayOfTheEpoch(institutionSendMailConfig.getEpochDatePecNotification(), onboarding.getCreatedAt(),
                                 institutionSendMailConfig.getPecNotificationFrequency()));
@@ -117,7 +118,7 @@ public class OnboardingServiceImpl implements OnboardingService {
 
         try {
             //If not exists, persist a new onboarding for product
-            setOnboardingFields(onboarding, institution);
+            setOnboardingFields(onboarding);
             final Institution institutionUpdated = institutionConnector.findAndAddOnboarding(institutionId, onboarding);
 
             log.trace("persistForUpdate end");
@@ -131,36 +132,30 @@ public class OnboardingServiceImpl implements OnboardingService {
         }
     }
 
-    private static void setOnboardingFields(Onboarding onboarding, Institution institution) {
-        //Setting institutionType if not present in request
+    private static void setOnboardingFields(Onboarding onboarding) {
         Optional.ofNullable(onboarding.getInstitutionType())
-                .ifPresentOrElse(
-                        value -> {}, // Do nothing if already present
-                        () -> onboarding.setInstitutionType(institution.getInstitutionType())
-                );
+                .ifPresent(onboarding::setInstitutionType);
 
-        //Setting origin if not present in request
         Optional.ofNullable(onboarding.getOrigin())
-                .ifPresentOrElse(
-                        value -> {}, // Do nothing if already present
-                        () -> onboarding.setOrigin(institution.getOrigin())
-                );
+                .ifPresent(onboarding::setOrigin);
 
-        //Setting originId if not present in request
         Optional.ofNullable(onboarding.getOriginId())
-                .ifPresentOrElse(
-                        value -> {}, // Do nothing if already present
-                        () -> onboarding.setOriginId(institution.getOriginId())
-                );
+                .ifPresent(onboarding::setOriginId);
     }
 
-    private boolean isMailNotificationEnabled(Institution institution) {
+    private boolean isMailNotificationEnabled(Institution institution, String productId) {
+        // Mail notifications are disabled if the global property is enabled
         if (Boolean.TRUE.equals(institutionSendMailConfig.getPecNotificationDisabled())) {
-            // If property is enabled then mail notification is disabled
             return false;
         }
-        // If institution is of type PT then mail notification is disabled
-        return !InstitutionType.PT.equals(institution.getInstitutionType());
+
+        // Return false if the most recent active onboarding for the product is PT, true otherwise
+        return institution.getOnboarding().stream()
+                .filter(o -> RelationshipState.ACTIVE.equals(o.getStatus()))
+                .filter(o -> productId.equals(o.getProductId()))
+                .max(Comparator.comparing(Onboarding::getCreatedAt))  // string comparison works for ISO-8601
+                .map(o -> !InstitutionType.PT.equals(o.getInstitutionType()))
+                .orElse(true);  // if no active onboarding, mail is enabled
     }
 
     @Override

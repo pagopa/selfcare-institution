@@ -9,7 +9,6 @@ import it.pagopa.selfcare.mscore.connector.dao.model.InstitutionEntity;
 import it.pagopa.selfcare.mscore.connector.dao.model.inner.OnboardingEntity;
 import it.pagopa.selfcare.mscore.constant.DelegationState;
 import it.pagopa.selfcare.mscore.constant.DelegationType;
-import it.pagopa.selfcare.mscore.constant.Origin;
 import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -60,11 +59,9 @@ public class DelegationSteps {
 
         final InstitutionEntity entity1 = new InstitutionEntity();
         entity1.setId(id1);
-        entity1.setOrigin(Origin.MOCK);
         entity1.setCreatedAt(OffsetDateTime.now());
         entity1.setUpdatedAt(OffsetDateTime.now());
         entity1.setTaxCode(taxCode1);
-        entity1.setInstitutionType(InstitutionType.PA);
         entity1.setSubunitCode(subCode1);
         entity1.setOnboarding(List.of(onboardingEntity));
         final InstitutionEntity savedEntity1 = institutionRepository.save(entity1);
@@ -72,11 +69,9 @@ public class DelegationSteps {
 
         final InstitutionEntity entity2 = new InstitutionEntity();
         entity2.setId(id2);
-        entity2.setOrigin(Origin.MOCK);
         entity2.setCreatedAt(OffsetDateTime.now());
         entity2.setUpdatedAt(OffsetDateTime.now());
         entity2.setTaxCode(taxCode2);
-        entity2.setInstitutionType(InstitutionType.GSP);
         entity2.setSubunitCode(subCode2);
         entity2.setOnboarding(List.of(onboardingEntity));
         final InstitutionEntity savedEntity2 = institutionRepository.save(entity2);
@@ -96,8 +91,8 @@ public class DelegationSteps {
         delegation.setInstitutionToName("To Institution");
         delegation.setFromTaxCode(fromInstitution.getTaxCode());
         delegation.setToTaxCode(toInstitution.getTaxCode());
-        delegation.setFromType(fromInstitution.getOnboarding().stream().filter(onb -> productId.equals(onb.getProductId())).map(onb -> onb.getInstitutionType().name()).findFirst().orElse(fromInstitution.getInstitutionType().name()));
-        delegation.setToType(toInstitution.getOnboarding().stream().filter(onb -> productId.equals(onb.getProductId())).map(onb -> onb.getInstitutionType().name()).findFirst().orElse(toInstitution.getInstitutionType().name()));
+        delegation.setFromType(fromInstitution.getOnboarding().stream().filter(onb -> productId.equals(onb.getProductId())).map(onb -> onb.getInstitutionType().name()).findFirst().orElse(null));
+        delegation.setToType(toInstitution.getOnboarding().stream().filter(onb -> productId.equals(onb.getProductId())).map(onb -> onb.getInstitutionType().name()).findFirst().orElse(null));
         delegation.setProductId(productId);
         delegation.setStatus(status);
         delegation.setType(delegationType);

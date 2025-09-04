@@ -6,7 +6,10 @@ import it.pagopa.selfcare.mscore.api.InstitutionConnector;
 import it.pagopa.selfcare.mscore.api.PartyRegistryProxyConnector;
 import it.pagopa.selfcare.mscore.api.UserApiConnector;
 import it.pagopa.selfcare.mscore.config.CoreConfig;
-import it.pagopa.selfcare.mscore.constant.*;
+import it.pagopa.selfcare.mscore.constant.CustomError;
+import it.pagopa.selfcare.mscore.constant.GenericError;
+import it.pagopa.selfcare.mscore.constant.RelationshipState;
+import it.pagopa.selfcare.mscore.constant.SearchMode;
 import it.pagopa.selfcare.mscore.core.mapper.InstitutionMapper;
 import it.pagopa.selfcare.mscore.core.strategy.CreateInstitutionStrategy;
 import it.pagopa.selfcare.mscore.core.strategy.factory.CreateInstitutionStrategyFactory;
@@ -113,14 +116,13 @@ public class InstitutionServiceImpl implements InstitutionService {
     }
 
     @Override
-    public Institution createInstitutionFromIpa(String taxCode, InstitutionPaSubunitType subunitType, String subunitCode, List<InstitutionGeographicTaxonomies> geographicTaxonomies, InstitutionType institutionType, String supportEmail, String supportPhone) {
+    public Institution createInstitutionFromIpa(String taxCode, InstitutionPaSubunitType subunitType, String subunitCode, List<InstitutionGeographicTaxonomies> geographicTaxonomies, String supportEmail, String supportPhone) {
         CreateInstitutionStrategy institutionStrategy = createInstitutionStrategyFactory.createInstitutionStrategyIpa();
         return institutionStrategy.createInstitution(CreateInstitutionStrategyInput.builder()
                 .taxCode(taxCode)
                 .subunitCode(subunitCode)
                 .subunitType(subunitType)
                 .geographicTaxonomies(geographicTaxonomies)
-                .institutionType(institutionType)
                 .supportEmail(supportEmail)
                 .supportPhone(supportPhone)
                 .build());
@@ -173,10 +175,10 @@ public class InstitutionServiceImpl implements InstitutionService {
     }
 
     @Override
-    public Institution createInstitutionFromIvass(Institution institution) {
+    public Institution createInstitutionFromIvass(Institution institution, String originId) {
         return createInstitutionStrategyFactory.createInstitutionStrategyIvass(institution)
                 .createInstitution(CreateInstitutionStrategyInput.builder()
-                        .ivassCode(institution.getOriginId())
+                        .ivassCode(originId)
                         .supportEmail(institution.getSupportEmail())
                         .supportPhone(institution.getSupportPhone())
                         .istatCode(institution.getIstatCode())
@@ -207,7 +209,6 @@ public class InstitutionServiceImpl implements InstitutionService {
         Institution newInstitution = institutionMapper.fromInstitutionProxyInfo(institutionProxyInfo);
 
         newInstitution.setExternalId(externalId);
-        newInstitution.setOrigin(Origin.IPA.getValue());
         newInstitution.setCreatedAt(OffsetDateTime.now());
 
         Attributes attributes = new Attributes();
@@ -233,10 +234,8 @@ public class InstitutionServiceImpl implements InstitutionService {
         Institution newInstitution = new Institution();
         newInstitution.setExternalId(taxId);
         newInstitution.setDescription(description);
-        newInstitution.setInstitutionType(InstitutionType.PG);
         newInstitution.setTaxCode(taxId);
         newInstitution.setCreatedAt(OffsetDateTime.now());
-        newInstitution.setOriginId(taxId);
         newInstitution.setIstatCode(istatCode);
 
         if (existsInRegistry) {
@@ -256,9 +255,6 @@ public class InstitutionServiceImpl implements InstitutionService {
                     newInstitution.setZipCode(professionalAddress.getZipCode());
                 }
             }
-            newInstitution.setOrigin(Origin.INFOCAMERE.getValue());
-        } else {
-            newInstitution.setOrigin(Origin.ADE.getValue());
         }
         return institutionConnector.save(newInstitution);
     }

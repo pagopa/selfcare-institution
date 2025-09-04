@@ -2,7 +2,6 @@ package it.pagopa.selfcare.mscore.core.strategy;
 
 import it.pagopa.selfcare.mscore.api.InstitutionConnector;
 import it.pagopa.selfcare.mscore.api.PartyRegistryProxyConnector;
-import it.pagopa.selfcare.mscore.constant.Origin;
 import it.pagopa.selfcare.mscore.core.strategy.input.CreateInstitutionStrategyInput;
 import it.pagopa.selfcare.mscore.exception.MsCoreException;
 import it.pagopa.selfcare.mscore.exception.ResourceNotFoundException;
@@ -75,8 +74,6 @@ public class CreateInstitutionStrategyInfocamere extends CreateInstitutionStrate
 
     private void fillInstitutionRawData(CreateInstitutionStrategyInput strategyInput) {
         institution.setExternalId(getExternalId(strategyInput));
-        institution.setOrigin(Origin.ADE.getValue());
-        institution.setOriginId(strategyInput.getTaxCode());
         institution.setCreatedAt(OffsetDateTime.now());
     }
 
@@ -86,8 +83,6 @@ public class CreateInstitutionStrategyInfocamere extends CreateInstitutionStrate
         institution.setTaxCode(taxCode);
         institution.setDescription(description);
         institution.setExternalId(taxCode);
-        institution.setOrigin(Origin.INFOCAMERE.getValue());
-        institution.setOriginId(taxCode);
         institution.setCreatedAt(OffsetDateTime.now());
     }
 
