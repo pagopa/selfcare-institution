@@ -24,17 +24,6 @@ public interface InstitutionMapper {
                 .orElse(null);
     }
 
-    default String getOrigin(Institution institution, String productId) {
-        return findOnboardingByProductId(institution, productId)
-                .map(Onboarding::getOrigin)
-                .orElse(null);
-    }
-    default String getOriginId(Institution institution, String productId) {
-        return findOnboardingByProductId(institution, productId)
-                .map(Onboarding::getOriginId)
-                .orElse(null);
-    }
-
     private Optional<Onboarding> findOnboardingByProductId(Institution institution, String productId) {
         return Optional.ofNullable(productId)
                 .flatMap(id -> Optional.ofNullable(institution.getOnboarding())
