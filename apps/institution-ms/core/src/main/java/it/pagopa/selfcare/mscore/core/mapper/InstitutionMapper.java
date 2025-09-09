@@ -14,6 +14,7 @@ import java.util.Optional;
 public interface InstitutionMapper {
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "origin", ignore = true)
     Institution fromInstitutionProxyInfo(InstitutionProxyInfo proxyInfo);
 
     Institution fromProfessionalAddress(NationalRegistriesProfessionalAddress nationalRegistriesProfessionalAddress);
