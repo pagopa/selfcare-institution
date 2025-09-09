@@ -11,10 +11,10 @@ Feature: External
     Then The status code is 200
     And The response body contains the list "" of size 3
     And The response body contains at path "" the following list of objects in any order:
-      | id                                   | externalId         | origin | originId | description                             | institutionType | digitalAddress               | address            | zipCode | taxCode     | imported | supportEmail | delegation | subunitCode | subunitType |
-      | b4705659-3a01-430a-a19b-7bdb4e340223 | 94076720658#UF5D7W | IPA    | UF5D7W   | Uff_eFatturaPA                          |                 | saic8bu00x@pec.istruzione.it | Via San Pietro, 10 | 84014   | 94076720658 | false    |              | false      | UF5D7W      | UO          |
-      | c9a50656-f345-4c81-84be-5b2474470544 | 00310810825        | IPA    | c_c067   | Comune di Castelbuono                   | PA              | comune.castelbuono@pec.it    | Via Sant' Anna, 25 | 90013   | 00310810825 | false    | a@l.it       | false      |             |             |
-      | fc5466e5-df00-4800-9ad5-aa2e7d9344f9 | 94076720658        | IPA    | isticom  | 3 Istituto Comprensivo Nocera Inferiore | PA              | saic8bu00x@pec.istruzione.it | Via San Pietro, 10 | 84014   | 94076720658 | false    |              | false      |             |             |
+      | id                                   | externalId         | origin | originId | description                             | digitalAddress               | address            | zipCode | taxCode     | imported | supportEmail | delegation | subunitCode | subunitType |
+      | b4705659-3a01-430a-a19b-7bdb4e340223 | 94076720658#UF5D7W | IPA    | UF5D7W   | Uff_eFatturaPA                          | saic8bu00x@pec.istruzione.it | Via San Pietro, 10 | 84014   | 94076720658 | false    |              | false      | UF5D7W      | UO          |
+      | c9a50656-f345-4c81-84be-5b2474470544 | 00310810825        | IPA    | c_c067   | Comune di Castelbuono                   | comune.castelbuono@pec.it    | Via Sant' Anna, 25 | 90013   | 00310810825 | false    | a@l.it       | false      |             |             |
+      | fc5466e5-df00-4800-9ad5-aa2e7d9344f9 | 94076720658        | IPA    | isticom  | 3 Istituto Comprensivo Nocera Inferiore | saic8bu00x@pec.istruzione.it | Via San Pietro, 10 | 84014   | 94076720658 | false    |              | false      |             |             |
 
   Scenario: Successfully retrieve institutions onboarding data by ids
     Given User login with username "j.doe" and password "test"

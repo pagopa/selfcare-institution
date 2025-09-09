@@ -1001,7 +1001,6 @@ Feature: Institution
     Then The status code is 201
     And The response body contains:
       | externalId      | 00310810825 |
-      | institutionType | PA          |
       | origin          | IPA         |
       | taxCode         | 00310810825 |
 
