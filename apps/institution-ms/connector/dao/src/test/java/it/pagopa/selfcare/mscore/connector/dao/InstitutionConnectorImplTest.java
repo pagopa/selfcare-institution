@@ -717,6 +717,8 @@ class InstitutionConnectorImplTest {
         institutionEntity.setId("42");
         institutionEntity.setImported(true);
         institutionEntity.setOnboarding(List.of(onboardingEntity));
+        institutionEntity.setOrigin(Origin.MOCK);
+        institutionEntity.setOriginId("42");
         institutionEntity.setPaymentServiceProvider(serviceProviderEntity);
         institutionEntity.setRea("Rea");
         institutionEntity.setShareCapital("Share Capital");

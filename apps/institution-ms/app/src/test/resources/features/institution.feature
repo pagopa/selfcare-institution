@@ -192,7 +192,7 @@ Feature: Institution
       | externalId                   | 00297110389                           |
       | taxCode                      | 00297110389                           |
       | origin                       | IPA                                   |
-      | originId                     | c_d548
+      | originId                     | c_d548                                |
       | istatCode                    | 038008                                |
       | digitalAddress               | comune.ferrara@cert.comune.fe.it      |
       | zipCode                      | 44121                                 |
