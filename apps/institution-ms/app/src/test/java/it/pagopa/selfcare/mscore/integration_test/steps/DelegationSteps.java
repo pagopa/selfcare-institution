@@ -9,6 +9,7 @@ import it.pagopa.selfcare.mscore.connector.dao.model.InstitutionEntity;
 import it.pagopa.selfcare.mscore.connector.dao.model.inner.OnboardingEntity;
 import it.pagopa.selfcare.mscore.constant.DelegationState;
 import it.pagopa.selfcare.mscore.constant.DelegationType;
+import it.pagopa.selfcare.mscore.constant.Origin;
 import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -59,6 +60,7 @@ public class DelegationSteps {
 
         final InstitutionEntity entity1 = new InstitutionEntity();
         entity1.setId(id1);
+        entity1.setOrigin(Origin.MOCK);
         entity1.setCreatedAt(OffsetDateTime.now());
         entity1.setUpdatedAt(OffsetDateTime.now());
         entity1.setTaxCode(taxCode1);
@@ -69,6 +71,7 @@ public class DelegationSteps {
 
         final InstitutionEntity entity2 = new InstitutionEntity();
         entity2.setId(id2);
+        entity2.setOrigin(Origin.MOCK);
         entity2.setCreatedAt(OffsetDateTime.now());
         entity2.setUpdatedAt(OffsetDateTime.now());
         entity2.setTaxCode(taxCode2);

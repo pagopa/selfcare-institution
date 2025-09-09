@@ -5,6 +5,7 @@ import it.pagopa.selfcare.mscore.connector.dao.model.InstitutionEntity;
 import it.pagopa.selfcare.mscore.connector.dao.model.inner.AttributesEntity;
 import it.pagopa.selfcare.mscore.connector.dao.model.inner.GeoTaxonomyEntity;
 import it.pagopa.selfcare.mscore.connector.dao.model.inner.OnboardingEntity;
+import it.pagopa.selfcare.mscore.constant.Origin;
 import it.pagopa.selfcare.mscore.constant.RelationshipState;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -39,6 +40,7 @@ class InstitutionRepositoryTest {
     void create() {
         // Given
         InstitutionEntity institutionEntity = mockInstance(new InstitutionEntity());
+        institutionEntity.setOrigin(Origin.IPA);
         institutionEntity.setCreatedAt(OffsetDateTime.parse("2020-11-01T02:15:30Z"));
         institutionEntity.setUpdatedAt(OffsetDateTime.parse("2021-12-12T02:15:30Z"));
         OnboardingEntity onboardingEntity1 = mockInstance(new OnboardingEntity(), 1);

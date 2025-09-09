@@ -4,6 +4,7 @@ import it.pagopa.selfcare.mscore.connector.dao.model.InstitutionEntity;
 import it.pagopa.selfcare.mscore.connector.dao.model.inner.BillingEntity;
 import it.pagopa.selfcare.mscore.connector.dao.model.inner.DataProtectionOfficerEntity;
 import it.pagopa.selfcare.mscore.connector.dao.model.inner.PaymentServiceProviderEntity;
+import it.pagopa.selfcare.mscore.constant.Origin;
 import it.pagopa.selfcare.mscore.constant.RelationshipState;
 import it.pagopa.selfcare.mscore.constant.TokenType;
 import it.pagopa.selfcare.mscore.model.institution.*;
@@ -97,6 +98,8 @@ public class TestUtils {
         institutionEntity.setId("42");
         institutionEntity.setImported(true);
         institutionEntity.setOnboarding(new ArrayList<>());
+        institutionEntity.setOrigin(Origin.MOCK);
+        institutionEntity.setOriginId("42");
         institutionEntity.setPaymentServiceProvider(createSimplePaymentServiceProviderEntity());
         institutionEntity.setRea("Rea");
         institutionEntity.setShareCapital("Share Capital");

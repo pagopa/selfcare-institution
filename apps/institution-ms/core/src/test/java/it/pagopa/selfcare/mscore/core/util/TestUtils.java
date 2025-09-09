@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.mscore.core.util;
 
+import it.pagopa.selfcare.mscore.constant.Origin;
 import it.pagopa.selfcare.mscore.model.institution.*;
 import it.pagopa.selfcare.mscore.model.onboarding.Contract;
 import it.pagopa.selfcare.mscore.model.onboarding.OnboardingRequest;
@@ -44,6 +45,8 @@ public class TestUtils {
         return Institution.builder()
                 .id("42")
                 .externalId("42")
+                .origin(Origin.SELC.getValue())
+                .originId("originId")
                 .description("institutionDescription")
                 .digitalAddress("institution@test.test")
                 .address("42 Main St")

@@ -8,6 +8,7 @@ import it.pagopa.selfcare.mscore.connector.dao.model.inner.PaymentServiceProvide
 import it.pagopa.selfcare.mscore.connector.dao.model.mapper.InstitutionEntityMapper;
 import it.pagopa.selfcare.mscore.connector.dao.model.mapper.InstitutionEntityMapperImpl;
 import it.pagopa.selfcare.mscore.connector.dao.utils.TestUtils;
+import it.pagopa.selfcare.mscore.constant.Origin;
 import it.pagopa.selfcare.mscore.constant.RelationshipState;
 import it.pagopa.selfcare.mscore.constant.SearchMode;
 import it.pagopa.selfcare.mscore.exception.InvalidRequestException;
@@ -507,6 +508,7 @@ class InstitutionConnectorImplTest {
         onboardingEntityMock.setProductId(productIdMock);
         updatedInstitutionMock.setOnboarding(List.of(onboardingEntityMock));
         updatedInstitutionMock.setId(institutionIdMock);
+        updatedInstitutionMock.setOrigin(Origin.IPA);
         when(institutionRepository.findAndModify(any(), any(), any(), any()))
                 .thenReturn(updatedInstitutionMock);
         // When
