@@ -315,9 +315,9 @@ public class InstitutionConnectorImpl implements InstitutionConnector {
                 Criteria.where(InstitutionEntity.Fields.onboarding.name())
                         .elemMatch(
                                 CriteriaBuilder.builder()
-                                        .is(Onboarding.Fields.productId.name(), productId)
-                                        .is(Onboarding.Fields.status.name(), ProductStatus.ACTIVE)
-                                        .is(Onboarding.Fields.institutionType.name(), type)
+                                        .isIfNotNull(Onboarding.Fields.productId.name(), productId)
+                                        .isIfNotNull(Onboarding.Fields.status.name(), ProductStatus.ACTIVE)
+                                        .isIfNotNull(Onboarding.Fields.institutionType.name(), type)
                                         .build()
                         )
         );
@@ -327,7 +327,6 @@ public class InstitutionConnectorImpl implements InstitutionConnector {
                 .map(institutionMapper::convertToInstitution)
                 .collect(Collectors.toList());
     }
-
 
     @Override
     public List<Institution> findByTaxCodeAndSubunitCode(String taxCode, String subunitCode, String productId) {
@@ -359,12 +358,21 @@ public class InstitutionConnectorImpl implements InstitutionConnector {
     @Override
     public List<Institution> findByOriginAndOriginId(String origin, String originId, String productId) {
 
-        Criteria onboardingCriteria = new Criteria().andOperator(
-                Criteria.where("origin").is(origin),
-                Criteria.where("originId").is(originId),
-                Criteria.where("productId").is(productId)
-        );
-        Criteria criteria = Criteria.where("onboarding").elemMatch(onboardingCriteria);
+        Criteria criteria;
+
+        if (productId != null) {
+            Criteria onboardingCriteria = new Criteria().andOperator(
+                    Criteria.where("origin").is(origin),
+                    Criteria.where("originId").is(originId),
+                    Criteria.where("productId").is(productId)
+            );
+            criteria = Criteria.where("onboarding").elemMatch(onboardingCriteria);
+        } else {
+            criteria = new Criteria().andOperator(
+                    Criteria.where(InstitutionEntity.Fields.origin.name()).is(origin),
+                    Criteria.where(InstitutionEntity.Fields.originId.name()).is(originId)
+            );
+        }
 
         Query query = new Query(criteria);
 
@@ -392,32 +400,23 @@ public class InstitutionConnectorImpl implements InstitutionConnector {
 
     @Override
     public Boolean existsOnboardingByFilters(VerifyOnboardingFilters filters) {
-
         Criteria criteriaInstitution = CriteriaBuilder.builder()
                 .isIfNotNull(InstitutionEntity.Fields.externalId.name(), filters.getExternalId())
                 .isIfNotNull(InstitutionEntity.Fields.taxCode.name(), filters.getTaxCode())
+                .isIfNotNull(InstitutionEntity.Fields.origin.name(), filters.getOrigin())
+                .isIfNotNull(InstitutionEntity.Fields.originId.name(), filters.getOriginId())
                 .build();
 
         criteriaInstitution.and(InstitutionEntity.Fields.subunitCode.name()).is(filters.getSubunitCode());
 
-        Criteria criteriaOnboarding = CriteriaBuilder.builder()
-                .inIfNotEmpty(Onboarding.Fields.status.name(), filters.getValidRelationshipStates())
-                .isIfNotNull(Onboarding.Fields.productId.name(), filters.getProductId())
-                .isIfNotNull(Onboarding.Fields.origin.name(), filters.getOrigin())
-                .isIfNotNull(Onboarding.Fields.originId.name(), filters.getOriginId())
-                .build();
+        Criteria criteriaOnboarding = Criteria.where(Onboarding.Fields.status.name()).in(filters.getValidRelationshipStates())
+                .and(Onboarding.Fields.productId.name()).is(filters.getProductId());
 
-        // Query finale
-        return repository.exists(
-                Query.query(criteriaInstitution)
-                        .addCriteria(
-                                Criteria.where(InstitutionEntity.Fields.onboarding.name())
-                                        .elemMatch(criteriaOnboarding)
-                        ),
-                InstitutionEntity.class
-        );
+        return repository.exists(Query.query(criteriaInstitution)
+                        .addCriteria(Criteria.where(InstitutionEntity.Fields.onboarding.name())
+                                .elemMatch(criteriaOnboarding))
+                , InstitutionEntity.class);
     }
-
 
     private Query constructQueryWithSearchMode(List<String> geo, SearchMode searchMode) {
         String geoQuery = InstitutionEntity.Fields.geographicTaxonomies.name()

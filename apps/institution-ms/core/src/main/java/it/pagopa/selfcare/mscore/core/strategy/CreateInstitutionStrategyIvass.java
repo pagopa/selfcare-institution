@@ -59,6 +59,8 @@ public class CreateInstitutionStrategyIvass extends CreateInstitutionStrategyCom
     private Institution addFieldsToInstitution(ASResource asResource) {
         institution.setTaxCode(asResource.getTaxCode());
         institution.setExternalId(asResource.getOriginId());
+        institution.setOrigin(Origin.IVASS.getValue());
+        institution.setOriginId(asResource.getOriginId());
         institution.setCreatedAt(OffsetDateTime.now());
         institution.setDigitalAddress(asResource.getDigitalAddress());
         institution.setDescription(asResource.getDescription());

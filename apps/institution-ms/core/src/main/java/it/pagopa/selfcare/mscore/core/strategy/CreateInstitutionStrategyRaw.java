@@ -1,10 +1,12 @@
 package it.pagopa.selfcare.mscore.core.strategy;
 
 import it.pagopa.selfcare.mscore.api.InstitutionConnector;
+import it.pagopa.selfcare.mscore.constant.Origin;
 import it.pagopa.selfcare.mscore.core.strategy.input.CreateInstitutionStrategyInput;
 import it.pagopa.selfcare.mscore.exception.MsCoreException;
 import it.pagopa.selfcare.mscore.model.institution.Institution;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -27,6 +29,12 @@ public class CreateInstitutionStrategyRaw extends CreateInstitutionStrategyCommo
 
         if (institutions.isEmpty()) {
             institution.setExternalId(getExternalId(strategyInput));
+            if(!StringUtils.hasText(institution.getOrigin())){
+                institution.setOrigin(Origin.SELC.getValue());
+            }
+            if(!StringUtils.hasText(institution.getOriginId())){
+                institution.setOriginId("SELC_" + institution.getExternalId());
+            }
             institution.setCreatedAt(OffsetDateTime.now());
             setContacts(strategyInput, institution);
             setIstatCode(strategyInput, institution);

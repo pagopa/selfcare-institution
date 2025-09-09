@@ -389,7 +389,7 @@ class InstitutionServiceImplTest {
     void testCreateInstitutionFromIvass() {
         when(createInstitutionStrategyFactory.createInstitutionStrategyIvass(any())).thenReturn(createInstitutionStrategy);
         when(createInstitutionStrategy.createInstitution(any())).thenReturn(new Institution());
-        Institution institution = institutionServiceImpl.createInstitutionFromIvass(new Institution(), anyString());
+        Institution institution = institutionServiceImpl.createInstitutionFromIvass(new Institution());
         assertNotNull(institution);
     }
 

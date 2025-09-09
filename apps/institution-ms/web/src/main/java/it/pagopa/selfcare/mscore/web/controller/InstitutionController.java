@@ -173,7 +173,7 @@ public class InstitutionController {
     @PostMapping(value = "/from-ivass", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<InstitutionResponse> createInstitutionFromIvass(@RequestBody @Valid InstitutionRequest institution) {
         CustomExceptionMessage.setCustomMessage(GenericError.CREATE_INSTITUTION_ERROR);
-        Institution saved = institutionService.createInstitutionFromIvass(institutionResourceMapper.toInstitution(institution), institution.getOriginId());
+        Institution saved = institutionService.createInstitutionFromIvass(institutionResourceMapper.toInstitution(institution));
         return ResponseEntity.status(HttpStatus.CREATED).body(institutionResourceMapper.toInstitutionResponse(saved));
     }
 

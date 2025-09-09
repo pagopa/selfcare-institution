@@ -139,7 +139,7 @@ class InstitutionControllerTest {
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
                 .andExpect(MockMvcResultMatchers.content()
                         .string(
-                                "{\"institutions\":[{\"id\":\"42\",\"externalId\":\"42\",\"description\":\"The characteristics of someone or something\",\"digitalAddress\":\"42 Main St\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"geographicTaxonomies\":[],\"attributes\":[],\"onboarding\":[],\"paymentServiceProvider\":{\"abiCode\":\"Abi Code\",\"businessRegisterNumber\":\"42\",\"legalRegisterNumber\":\"42\",\"legalRegisterName\":\"Legal Register Name\",\"vatNumberGroup\":true},\"dataProtectionOfficer\":{\"address\":\"42 Main St\",\"email\":\"jane.doe@example.org\",\"pec\":\"Pec\"},\"rea\":\"Rea\",\"shareCapital\":\"Share Capital\",\"imported\":false,\"delegation\":false}]}"));
+                                "{\"institutions\":[{\"id\":\"42\",\"externalId\":\"42\",\"origin\":\"MOCK\",\"originId\":\"Ipa Code\",\"description\":\"The characteristics of someone or something\",\"digitalAddress\":\"42 Main St\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"geographicTaxonomies\":[],\"attributes\":[],\"onboarding\":[],\"paymentServiceProvider\":{\"abiCode\":\"Abi Code\",\"businessRegisterNumber\":\"42\",\"legalRegisterNumber\":\"42\",\"legalRegisterName\":\"Legal Register Name\",\"vatNumberGroup\":true},\"dataProtectionOfficer\":{\"address\":\"42 Main St\",\"email\":\"jane.doe@example.org\",\"pec\":\"Pec\"},\"rea\":\"Rea\",\"shareCapital\":\"Share Capital\",\"imported\":false,\"delegation\":false}]}"));
     }
 
     @Test
@@ -163,7 +163,7 @@ class InstitutionControllerTest {
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
                 .andExpect(MockMvcResultMatchers.content()
                         .string(
-                                "{\"institutions\":[{\"id\":\"42\",\"externalId\":\"42\",\"description\":\"The characteristics of someone or something\",\"digitalAddress\":\"42 Main St\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"geographicTaxonomies\":[],\"attributes\":[],\"onboarding\":[],\"paymentServiceProvider\":{\"abiCode\":\"Abi Code\",\"businessRegisterNumber\":\"42\",\"legalRegisterNumber\":\"42\",\"legalRegisterName\":\"Legal Register Name\",\"vatNumberGroup\":true},\"dataProtectionOfficer\":{\"address\":\"42 Main St\",\"email\":\"jane.doe@example.org\",\"pec\":\"Pec\"},\"rootParent\":{\"description\":\"parentDescription\",\"id\":\"rootParentId\"},\"rea\":\"Rea\",\"shareCapital\":\"Share Capital\",\"imported\":false,\"subunitCode\":\"example\",\"subunitType\":\"UO\",\"delegation\":false}]}"));
+                                "{\"institutions\":[{\"id\":\"42\",\"externalId\":\"42\",\"origin\":\"MOCK\",\"originId\":\"Ipa Code\",\"description\":\"The characteristics of someone or something\",\"digitalAddress\":\"42 Main St\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"geographicTaxonomies\":[],\"attributes\":[],\"onboarding\":[],\"paymentServiceProvider\":{\"abiCode\":\"Abi Code\",\"businessRegisterNumber\":\"42\",\"legalRegisterNumber\":\"42\",\"legalRegisterName\":\"Legal Register Name\",\"vatNumberGroup\":true},\"dataProtectionOfficer\":{\"address\":\"42 Main St\",\"email\":\"jane.doe@example.org\",\"pec\":\"Pec\"},\"rootParent\":{\"description\":\"parentDescription\",\"id\":\"rootParentId\"},\"rea\":\"Rea\",\"shareCapital\":\"Share Capital\",\"imported\":false,\"subunitCode\":\"example\",\"subunitType\":\"UO\",\"delegation\":false}]}"));
     }
 
     @Test
@@ -187,7 +187,7 @@ class InstitutionControllerTest {
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
                 .andExpect(MockMvcResultMatchers.content()
                         .string(
-                                "{\"institutions\":[{\"id\":\"42\",\"externalId\":\"42\",\"description\":\"The characteristics of someone or something\",\"digitalAddress\":\"42 Main St\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"geographicTaxonomies\":[],\"attributes\":[],\"onboarding\":[],\"paymentServiceProvider\":{\"abiCode\":\"Abi Code\",\"businessRegisterNumber\":\"42\",\"legalRegisterNumber\":\"42\",\"legalRegisterName\":\"Legal Register Name\",\"vatNumberGroup\":true},\"dataProtectionOfficer\":{\"address\":\"42 Main St\",\"email\":\"jane.doe@example.org\",\"pec\":\"Pec\"},\"rootParent\":{\"description\":\"parentDescription\",\"id\":\"rootParentId\"},\"rea\":\"Rea\",\"shareCapital\":\"Share Capital\",\"imported\":false,\"subunitCode\":\"example\",\"subunitType\":\"UO\",\"delegation\":false}]}"));
+                                "{\"institutions\":[{\"id\":\"42\",\"externalId\":\"42\",\"origin\":\"MOCK\",\"originId\":\"Ipa Code\",\"description\":\"The characteristics of someone or something\",\"digitalAddress\":\"42 Main St\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"geographicTaxonomies\":[],\"attributes\":[],\"onboarding\":[],\"paymentServiceProvider\":{\"abiCode\":\"Abi Code\",\"businessRegisterNumber\":\"42\",\"legalRegisterNumber\":\"42\",\"legalRegisterName\":\"Legal Register Name\",\"vatNumberGroup\":true},\"dataProtectionOfficer\":{\"address\":\"42 Main St\",\"email\":\"jane.doe@example.org\",\"pec\":\"Pec\"},\"rootParent\":{\"description\":\"parentDescription\",\"id\":\"rootParentId\"},\"rea\":\"Rea\",\"shareCapital\":\"Share Capital\",\"imported\":false,\"subunitCode\":\"example\",\"subunitType\":\"UO\",\"delegation\":false}]}"));
     }
 
     @Test
@@ -211,7 +211,7 @@ class InstitutionControllerTest {
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
                 .andExpect(MockMvcResultMatchers.content()
                         .string(
-                                "{\"institutions\":[{\"id\":\"42\",\"externalId\":\"42\",\"description\":\"The characteristics of someone or something\",\"digitalAddress\":\"42 Main St\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"geographicTaxonomies\":[],\"attributes\":[],\"onboarding\":[],\"paymentServiceProvider\":{\"abiCode\":\"Abi Code\",\"businessRegisterNumber\":\"42\",\"legalRegisterNumber\":\"42\",\"legalRegisterName\":\"Legal Register Name\",\"vatNumberGroup\":true},\"dataProtectionOfficer\":{\"address\":\"42 Main St\",\"email\":\"jane.doe@example.org\",\"pec\":\"Pec\"},\"rootParent\":{\"description\":\"parentDescription\",\"id\":\"rootParentId\"},\"rea\":\"Rea\",\"shareCapital\":\"Share Capital\",\"imported\":false,\"subunitCode\":\"example\",\"subunitType\":\"UO\",\"delegation\":false}]}"));
+                                "{\"institutions\":[{\"id\":\"42\",\"externalId\":\"42\",\"origin\":\"MOCK\",\"originId\":\"Ipa Code\",\"description\":\"The characteristics of someone or something\",\"digitalAddress\":\"42 Main St\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"geographicTaxonomies\":[],\"attributes\":[],\"onboarding\":[],\"paymentServiceProvider\":{\"abiCode\":\"Abi Code\",\"businessRegisterNumber\":\"42\",\"legalRegisterNumber\":\"42\",\"legalRegisterName\":\"Legal Register Name\",\"vatNumberGroup\":true},\"dataProtectionOfficer\":{\"address\":\"42 Main St\",\"email\":\"jane.doe@example.org\",\"pec\":\"Pec\"},\"rootParent\":{\"description\":\"parentDescription\",\"id\":\"rootParentId\"},\"rea\":\"Rea\",\"shareCapital\":\"Share Capital\",\"imported\":false,\"subunitCode\":\"example\",\"subunitType\":\"UO\",\"delegation\":false}]}"));
     }
 
     @Test
@@ -235,7 +235,7 @@ class InstitutionControllerTest {
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
                 .andExpect(MockMvcResultMatchers.content()
                         .string(
-                                "{\"institutions\":[{\"id\":\"42\",\"externalId\":\"42\",\"description\":\"The characteristics of someone or something\",\"digitalAddress\":\"42 Main St\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"geographicTaxonomies\":[],\"attributes\":[],\"onboarding\":[],\"paymentServiceProvider\":{\"abiCode\":\"Abi Code\",\"businessRegisterNumber\":\"42\",\"legalRegisterNumber\":\"42\",\"legalRegisterName\":\"Legal Register Name\",\"vatNumberGroup\":true},\"dataProtectionOfficer\":{\"address\":\"42 Main St\",\"email\":\"jane.doe@example.org\",\"pec\":\"Pec\"},\"rootParent\":{\"description\":\"parentDescription\",\"id\":\"rootParentId\"},\"rea\":\"Rea\",\"shareCapital\":\"Share Capital\",\"imported\":false,\"subunitCode\":\"example\",\"subunitType\":\"UO\",\"delegation\":false}]}"));
+                                "{\"institutions\":[{\"id\":\"42\",\"externalId\":\"42\",\"origin\":\"MOCK\",\"originId\":\"Ipa Code\",\"description\":\"The characteristics of someone or something\",\"digitalAddress\":\"42 Main St\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"geographicTaxonomies\":[],\"attributes\":[],\"onboarding\":[],\"paymentServiceProvider\":{\"abiCode\":\"Abi Code\",\"businessRegisterNumber\":\"42\",\"legalRegisterNumber\":\"42\",\"legalRegisterName\":\"Legal Register Name\",\"vatNumberGroup\":true},\"dataProtectionOfficer\":{\"address\":\"42 Main St\",\"email\":\"jane.doe@example.org\",\"pec\":\"Pec\"},\"rootParent\":{\"description\":\"parentDescription\",\"id\":\"rootParentId\"},\"rea\":\"Rea\",\"shareCapital\":\"Share Capital\",\"imported\":false,\"subunitCode\":\"example\",\"subunitType\":\"UO\",\"delegation\":false}]}"));
     }
 
     @Test
@@ -367,7 +367,7 @@ class InstitutionControllerTest {
                 .perform(requestBuilder);
         actualPerformResult.andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-                .andExpect(MockMvcResultMatchers.content().string("{\"id\":\"42\",\"externalId\":\"42\",\"description\":\"The characteristics of someone or something\",\"digitalAddress\":\"42 Main St\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"geographicTaxonomies\":[],\"attributes\":[],\"onboarding\":[],\"paymentServiceProvider\":{\"abiCode\":\"Abi Code\",\"businessRegisterNumber\":\"42\",\"legalRegisterNumber\":\"42\",\"legalRegisterName\":\"Legal Register Name\",\"vatNumberGroup\":true},\"dataProtectionOfficer\":{\"address\":\"42 Main St\",\"email\":\"jane.doe@example.org\",\"pec\":\"Pec\"},\"rootParent\":{\"description\":\"parentDescription\",\"id\":\"rootParentId\"},\"rea\":\"Rea\",\"shareCapital\":\"Share Capital\",\"imported\":false,\"subunitCode\":\"1234\",\"subunitType\":\"AOO\",\"delegation\":false}"));
+                .andExpect(MockMvcResultMatchers.content().string("{\"id\":\"42\",\"externalId\":\"42\",\"origin\":\"MOCK\",\"originId\":\"Ipa Code\",\"description\":\"The characteristics of someone or something\",\"digitalAddress\":\"42 Main St\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"geographicTaxonomies\":[],\"attributes\":[],\"onboarding\":[],\"paymentServiceProvider\":{\"abiCode\":\"Abi Code\",\"businessRegisterNumber\":\"42\",\"legalRegisterNumber\":\"42\",\"legalRegisterName\":\"Legal Register Name\",\"vatNumberGroup\":true},\"dataProtectionOfficer\":{\"address\":\"42 Main St\",\"email\":\"jane.doe@example.org\",\"pec\":\"Pec\"},\"rootParent\":{\"description\":\"parentDescription\",\"id\":\"rootParentId\"},\"rea\":\"Rea\",\"shareCapital\":\"Share Capital\",\"imported\":false,\"subunitCode\":\"1234\",\"subunitType\":\"AOO\",\"delegation\":false}"));
 
         ArgumentCaptor<List<InstitutionGeographicTaxonomies>> captorGeo = ArgumentCaptor.forClass(List.class);
         verify(institutionService, times(1))
@@ -405,7 +405,7 @@ class InstitutionControllerTest {
                 .perform(requestBuilder);
         actualPerformResult.andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-                .andExpect(MockMvcResultMatchers.content().string("{\"id\":\"42\",\"externalId\":\"42\",\"description\":\"The characteristics of someone or something\",\"digitalAddress\":\"42 Main St\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"geographicTaxonomies\":[],\"attributes\":[],\"onboarding\":[],\"paymentServiceProvider\":{\"abiCode\":\"Abi Code\",\"businessRegisterNumber\":\"42\",\"legalRegisterNumber\":\"42\",\"legalRegisterName\":\"Legal Register Name\",\"vatNumberGroup\":true},\"dataProtectionOfficer\":{\"address\":\"42 Main St\",\"email\":\"jane.doe@example.org\",\"pec\":\"Pec\"},\"rea\":\"Rea\",\"shareCapital\":\"Share Capital\",\"imported\":false,\"delegation\":false}"));
+                .andExpect(MockMvcResultMatchers.content().string("{\"id\":\"42\",\"externalId\":\"42\",\"origin\":\"ANAC\",\"originId\":\"ANAC Code\",\"description\":\"The characteristics of someone or something\",\"digitalAddress\":\"42 Main St\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"geographicTaxonomies\":[],\"attributes\":[],\"onboarding\":[],\"paymentServiceProvider\":{\"abiCode\":\"Abi Code\",\"businessRegisterNumber\":\"42\",\"legalRegisterNumber\":\"42\",\"legalRegisterName\":\"Legal Register Name\",\"vatNumberGroup\":true},\"dataProtectionOfficer\":{\"address\":\"42 Main St\",\"email\":\"jane.doe@example.org\",\"pec\":\"Pec\"},\"rea\":\"Rea\",\"shareCapital\":\"Share Capital\",\"imported\":false,\"delegation\":false}"));
     }
 
     /**
@@ -426,7 +426,7 @@ class InstitutionControllerTest {
 
         Institution institution = TestUtils.createSimpleInstitutionAS();
 
-        when(institutionService.createInstitutionFromIvass(any(), anyString())).thenReturn(institution);
+        when(institutionService.createInstitutionFromIvass(any())).thenReturn(institution);
 
         //Then
         MockHttpServletRequestBuilder requestBuilder = post("/institutions/from-ivass/")
@@ -437,7 +437,7 @@ class InstitutionControllerTest {
                 .perform(requestBuilder);
         actualPerformResult.andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-                .andExpect(MockMvcResultMatchers.content().string("{\"id\":\"42\",\"externalId\":\"42\",\"description\":\"The characteristics of someone or something\",\"digitalAddress\":\"42 Main St\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"geographicTaxonomies\":[],\"attributes\":[],\"onboarding\":[],\"paymentServiceProvider\":{\"abiCode\":\"Abi Code\",\"businessRegisterNumber\":\"42\",\"legalRegisterNumber\":\"42\",\"legalRegisterName\":\"Legal Register Name\",\"vatNumberGroup\":true},\"dataProtectionOfficer\":{\"address\":\"42 Main St\",\"email\":\"jane.doe@example.org\",\"pec\":\"Pec\"},\"rea\":\"Rea\",\"shareCapital\":\"Share Capital\",\"imported\":false,\"delegation\":false}"));
+                .andExpect(MockMvcResultMatchers.content().string("{\"id\":\"42\",\"externalId\":\"42\",\"origin\":\"IVASS\",\"originId\":\"IVASS Code\",\"description\":\"The characteristics of someone or something\",\"digitalAddress\":\"42 Main St\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"geographicTaxonomies\":[],\"attributes\":[],\"onboarding\":[],\"paymentServiceProvider\":{\"abiCode\":\"Abi Code\",\"businessRegisterNumber\":\"42\",\"legalRegisterNumber\":\"42\",\"legalRegisterName\":\"Legal Register Name\",\"vatNumberGroup\":true},\"dataProtectionOfficer\":{\"address\":\"42 Main St\",\"email\":\"jane.doe@example.org\",\"pec\":\"Pec\"},\"rea\":\"Rea\",\"shareCapital\":\"Share Capital\",\"imported\":false,\"delegation\":false}"));
     }
 
     /**
@@ -468,7 +468,7 @@ class InstitutionControllerTest {
                 .perform(requestBuilder);
         actualPerformResult.andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-                .andExpect(MockMvcResultMatchers.content().string("{\"id\":\"42\",\"externalId\":\"42\",\"description\":\"The characteristics of someone or something\",\"digitalAddress\":\"42 Main St\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"geographicTaxonomies\":[],\"attributes\":[],\"onboarding\":[],\"paymentServiceProvider\":{\"abiCode\":\"Abi Code\",\"businessRegisterNumber\":\"42\",\"legalRegisterNumber\":\"42\",\"legalRegisterName\":\"Legal Register Name\",\"vatNumberGroup\":true},\"dataProtectionOfficer\":{\"address\":\"42 Main St\",\"email\":\"jane.doe@example.org\",\"pec\":\"Pec\"},\"rea\":\"Rea\",\"shareCapital\":\"Share Capital\",\"imported\":false,\"delegation\":false}"));
+                .andExpect(MockMvcResultMatchers.content().string("{\"id\":\"42\",\"externalId\":\"42\",\"origin\":\"MOCK\",\"originId\":\"Ipa Code\",\"description\":\"The characteristics of someone or something\",\"digitalAddress\":\"42 Main St\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"geographicTaxonomies\":[],\"attributes\":[],\"onboarding\":[],\"paymentServiceProvider\":{\"abiCode\":\"Abi Code\",\"businessRegisterNumber\":\"42\",\"legalRegisterNumber\":\"42\",\"legalRegisterName\":\"Legal Register Name\",\"vatNumberGroup\":true},\"dataProtectionOfficer\":{\"address\":\"42 Main St\",\"email\":\"jane.doe@example.org\",\"pec\":\"Pec\"},\"rea\":\"Rea\",\"shareCapital\":\"Share Capital\",\"imported\":false,\"delegation\":false}"));
     }
 
     /**
@@ -606,7 +606,7 @@ class InstitutionControllerTest {
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
                 .andExpect(MockMvcResultMatchers.content()
                         .string(
-                                "{\"id\":\"42\",\"externalId\":\"42\",\"description\":\"The characteristics of someone or something\",\"digitalAddress\":\"42 Main St\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"geographicTaxonomies\":[],\"attributes\":[],\"onboarding\":[],\"paymentServiceProvider\":{\"abiCode\":\"Abi Code\",\"businessRegisterNumber\":\"42\",\"legalRegisterNumber\":\"42\",\"legalRegisterName\":\"Legal Register Name\",\"vatNumberGroup\":true},\"dataProtectionOfficer\":{\"address\":\"42 Main St\",\"email\":\"jane.doe@example.org\",\"pec\":\"Pec\"},\"rea\":\"Rea\",\"shareCapital\":\"Share Capital\",\"imported\":false,\"delegation\":false}"));
+                                "{\"id\":\"42\",\"externalId\":\"42\",\"origin\":\"MOCK\",\"originId\":\"Ipa Code\",\"description\":\"The characteristics of someone or something\",\"digitalAddress\":\"42 Main St\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"geographicTaxonomies\":[],\"attributes\":[],\"onboarding\":[],\"paymentServiceProvider\":{\"abiCode\":\"Abi Code\",\"businessRegisterNumber\":\"42\",\"legalRegisterNumber\":\"42\",\"legalRegisterName\":\"Legal Register Name\",\"vatNumberGroup\":true},\"dataProtectionOfficer\":{\"address\":\"42 Main St\",\"email\":\"jane.doe@example.org\",\"pec\":\"Pec\"},\"rea\":\"Rea\",\"shareCapital\":\"Share Capital\",\"imported\":false,\"delegation\":false}"));
     }
 
     /**
@@ -1164,7 +1164,7 @@ class InstitutionControllerTest {
                 .perform(requestBuilder)
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-                .andExpect(MockMvcResultMatchers.content().string("{\"id\":\"42\",\"externalId\":\"42\",\"description\":\"The characteristics of someone or something\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"imported\":false,\"delegation\":false}"));
+                .andExpect(MockMvcResultMatchers.content().string("{\"id\":\"42\",\"externalId\":\"42\",\"origin\":\"MOCK\",\"originId\":\"Pg Code\",\"description\":\"The characteristics of someone or something\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"imported\":false,\"delegation\":false}"));
     }
 
     /**

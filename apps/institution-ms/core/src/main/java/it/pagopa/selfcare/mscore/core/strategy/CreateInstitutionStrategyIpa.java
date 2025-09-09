@@ -2,6 +2,7 @@ package it.pagopa.selfcare.mscore.core.strategy;
 
 import it.pagopa.selfcare.mscore.api.InstitutionConnector;
 import it.pagopa.selfcare.mscore.api.PartyRegistryProxyConnector;
+import it.pagopa.selfcare.mscore.constant.Origin;
 import it.pagopa.selfcare.mscore.core.mapper.InstitutionMapper;
 import it.pagopa.selfcare.mscore.core.strategy.input.CreateInstitutionStrategyInput;
 import it.pagopa.selfcare.mscore.core.util.InstitutionPaSubunitType;
@@ -96,6 +97,7 @@ public class CreateInstitutionStrategyIpa extends CreateInstitutionStrategyCommo
         GeographicTaxonomies geotax = partyRegistryProxyConnector.getExtByCode(institutionProxyInfo.getIstatCode());
 
         newInstitution.setExternalId(taxCode);
+        newInstitution.setOrigin(Origin.IPA.getValue());
         newInstitution.setCreatedAt(OffsetDateTime.now());
         newInstitution.setCity(Optional.ofNullable(geotax.getDescription())
                 .map(s -> s.replaceAll(DESCRIPTION_TO_REPLACE_REGEX, ""))
@@ -121,7 +123,7 @@ public class CreateInstitutionStrategyIpa extends CreateInstitutionStrategyCommo
         AreaOrganizzativaOmogenea areaOrganizzativaOmogenea = partyRegistryProxyConnector.getAooById(strategyInput.getSubunitCode());
         GeographicTaxonomies geotax = partyRegistryProxyConnector.getExtByCode(areaOrganizzativaOmogenea.getCodiceComuneISTAT());
         Institution newInstitution = new Institution();
-
+        newInstitution.setOriginId(areaOrganizzativaOmogenea.getId());
         newInstitution.setDescription(areaOrganizzativaOmogenea.getDenominazioneAoo());
         newInstitution.setDigitalAddress(TYPE_MAIL_PEC.equals(areaOrganizzativaOmogenea.getTipoMail1())
                 ? areaOrganizzativaOmogenea.getMail1() : institutionProxyInfo.getDigitalAddress());
@@ -133,6 +135,9 @@ public class CreateInstitutionStrategyIpa extends CreateInstitutionStrategyCommo
         newInstitution.setParentDescription(institutionProxyInfo.getDescription());
         newInstitution.setRootParentId(rootParentInstitutionId);
         newInstitution.setExternalId(getExternalId(strategyInput));
+        newInstitution.setOrigin(Optional.ofNullable(areaOrganizzativaOmogenea.getOrigin())
+                .map(Origin::name)
+                .orElse(null));
         newInstitution.setCreatedAt(OffsetDateTime.now());
         newInstitution.setCounty(geotax.getProvinceAbbreviation());
         newInstitution.setCountry(geotax.getCountryAbbreviation());
@@ -157,6 +162,7 @@ public class CreateInstitutionStrategyIpa extends CreateInstitutionStrategyCommo
         UnitaOrganizzativa unitaOrganizzativa = partyRegistryProxyConnector.getUoById(strategyInput.getSubunitCode());
         GeographicTaxonomies geotax = partyRegistryProxyConnector.getExtByCode(unitaOrganizzativa.getCodiceComuneISTAT());
         Institution newInstitution = new Institution();
+        newInstitution.setOriginId(unitaOrganizzativa.getId());
         newInstitution.setDescription(unitaOrganizzativa.getDescrizioneUo());
         newInstitution.setDigitalAddress(TYPE_MAIL_PEC.equals(unitaOrganizzativa.getTipoMail1())
                 ? unitaOrganizzativa.getMail1() : institutionProxyInfo.getDigitalAddress());
@@ -180,6 +186,9 @@ public class CreateInstitutionStrategyIpa extends CreateInstitutionStrategyCommo
         }
 
         newInstitution.setExternalId(getExternalId(strategyInput));
+        newInstitution.setOrigin(Optional.ofNullable(unitaOrganizzativa.getOrigin())
+                .map(Origin::name)
+                .orElse(null));
         newInstitution.setCreatedAt(OffsetDateTime.now());
 
         Attributes attributes = new Attributes();

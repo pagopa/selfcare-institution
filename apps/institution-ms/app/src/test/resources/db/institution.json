@@ -2,6 +2,8 @@
   {
     "_id": "c9a50656-f345-4c81-84be-5b2474470544",
     "externalId": "00310810825",
+    "origin": "IPA",
+    "originId": "c_c067",
     "description": "Comune di Castelbuono",
     "digitalAddress": "comune.castelbuono@pec.it",
     "address": "Via Sant' Anna, 25",
@@ -99,6 +101,8 @@
   {
     "_id": "467ac77d-7faa-47bf-a60e-38ea74bd5fd2",
     "externalId": "85000870064",
+    "origin": "IPA",
+    "originId": "c_d277",
     "description": "Comune di Agrigento",
     "digitalAddress": "protocollo@pec.comune.dernice.al.it",
     "address": "Via Roma N.17",
@@ -196,6 +200,8 @@
   {
     "_id": "0b56686d-3e25-4851-86c8-b9ba0d4fe301",
     "externalId": "15555555555",
+    "origin": "SELC",
+    "originId": "PSP_15555555555",
     "description": "Comune di Castel Test",
     "digitalAddress": "test@t.it",
     "address": "Via Giacomo Matteotti",
@@ -301,6 +307,8 @@
   {
     "_id": "b4705659-3a01-430a-a19b-7bdb4e340223",
     "externalId": "94076720658#UF5D7W",
+    "origin": "IPA",
+    "originId": "UF5D7W",
     "description": "Uff_eFatturaPA",
     "digitalAddress": "saic8bu00x@pec.istruzione.it",
     "address": "Via San Pietro, 10",
@@ -343,6 +351,8 @@
   {
     "_id": "f94c0589-b07e-4ee7-a509-fda5fe91faa2",
     "externalId": "01726610056_AVO36EJ",
+    "origin": "IPA",
+    "originId": "AVO36EJ",
     "description": "COMUNE DI MORANSENGO-TONENGO",
     "digitalAddress": "comune.moransengotonengo@legalmail.it",
     "address": "Via VIA AIRALI 9",
@@ -429,6 +439,8 @@
   {
     "_id": "067327d3-bdd6-408d-8655-87e8f1960046",
     "externalId": "99000870064",
+    "origin": "IPA",
+    "originId": "c_d277",
     "description": "comune di dernice",
     "digitalAddress": "protocollo@pec.comune.dernice.al.it",
     "address": "Via Roma N.17",
@@ -530,6 +542,8 @@
   {
     "_id": "fc5466e5-df00-4800-9ad5-aa2e7d9344f9",
     "externalId": "94076720658",
+    "origin": "IPA",
+    "originId": "isticom",
     "description": "3 Istituto Comprensivo Nocera Inferiore",
     "digitalAddress": "saic8bu00x@pec.istruzione.it",
     "address": "Via San Pietro, 10",
@@ -592,6 +606,8 @@
   {
     "_id": "bf4dcdb6-f223-4996-bfbc-326b119dd101",
     "externalId": "00313820540",
+    "origin": "IPA",
+    "originId": "isticom",
     "description": "Comune di Assisi",
     "digitalAddress": "test@test.com",
     "address": "Via Roma, 1",
@@ -641,6 +657,8 @@
   {
     "_id": "c18d0cd5-e8a5-4f40-894b-f1f4252e1294",
     "externalId": "12399999890",
+    "origin": "IPA",
+    "originId": "isticom",
     "description": "NTT Data",
     "digitalAddress": "test@test.com",
     "address": "Via Roma, 1",

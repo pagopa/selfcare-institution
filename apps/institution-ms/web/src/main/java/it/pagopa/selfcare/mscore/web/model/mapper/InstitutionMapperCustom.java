@@ -63,13 +63,13 @@ public class InstitutionMapperCustom {
     private static String toOriginId(Institution institution, String productId) {
         return getOnboarding(institution, productId)
                 .map(Onboarding::getOriginId)
-                .orElse(null);
+                .orElse(institution.getOriginId());
     }
 
     private static String toOrigin(Institution institution, String productId) {
         return getOnboarding(institution, productId)
                 .map(Onboarding::getOrigin)
-                .orElse(null);
+                .orElse(institution.getOrigin());
     }
 
     private static BillingResponse toBillingResponse(Billing billing, Institution institution) {
@@ -274,6 +274,8 @@ public class InstitutionMapperCustom {
         BulkInstitution bulkInstitution = new BulkInstitution();
         bulkInstitution.setId(inst.getId());
         bulkInstitution.setExternalId(inst.getExternalId());
+        bulkInstitution.setOrigin(inst.getOrigin());
+        bulkInstitution.setOriginId(inst.getOriginId());
         bulkInstitution.setDescription(inst.getDescription());
         bulkInstitution.setDigitalAddress(inst.getDigitalAddress());
         bulkInstitution.setAddress(inst.getAddress());

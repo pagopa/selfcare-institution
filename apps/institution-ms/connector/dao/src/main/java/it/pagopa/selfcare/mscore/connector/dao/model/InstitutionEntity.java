@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.mscore.connector.dao.model;
 
 import it.pagopa.selfcare.mscore.connector.dao.model.inner.*;
+import it.pagopa.selfcare.mscore.constant.Origin;
 import lombok.Data;
 import lombok.experimental.FieldNameConstants;
 import org.springframework.data.annotation.Id;
@@ -22,6 +23,8 @@ public class InstitutionEntity {
 
     @Indexed(unique = true)
     private String externalId;
+    private Origin origin;
+    private String originId;
     private String description;
     private String digitalAddress;
     private String address;

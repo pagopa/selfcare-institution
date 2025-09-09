@@ -3,6 +3,7 @@ package it.pagopa.selfcare.mscore.core.strategy;
 import it.pagopa.selfcare.mscore.api.InstitutionConnector;
 import it.pagopa.selfcare.mscore.api.PartyRegistryProxyConnector;
 import it.pagopa.selfcare.mscore.constant.CustomError;
+import it.pagopa.selfcare.mscore.constant.Origin;
 import it.pagopa.selfcare.mscore.core.mapper.InstitutionMapper;
 import it.pagopa.selfcare.mscore.core.strategy.input.CreateInstitutionStrategyInput;
 import it.pagopa.selfcare.mscore.exception.MsCoreException;
@@ -97,7 +98,9 @@ public class CreateInstitutionStrategyPda extends CreateInstitutionStrategyCommo
         newInstitution.setTaxCode(taxCode);
         newInstitution.setDescription(description);
         newInstitution.setExternalId(taxCode);
+        newInstitution.setOrigin(Origin.INFOCAMERE.getValue());
         newInstitution.setIstatCode(istatCode);
+        newInstitution.setOriginId(taxCode);
         newInstitution.setCreatedAt(OffsetDateTime.now());
         newInstitution.setImported(true);
 
@@ -108,6 +111,7 @@ public class CreateInstitutionStrategyPda extends CreateInstitutionStrategyCommo
 
         Institution newInstitution = institutionMapper.fromInstitutionProxyInfo(institutionProxyInfo);
         newInstitution.setExternalId(taxCode);
+        newInstitution.setOrigin(Origin.IPA.getValue());
         newInstitution.setCreatedAt(OffsetDateTime.now());
         newInstitution.setImported(true);
 

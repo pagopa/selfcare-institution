@@ -33,7 +33,7 @@ public interface InstitutionService {
 
     Institution createInstitutionFromAnac(Institution institution);
 
-    Institution createInstitutionFromIvass(Institution institution, String originId);
+    Institution createInstitutionFromIvass(Institution institution);
 
     Institution createInstitutionFromInfocamere(Institution institution);
 

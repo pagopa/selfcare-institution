@@ -2,6 +2,7 @@ package it.pagopa.selfcare.mscore.core.strategy;
 
 import it.pagopa.selfcare.mscore.api.InstitutionConnector;
 import it.pagopa.selfcare.mscore.api.PartyRegistryProxyConnector;
+import it.pagopa.selfcare.mscore.constant.Origin;
 import it.pagopa.selfcare.mscore.core.strategy.input.CreateInstitutionStrategyInput;
 import it.pagopa.selfcare.mscore.exception.MsCoreException;
 import it.pagopa.selfcare.mscore.model.institution.Institution;
@@ -58,6 +59,8 @@ public class CreateInstitutionStrategyAnac extends CreateInstitutionStrategyComm
     private Institution addFieldsToInstitution(SaResource saResource) {
 
         institution.setExternalId(institution.getTaxCode());
+        institution.setOrigin(Origin.ANAC.getValue());
+        institution.setOriginId(saResource.getTaxCode());
         institution.setCreatedAt(OffsetDateTime.now());
         institution.setDigitalAddress(saResource.getDigitalAddress());
         institution.setDescription(saResource.getDescription());

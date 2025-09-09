@@ -142,6 +142,8 @@ class CreateInstitutionStrategyTest {
 
         Institution institution = new Institution();
         institution.setId("id");
+        institution.setOrigin(origin);
+        institution.setOriginId(originId);
         institution.setIstatCode("42");
 
         when(institutionConnector.findByOriginAndOriginId(any(), any(), eq(null))). thenReturn(List.of(institution));
@@ -353,6 +355,7 @@ class CreateInstitutionStrategyTest {
                         .build());
 
         //Then
+        assertThat(actual.getOriginId()).isEqualTo(dummyAreaOrganizzativaOmogenea.getId());
         assertThat(actual.getDescription()).isEqualTo(dummyAreaOrganizzativaOmogenea.getDenominazioneAoo());
         assertThat(actual.getDigitalAddress()).isEqualTo(dummyInstitutionProxyInfo.getDigitalAddress());
         assertThat(actual.getAddress()).isEqualTo(dummyAreaOrganizzativaOmogenea.getIndirizzo());
@@ -400,6 +403,7 @@ class CreateInstitutionStrategyTest {
                         .build());
 
         //Then
+        assertThat(actual.getOriginId()).isEqualTo(dummyUnitaOrganizzativa.getId());
         assertThat(actual.getDescription()).isEqualTo(dummyUnitaOrganizzativa.getDescrizioneUo());
 
         assertThat(actual.getDigitalAddress()).isEqualTo(dummyInstitutionProxyInfo.getDigitalAddress());
@@ -476,6 +480,7 @@ class CreateInstitutionStrategyTest {
                         .build());
 
         //Then
+        assertThat(actual.getOriginId()).isEqualTo(dummyUnitaOrganizzativa.getId());
         assertThat(actual.getDescription()).isEqualTo(dummyUnitaOrganizzativa.getDescrizioneUo());
 
         assertThat(actual.getDigitalAddress()).isEqualTo(dummyInstitutionProxyInfo.getDigitalAddress());
@@ -519,6 +524,7 @@ class CreateInstitutionStrategyTest {
                         .build());
 
         //Then
+        assertThat(actual.getOriginId()).isEqualTo(dummyUnitaOrganizzativa.getId());
         assertThat(actual.getDescription()).isEqualTo(dummyUnitaOrganizzativa.getDescrizioneUo());
 
         assertThat(actual.getDigitalAddress()).isEqualTo(dummyInstitutionProxyInfo.getDigitalAddress());
@@ -599,6 +605,7 @@ class CreateInstitutionStrategyTest {
                         .build());
 
         //Then
+        assertThat(actual.getOriginId()).isEqualTo(dummyUnitaOrganizzativa.getId());
         assertThat(actual.getDescription()).isEqualTo(dummyUnitaOrganizzativa.getDescrizioneUo());
 
         assertThat(actual.getDigitalAddress()).isEqualTo(dummyUnitaOrganizzativa.getMail1());
@@ -645,6 +652,7 @@ class CreateInstitutionStrategyTest {
         assertThat(actual.getSubunitCode()).isNull();
         assertThat(actual.getSubunitType()).isNull();
         assertThat(actual.getSubunitType()).isNull();
+        assertThat(actual.getOrigin()).isEqualTo(Origin.INFOCAMERE.getValue());
 
         verify(institutionConnector).save(any());
     }
@@ -679,6 +687,7 @@ class CreateInstitutionStrategyTest {
         assertThat(actual.getSubunitCode()).isNull();
         assertThat(actual.getSubunitType()).isNull();
         assertThat(actual.getSubunitType()).isNull();
+        assertThat(actual.getOrigin()).isEqualTo(institution.getOrigin());
 
         verify(institutionConnector).save(any());
     }
@@ -706,6 +715,7 @@ class CreateInstitutionStrategyTest {
         assertThat(actual.getSubunitCode()).isNull();
         assertThat(actual.getSubunitType()).isNull();
         assertThat(actual.getSubunitType()).isNull();
+        assertThat(actual.getOriginId()).isEqualTo(institution.getTaxCode());
 
         verify(institutionConnector).save(any());
     }

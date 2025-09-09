@@ -118,7 +118,7 @@ public class OnboardingServiceImpl implements OnboardingService {
 
         try {
             //If not exists, persist a new onboarding for product
-            setOnboardingFields(onboarding);
+            setOnboardingFields(onboarding, institution);
             final Institution institutionUpdated = institutionConnector.findAndAddOnboarding(institutionId, onboarding);
 
             log.trace("persistForUpdate end");
@@ -132,15 +132,21 @@ public class OnboardingServiceImpl implements OnboardingService {
         }
     }
 
-    private static void setOnboardingFields(Onboarding onboarding) {
+    private static void setOnboardingFields(Onboarding onboarding, Institution institution) {
         Optional.ofNullable(onboarding.getInstitutionType())
                 .ifPresent(onboarding::setInstitutionType);
 
         Optional.ofNullable(onboarding.getOrigin())
-                .ifPresent(onboarding::setOrigin);
+                .ifPresentOrElse(
+                        value -> {}, // Do nothing if already present
+                        () -> onboarding.setOrigin(institution.getOrigin())
+                );
 
         Optional.ofNullable(onboarding.getOriginId())
-                .ifPresent(onboarding::setOriginId);
+                .ifPresentOrElse(
+                        value -> {}, // Do nothing if already present
+                        () -> onboarding.setOriginId(institution.getOriginId())
+                );
     }
 
     private boolean isMailNotificationEnabled(Institution institution, String productId) {

@@ -54,7 +54,7 @@ public interface InstitutionResourceMapper {
                 .flatMap(pid -> Optional.ofNullable(institution.getOnboarding()))
                 .flatMap(onb -> onb.stream().filter(o -> o.getProductId().equals(productId)).findFirst())
                 .flatMap(o -> Optional.ofNullable(o.getOrigin()))
-                .orElse(null);
+                .orElse(institution.getOrigin());
     }
 
     @Named("setOriginId")
@@ -63,7 +63,7 @@ public interface InstitutionResourceMapper {
                 .flatMap(pid -> Optional.ofNullable(institution.getOnboarding()))
                 .flatMap(onb -> onb.stream().filter(o -> o.getProductId().equals(productId)).findFirst())
                 .flatMap(o -> Optional.ofNullable(o.getOriginId()))
-                .orElse(null);
+                .orElse(institution.getOriginId());
     }
 
     InstitutionGeographicTaxonomies toInstitutionGeographicTaxonomies(GeoTaxonomies geoTaxonomies);
