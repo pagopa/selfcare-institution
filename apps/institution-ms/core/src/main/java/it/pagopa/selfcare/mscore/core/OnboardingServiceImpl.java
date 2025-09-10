@@ -155,10 +155,11 @@ public class OnboardingServiceImpl implements OnboardingService {
         }
 
         // Return false if there is any active onboarding for the product with institution type PT, true otherwise
-        return institution.getOnboarding().stream()
-                .noneMatch(o -> RelationshipState.ACTIVE.equals(o.getStatus())
-                        && productId.equals(o.getProductId())
-                        && InstitutionType.PT.equals(o.getInstitutionType()));
+        final Onboarding onboarding = institution.getOnboarding().stream()
+                .filter(o -> productId.equals(o.getProductId()) && RelationshipState.ACTIVE.equals(o.getStatus()))
+                .findFirst()
+                .orElseThrow();
+        return !InstitutionType.PT.equals(onboarding.getInstitutionType());
 
     }
 
