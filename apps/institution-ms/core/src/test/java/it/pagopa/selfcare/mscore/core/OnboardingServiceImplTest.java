@@ -257,6 +257,8 @@ class OnboardingServiceImplTest {
         billing.setRecipientCode("recipientCode");
         billing.setTaxCodeInvoicing("taxCodeInvoicing");
         Onboarding onboarding = dummyOnboarding();
+        onboarding.setProductId(productId);
+        onboarding.setInstitutionType(InstitutionType.PA);
         onboarding.setStatus(UtilEnumList.VALID_RELATIONSHIP_STATES.get(0));
 
         Onboarding onboardingToPersist = new Onboarding();
@@ -269,6 +271,9 @@ class OnboardingServiceImplTest {
         onboardingToPersist.setInstitutionType(InstitutionType.PA);
         onboardingToPersist.setOrigin("IPA");
         onboardingToPersist.setOriginId("123x");
+
+        Institution firstInstitution = new Institution();
+        firstInstitution.setId("institutionId");
 
         Institution institution = new Institution();
         institution.setId("institutionId");
@@ -284,7 +289,7 @@ class OnboardingServiceImplTest {
         token.setStatus(onboarding.getStatus());
         token.setContractSigned(onboarding.getContract());
 
-        when(institutionConnector.findById(institution.getId())).thenReturn(institution);
+        when(institutionConnector.findById(institution.getId())).thenReturn(firstInstitution);
         when(institutionConnector.findAndAddOnboarding(any(), any())).thenReturn(institution);
         when(institutionSendMailConfig.getPecNotificationDisabled()).thenReturn(false);
         when(institutionSendMailConfig.getPecNotificationFrequency()).thenReturn(30);
