@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Comparator;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -155,13 +154,12 @@ public class OnboardingServiceImpl implements OnboardingService {
             return false;
         }
 
-        // Return false if the most recent active onboarding for the product is PT, true otherwise
+        // Return false if there is any active onboarding for the product with institution type PT, true otherwise
         return institution.getOnboarding().stream()
-                .filter(o -> RelationshipState.ACTIVE.equals(o.getStatus()))
-                .filter(o -> productId.equals(o.getProductId()))
-                .max(Comparator.comparing(Onboarding::getCreatedAt))  // string comparison works for ISO-8601
-                .map(o -> !InstitutionType.PT.equals(o.getInstitutionType()))
-                .orElse(true);  // if no active onboarding, mail is enabled
+                .noneMatch(o -> RelationshipState.ACTIVE.equals(o.getStatus())
+                        && productId.equals(o.getProductId())
+                        && InstitutionType.PT.equals(o.getInstitutionType()));
+
     }
 
     @Override
