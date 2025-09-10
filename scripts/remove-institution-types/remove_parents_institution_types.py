@@ -43,35 +43,30 @@ def main():
     institutionCollection = institutionDB[INSTITUTION_COLLECTION]
 
     totalInstitutionCount = institutionCollection.count_documents({})
-    checkedInstitutionCount = 0
+    modifiedCount = 0
     bulkCounters = { "countInserted": 0, "countUpserted": 0, "countMatched": 0, "countModified": 0, "countRemoved": 0 }
 
     bufferBatch = []
     for institution in institutionCollection.find({}, batch_size=MONGO_BATCH_SIZE):
-        checkedInstitutionCount += 1
-
-        unsetFields = {}
         if "institutionType" in institution:
-            unsetFields["institutionType"] = ""
-        if "origin" in institution:
-            unsetFields["origin"] = ""
-        if "originId" in institution:
-            unsetFields["originId"] = ""
-
-        if unsetFields:
-            bufferBatch.append(UpdateOne({"_id": institution["_id"]}, {"$unset": unsetFields}))
+            bufferBatch.append(
+                UpdateOne({"_id": institution["_id"]}, {"$unset": {"institutionType": ""}})
+            )
 
         if len(bufferBatch) >= MONGO_BATCH_SIZE:
             result = bulkWrite(bufferBatch, institutionCollection)
             bufferBatch = []
             bulkCounters = dict(Counter(bulkCounters) + Counter(result))
-            print(f"{checkedInstitutionCount} / {totalInstitutionCount} - {bulkCounters}", end="\r")
+            modifiedCount += result["countModified"]
+            print(f"{modifiedCount} / {totalInstitutionCount} - {bulkCounters}")
 
+    # Process any remaining documents
     if bufferBatch:
         result = bulkWrite(bufferBatch, institutionCollection)
         bulkCounters = dict(Counter(bulkCounters) + Counter(result))
+        modifiedCount += result["countModified"]
+        print(f"{modifiedCount} / {totalInstitutionCount} - {bulkCounters}")
 
-    print(f"\n{checkedInstitutionCount} / {totalInstitutionCount} - {bulkCounters}")
     client.close()
 
 if __name__ == "__main__":

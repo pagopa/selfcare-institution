@@ -22,8 +22,8 @@ def main():
     for institution in institutionCollection.find({}, batch_size=MONGO_BATCH_SIZE):
         checkedInstitutionCount += 1
 
-        if any(field in institution for field in ["institutionType", "origin", "originId"]):
-            print(f"[FOUND] Institution {institution['_id']} contains fields institutionType, origin, originId")
+        if "institutionType" in institution:
+            print(f"[FOUND] Institution {institution['_id']} contains field institutionType")
             violations += 1
 
         if checkedInstitutionCount % 1000 == 0:
@@ -31,7 +31,7 @@ def main():
 
     print("\n=== Scan completed ===")
     print(f"Checked documents: {checkedInstitutionCount}")
-    print(f"Documents with unwanted fields: {violations}")
+    print(f"Documents with unwanted field 'institutionType': {violations}")
 
     client.close()
 
