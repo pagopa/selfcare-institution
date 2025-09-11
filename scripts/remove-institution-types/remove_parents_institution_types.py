@@ -42,16 +42,18 @@ def main():
     institutionDB = client[INSTITUTION_DB]
     institutionCollection = institutionDB[INSTITUTION_COLLECTION]
 
-    totalInstitutionCount = institutionCollection.count_documents({})
+    totalInstitutionCount = institutionCollection.count_documents({"institutionType": {"$exists": True}})
+    print(f"Documents to modify: {totalInstitutionCount}")
+
     modifiedCount = 0
     bulkCounters = { "countInserted": 0, "countUpserted": 0, "countMatched": 0, "countModified": 0, "countRemoved": 0 }
 
     bufferBatch = []
-    for institution in institutionCollection.find({}, batch_size=MONGO_BATCH_SIZE):
-        if "institutionType" in institution:
-            bufferBatch.append(
-                UpdateOne({"_id": institution["_id"]}, {"$unset": {"institutionType": ""}})
-            )
+    cursor = institutionCollection.find({"institutionType": {"$exists": True}},{"_id": 1}, batch_size=MONGO_BATCH_SIZE)
+    for institution in cursor:
+        bufferBatch.append(
+            UpdateOne({"_id": institution["_id"]}, {"$unset": {"institutionType": ""}})
+        )
 
         if len(bufferBatch) >= MONGO_BATCH_SIZE:
             result = bulkWrite(bufferBatch, institutionCollection)
