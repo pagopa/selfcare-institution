@@ -1270,12 +1270,12 @@ Feature: Institution
     And The following request body:
       """
       {
-        "productId": "prod-pn",
+        "productId": "prod-io",
         "tokenId": "123456789",
         "contractPath": "testContractPath",
         "activatedAt": "2025-02-28T15:00:00Z",
         "isAggregator": false,
-        "institutionType": "PT",
+        "institutionType": "PA",
         "origin": "SELC",
         "originId": "xxx"
       }
@@ -1293,7 +1293,7 @@ Feature: Institution
       | prod-pagopa | ACTIVE    |
       | prod-idpay  | DELETED   |
       | prod-pn     | SUSPENDED |
-    And Onboarding for institutionId "123" and productId "prod-pn" was saved to db successfully with token "MOCK_TOKEN" contract "MOCK_CONTRACT", a module of 10, institutionType "PA", origin "MOCK" and originId "123x"
+    And Onboarding for institutionId "123" and productId "prod-io" was saved to db successfully with token "MOCK_TOKEN" contract "MOCK_CONTRACT", a module of 10, institutionType "PA", origin "MOCK" and originId "123x"
 
   Scenario: Do not persist PecNotification with PT institution type
     Given User login with username "j.doe" and password "test"
@@ -1302,7 +1302,8 @@ Feature: Institution
     And The following request body:
       """
       {
-        "productId": "prod-io"
+        "productId": "prod-io",
+        "institutionType": "PT"
       }
       """
     When I send a POST request to "/institutions/{id}/onboarding"
@@ -1314,6 +1315,30 @@ Feature: Institution
       | prod-interop |
     And The response body contains field "id"
     And Count of MailNotification with institutionId "067327d3-bdd6-408d-8655-87e8f1960046" is 0
+
+  @RemoveMockInstitutionAfterScenario
+  Scenario: Attempt to persistOnboarding with existing productId but different institutionType
+    Given User login with username "j.doe" and password "test"
+    And A mock institution with id "123"
+    And The following path params:
+      | id | 123 |
+    And The following request body:
+      """
+      {
+        "productId": "prod-pn",
+        "tokenId": "123456789",
+        "contractPath": "testContractPath",
+        "activatedAt": "2025-02-28T15:00:00Z",
+        "isAggregator": false,
+        "institutionType": "PT",
+        "origin": "SELC",
+        "originId": "xxx"
+      }
+      """
+    When I send a POST request to "/institutions/{id}/onboarding"
+    And The response body contains:
+      | status | 500                                                                  |
+      | detail | Conflicting institutionType for product prod-pn: existing=PA, new=PT |
 
   Scenario: Not found institution while persistOnboarding
     Given User login with username "j.doe" and password "test"

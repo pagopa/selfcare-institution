@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -107,13 +108,31 @@ public class OnboardingServiceImpl implements OnboardingService {
         //Verify if onboarding exists, in case onboarding must fail
         final Institution institution = institutionConnector.findById(institutionId);
 
-        if (Optional.ofNullable(institution.getOnboarding()).flatMap(onboardings -> onboardings.stream()
-                .filter(item -> item.getProductId().equals(productId) && UtilEnumList.VALID_RELATIONSHIP_STATES.contains(item.getStatus()))
-                .findAny()).isPresent()) {
+        Onboarding existingOnboarding = Optional.ofNullable(institution.getOnboarding())
+                .orElse(List.of())
+                .stream()
+                .filter(item -> productId.equals(item.getProductId())
+                        && UtilEnumList.VALID_RELATIONSHIP_STATES.contains(item.getStatus()))
+                .findFirst()
+                .orElse(null);
 
-            httpStatus.append(HttpStatus.OK.value());
-            return institution;
+        if (existingOnboarding != null) {
+            if (existingOnboarding.getInstitutionType().equals(onboarding.getInstitutionType())) {
+                log.info("Found existing onboarding for product {} with matching institutionType {}",
+                        productId, existingOnboarding.getInstitutionType());
+
+                httpStatus.append(HttpStatus.OK.value());
+                return institution;
+            } else {
+                throw new IllegalStateException(
+                        String.format("Conflicting institutionType for product %s: existing=%s, new=%s",
+                                productId,
+                                existingOnboarding.getInstitutionType(),
+                                onboarding.getInstitutionType())
+                );
+            }
         }
+
 
         try {
             //If not exists, persist a new onboarding for product
