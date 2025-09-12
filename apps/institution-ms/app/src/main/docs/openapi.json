@@ -471,7 +471,7 @@
     },
     "/delegations/{delegationId}" : {
       "delete" : {
-        "tags" : [ "Delegation" ],
+        "tags" : [ "Delegation", "support" ],
         "summary" : "Delete an association between institution id and technical partner setting its status to DELETED and setting delegation to false on institution if it has no more delegations",
         "description" : "Delete an association between institution id and technical partner setting its status to DELETED and setting delegation to false on institution if it has no more delegations",
         "operationId" : "deleteDelegationUsingDELETE",

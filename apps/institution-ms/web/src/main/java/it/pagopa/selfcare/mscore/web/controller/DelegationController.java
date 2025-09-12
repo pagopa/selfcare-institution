@@ -134,6 +134,8 @@ public class DelegationController {
      * * Code: 409, Message: Conflict, DataType: Problem
      */
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Tag(name = "support")
+    @Tag(name = "Delegation")
     @ApiOperation(value = "${swagger.mscore.delegation.delete}", notes = "${swagger.mscore.delegation.delete}")
     @DeleteMapping(value = "/{delegationId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> deleteDelegation(@ApiParam("${swagger.mscore.delegation.model.delegationId}")
