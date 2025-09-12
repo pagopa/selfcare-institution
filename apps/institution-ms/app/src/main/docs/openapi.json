@@ -2901,9 +2901,6 @@
           "id" : {
             "type" : "string"
           },
-          "institutionType" : {
-            "type" : "string"
-          },
           "origin" : {
             "type" : "string"
           },

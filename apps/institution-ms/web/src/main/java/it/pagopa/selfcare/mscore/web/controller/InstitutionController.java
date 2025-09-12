@@ -135,7 +135,7 @@ public class InstitutionController {
 
         Institution saved = institutionService.createInstitutionFromIpa(institutionFromIpaPost.getTaxCode(),
                 institutionFromIpaPost.getSubunitType(), institutionFromIpaPost.getSubunitCode(), geographicTaxonomies,
-                institutionFromIpaPost.getInstitutionType(), institutionFromIpaPost.getSupportEmail(), institutionFromIpaPost.getSupportPhone());
+                institutionFromIpaPost.getSupportEmail(), institutionFromIpaPost.getSupportPhone());
         return ResponseEntity.status(HttpStatus.CREATED).body(institutionResourceMapper.toInstitutionResponse(saved));
     }
 
@@ -535,7 +535,7 @@ public class InstitutionController {
 
         InstitutionOnboardingListResponse institutionListResponse = new InstitutionOnboardingListResponse(
                 institutions.stream()
-                        .map(InstitutionMapperCustom::toInstitutionOnboardingResponse)
+                        .map(institution -> InstitutionMapperCustom.toInstitutionOnboardingResponse(institution, productId))
                         .toList());
 
         log.trace("findFromProduct end");

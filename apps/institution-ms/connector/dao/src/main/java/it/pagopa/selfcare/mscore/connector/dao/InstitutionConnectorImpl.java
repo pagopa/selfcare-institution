@@ -251,22 +251,7 @@ public class InstitutionConnectorImpl implements InstitutionConnector {
                 .and("elem.status").is(RelationshipState.ACTIVE.name()));
 
         FindAndModifyOptions options = FindAndModifyOptions.options().upsert(false).returnNew(false);
-        InstitutionEntity updatedEntity = repository.findAndModify(query, update, options, InstitutionEntity.class);
-    }
-
-
-    @Override
-    public List<Institution> findByTaxCodeSubunitCodeAndOrigin(String taxCode, String subunitCode, String origin, String originId) {
-        return repository.find(Query.query(CriteriaBuilder.builder()
-                                .isIfNotNull(InstitutionEntity.Fields.taxCode.name(), taxCode)
-                                .isIfNotNull(InstitutionEntity.Fields.subunitCode.name(), subunitCode)
-                                .isIfNotNull(InstitutionEntity.Fields.origin.name(), origin)
-                                .isIfNotNull(InstitutionEntity.Fields.originId.name(), originId)
-                                .build()
-                        ),
-                        InstitutionEntity.class).stream()
-                .map(institutionMapper::convertToInstitution)
-                .collect(Collectors.toList());
+        repository.findAndModify(query, update, options, InstitutionEntity.class);
     }
 
     @Override
@@ -326,9 +311,16 @@ public class InstitutionConnectorImpl implements InstitutionConnector {
     @Override
     public List<Institution> findBrokers(String productId, InstitutionType type) {
 
-        Query query = Query.query(Criteria.where(InstitutionEntity.Fields.institutionType.name()).is(type)
-                .and(InstitutionEntity.Fields.onboarding.name()).elemMatch(Criteria.where(Onboarding.Fields.productId.name()).is(productId)
-                        .and(Onboarding.Fields.status.name()).is(ProductStatus.ACTIVE)));
+        Query query = Query.query(
+                Criteria.where(InstitutionEntity.Fields.onboarding.name())
+                        .elemMatch(
+                                CriteriaBuilder.builder()
+                                        .isIfNotNull(Onboarding.Fields.productId.name(), productId)
+                                        .isIfNotNull(Onboarding.Fields.status.name(), ProductStatus.ACTIVE)
+                                        .isIfNotNull(Onboarding.Fields.institutionType.name(), type)
+                                        .build()
+                        )
+        );
 
         List<InstitutionEntity> institutionEntities = repository.find(query, InstitutionEntity.class);
         return institutionEntities.stream()

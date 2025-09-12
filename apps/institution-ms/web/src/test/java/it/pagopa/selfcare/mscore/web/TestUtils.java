@@ -60,7 +60,6 @@ public class TestUtils {
         institution.setExternalId("42");
         institution.setGeographicTaxonomies(new ArrayList<>());
         institution.setId("42");
-        institution.setInstitutionType(InstitutionType.PA);
         institution.setOriginId("Ipa Code");
         institution.setOrigin(Origin.MOCK.name());
         institution.setOnboarding(new ArrayList<>());
@@ -87,7 +86,6 @@ public class TestUtils {
         institution.setExternalId("42");
         institution.setGeographicTaxonomies(new ArrayList<>());
         institution.setId("42");
-        institution.setInstitutionType(InstitutionType.SA);
         institution.setOriginId("ANAC Code");
         institution.setOrigin(Origin.ANAC.name());
         institution.setOnboarding(new ArrayList<>());
@@ -114,7 +112,6 @@ public class TestUtils {
         institution.setExternalId("42");
         institution.setGeographicTaxonomies(new ArrayList<>());
         institution.setId("42");
-        institution.setInstitutionType(InstitutionType.AS);
         institution.setOriginId("IVASS Code");
         institution.setOrigin(Origin.IVASS.name());
         institution.setOnboarding(new ArrayList<>());
@@ -136,7 +133,6 @@ public class TestUtils {
         institution.setDescription("The characteristics of someone or something");
         institution.setExternalId("42");
         institution.setId("42");
-        institution.setInstitutionType(InstitutionType.PG);
         institution.setOriginId("Pg Code");
         institution.setOrigin(Origin.MOCK.name());
 

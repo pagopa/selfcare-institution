@@ -1,6 +1,5 @@
 package it.pagopa.selfcare.mscore.core.strategy;
 
-import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import it.pagopa.selfcare.mscore.api.InstitutionConnector;
 import it.pagopa.selfcare.mscore.api.PartyRegistryProxyConnector;
 import it.pagopa.selfcare.mscore.constant.CustomError;
@@ -100,11 +99,6 @@ public class CreateInstitutionStrategyPda extends CreateInstitutionStrategyCommo
         newInstitution.setDescription(description);
         newInstitution.setExternalId(taxCode);
         newInstitution.setOrigin(Origin.INFOCAMERE.getValue());
-        if(injectionInstitutionType.equalsIgnoreCase(InstitutionType.PT.name())) {
-            newInstitution.setInstitutionType(InstitutionType.PT);
-        }else{
-            newInstitution.setInstitutionType(InstitutionType.PG);
-        }
         newInstitution.setIstatCode(istatCode);
         newInstitution.setOriginId(taxCode);
         newInstitution.setCreatedAt(OffsetDateTime.now());
@@ -120,7 +114,6 @@ public class CreateInstitutionStrategyPda extends CreateInstitutionStrategyCommo
         newInstitution.setOrigin(Origin.IPA.getValue());
         newInstitution.setCreatedAt(OffsetDateTime.now());
         newInstitution.setImported(true);
-        newInstitution.setInstitutionType(InstitutionType.PA);
 
         Attributes attributes = new Attributes();
         attributes.setOrigin(categoryProxyInfo.getOrigin());

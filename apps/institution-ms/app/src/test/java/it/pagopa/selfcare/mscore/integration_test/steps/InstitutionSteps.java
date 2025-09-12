@@ -96,7 +96,6 @@ public class InstitutionSteps {
     public void createMockInstitutionWithoutActiveOnboardings(String id) {
         final InstitutionEntity entity = new InstitutionEntity();
         entity.setId(id);
-        entity.setInstitutionType(InstitutionType.PA);
         entity.setOrigin(Origin.MOCK);
         entity.setOriginId("x1");
         entity.setCreatedAt(OffsetDateTime.now());

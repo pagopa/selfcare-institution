@@ -48,7 +48,6 @@ public class TestUtils {
                 .origin(Origin.SELC.getValue())
                 .originId("originId")
                 .description("institutionDescription")
-                .institutionType(institutionType)
                 .digitalAddress("institution@test.test")
                 .address("42 Main St")
                 .zipCode("21654")

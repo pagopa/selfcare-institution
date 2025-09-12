@@ -27,7 +27,7 @@ public class InstitutionMapperCustom {
         response.setInstitutionId(institution.getId());
         response.setExternalId(institution.getExternalId());
         response.setDescription(institution.getDescription());
-        response.setInstitutionType(Optional.ofNullable(institution.getInstitutionType()).map(InstitutionType::name).orElse(null));
+        response.setInstitutionType(toInstitutionType(institution, productId));
         response.setDigitalAddress(institution.getDigitalAddress());
         response.setAddress(institution.getAddress());
         response.setZipCode(institution.getZipCode());
@@ -45,6 +45,31 @@ public class InstitutionMapperCustom {
         }
 
         return response;
+    }
+
+    private static Optional<Onboarding> getOnboarding(Institution institution, String productId) {
+        return Optional.ofNullable(productId)
+                .flatMap(pid -> Optional.ofNullable(institution.getOnboarding()))
+                .flatMap(onb -> onb.stream().filter(o -> o.getProductId().equals(productId)).findFirst());
+    }
+
+    private static String toInstitutionType(Institution institution, String productId) {
+        return  getOnboarding(institution, productId)
+                .flatMap(o -> Optional.ofNullable(o.getInstitutionType()))
+                .map(InstitutionType::name)
+                .orElse(null);
+    }
+
+    private static String toOriginId(Institution institution, String productId) {
+        return getOnboarding(institution, productId)
+                .map(Onboarding::getOriginId)
+                .orElse(institution.getOriginId());
+    }
+
+    private static String toOrigin(Institution institution, String productId) {
+        return getOnboarding(institution, productId)
+                .map(Onboarding::getOrigin)
+                .orElse(institution.getOrigin());
     }
 
     private static BillingResponse toBillingResponse(Billing billing, Institution institution) {
@@ -132,14 +157,14 @@ public class InstitutionMapperCustom {
         }).toList();
     }
 
-    public static InstitutionOnboardingResponse toInstitutionOnboardingResponse(Institution institution) {
+    public static InstitutionOnboardingResponse toInstitutionOnboardingResponse(Institution institution, String productId) {
         InstitutionOnboardingResponse response = new InstitutionOnboardingResponse();
         response.setId(institution.getId());
         response.setExternalId(institution.getExternalId());
-        response.setOrigin(institution.getOrigin());
-        response.setOriginId(institution.getOriginId());
+        response.setOrigin(toOrigin(institution, productId));
+        response.setOriginId(toOriginId(institution, productId));
         response.setDescription(institution.getDescription());
-        response.setInstitutionType(Optional.ofNullable(institution.getInstitutionType()).map(InstitutionType::name).orElse(null));
+        response.setInstitutionType(toInstitutionType(institution, productId));
         response.setDigitalAddress(institution.getDigitalAddress());
         response.setAddress(institution.getAddress());
         response.setZipCode(institution.getZipCode());
@@ -170,6 +195,7 @@ public class InstitutionMapperCustom {
         response.setSubunitCode(institution.getSubunitCode());
         response.setSubunitType(institution.getSubunitType());
         response.setAooParentCode(Optional.ofNullable(institution.getPaAttributes()).map(PaAttributes::getAooParentCode).orElse(null));
+        response.setInstitutionType(toInstitutionType(institution, productId));
         return response;
     }
 
@@ -251,7 +277,6 @@ public class InstitutionMapperCustom {
         bulkInstitution.setOrigin(inst.getOrigin());
         bulkInstitution.setOriginId(inst.getOriginId());
         bulkInstitution.setDescription(inst.getDescription());
-        bulkInstitution.setInstitutionType(Optional.ofNullable(inst.getInstitutionType()).map(InstitutionType::name).orElse(null));
         bulkInstitution.setDigitalAddress(inst.getDigitalAddress());
         bulkInstitution.setAddress(inst.getAddress());
         bulkInstitution.setZipCode(inst.getZipCode());

@@ -40,13 +40,12 @@ public interface InstitutionResourceMapper {
 
     @Named("setInstitutionType")
     default String setInstitutionType(Institution institution, @Context String productId) {
-        final String parentInstitutionType = Optional.ofNullable(institution.getInstitutionType()).map(InstitutionType::name).orElse(null);
         return Optional.ofNullable(productId)
                 .flatMap(pid -> Optional.ofNullable(institution.getOnboarding()))
                 .flatMap(onb -> onb.stream().filter(o -> o.getProductId().equals(productId)).findFirst())
                 .flatMap(o -> Optional.ofNullable(o.getInstitutionType()))
                 .map(InstitutionType::name)
-                .orElse(parentInstitutionType);
+                .orElse(null);
     }
 
     @Named("setOrigin")

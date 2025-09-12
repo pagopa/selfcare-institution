@@ -1,7 +1,5 @@
 package it.pagopa.selfcare.mscore.core;
 
-import it.pagopa.selfcare.mscore.model.delegation.*;
-import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import it.pagopa.selfcare.mscore.api.DelegationConnector;
 import it.pagopa.selfcare.mscore.constant.DelegationState;
 import it.pagopa.selfcare.mscore.constant.DelegationType;
@@ -11,8 +9,10 @@ import it.pagopa.selfcare.mscore.core.mapper.InstitutionMapperImpl;
 import it.pagopa.selfcare.mscore.exception.MsCoreException;
 import it.pagopa.selfcare.mscore.exception.ResourceConflictException;
 import it.pagopa.selfcare.mscore.exception.ResourceNotFoundException;
+import it.pagopa.selfcare.mscore.model.delegation.*;
 import it.pagopa.selfcare.mscore.model.institution.Institution;
 import it.pagopa.selfcare.mscore.model.institution.Onboarding;
+import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static it.pagopa.selfcare.mscore.constant.GenericError.*;
+import static it.pagopa.selfcare.onboarding.common.ProductId.PROD_IO;
+import static it.pagopa.selfcare.onboarding.common.ProductId.PROD_PAGOPA;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -84,11 +86,14 @@ class DelegationServiceImplTest {
         Delegation dummyDelegationProdIo = createDelegationProdIo();
         institutionTo.setId("idTo");
         institutionTo.setTaxCode("taxCodeTo");
-        institutionTo.setInstitutionType(InstitutionType.PA);
         Institution institutionFrom = new Institution();
         institutionTo.setId("idFrom");
         institutionTo.setTaxCode("taxCodeFrom");
-        institutionTo.setInstitutionType(InstitutionType.PT);
+        Onboarding onboarding = new Onboarding();
+        onboarding.setProductId(String.valueOf(PROD_IO));
+        onboarding.setInstitutionType(InstitutionType.PA);
+        institutionTo.setOnboarding(List.of(onboarding));
+        institutionFrom.setOnboarding(List.of(onboarding));
         when(delegationConnector.save(dummyDelegationProdIo)).thenAnswer(arg ->arg.getArguments()[0]);
         when(institutionService.retrieveInstitutionById(dummyDelegationProdIo.getFrom())).thenReturn(institutionFrom);
         when(institutionService.retrieveInstitutionById(dummyDelegationProdIo.getTo())).thenReturn(institutionTo);
@@ -101,8 +106,8 @@ class DelegationServiceImplTest {
         assertEquals(dummyDelegationProdIo.getId(), response.getId());
         assertEquals(institutionTo.getTaxCode(), response.getToTaxCode());
         assertEquals(institutionFrom.getTaxCode(), response.getFromTaxCode());
-        assertEquals(institutionTo.getInstitutionType(), response.getBrokerType());
-        assertEquals(institutionFrom.getInstitutionType(), response.getInstitutionType());
+        assertEquals(institutionTo.getOnboarding().get(0).getInstitutionType(), response.getBrokerType());
+        assertEquals(institutionFrom.getOnboarding().get(0).getInstitutionType(), response.getInstitutionType());
     }
 
     @Test
@@ -111,11 +116,14 @@ class DelegationServiceImplTest {
         Institution institutionTo = new Institution();
         institutionTo.setId("idTo");
         institutionTo.setTaxCode("taxCodeTo");
-        institutionTo.setInstitutionType(InstitutionType.PA);
         Institution institutionFrom = new Institution();
         institutionTo.setId("idFrom");
         institutionTo.setTaxCode("taxCodeFrom");
-        institutionTo.setInstitutionType(InstitutionType.PT);
+        Onboarding onboarding = new Onboarding();
+        onboarding.setProductId(String.valueOf(PROD_IO));
+        onboarding.setInstitutionType(InstitutionType.PA);
+        institutionTo.setOnboarding(List.of(onboarding));
+        institutionFrom.setOnboarding(List.of(onboarding));
         dummyDelegationProdIo.setInstitutionFromRootName("test parent");
         when(delegationConnector.save(dummyDelegationProdIo)).thenAnswer(arg ->arg.getArguments()[0]);
         when(institutionService.retrieveInstitutionById(dummyDelegationProdIo.getFrom())).thenReturn(institutionFrom);
@@ -129,8 +137,8 @@ class DelegationServiceImplTest {
         assertEquals(dummyDelegationProdIo.getId(), response.getId());
         assertEquals(institutionTo.getTaxCode(), response.getToTaxCode());
         assertEquals(institutionFrom.getTaxCode(), response.getFromTaxCode());
-        assertEquals(institutionTo.getInstitutionType(), response.getBrokerType());
-        assertEquals(institutionFrom.getInstitutionType(), response.getInstitutionType());
+        assertEquals(institutionTo.getOnboarding().get(0).getInstitutionType(), response.getBrokerType());
+        assertEquals(institutionFrom.getOnboarding().get(0).getInstitutionType(), response.getInstitutionType());
         assertEquals("test parent", response.getInstitutionFromRootName());
     }
 
@@ -143,11 +151,14 @@ class DelegationServiceImplTest {
         Institution institutionTo = new Institution();
         institutionTo.setId("idTo");
         institutionTo.setTaxCode("taxCodeTo");
-        institutionTo.setInstitutionType(InstitutionType.PA);
         Institution institutionFrom = new Institution();
         institutionTo.setId("idFrom");
         institutionTo.setTaxCode("taxCodeFrom");
-        institutionTo.setInstitutionType(InstitutionType.PT);
+        Onboarding onboarding = new Onboarding();
+        onboarding.setProductId(String.valueOf(PROD_PAGOPA));
+        onboarding.setInstitutionType(InstitutionType.PA);
+        institutionTo.setOnboarding(List.of(onboarding));
+        institutionFrom.setOnboarding(List.of(onboarding));
         when(delegationConnector.save(dummyDelegationProdPagopa)).thenAnswer(arg ->arg.getArguments()[0]);
         when(institutionService.retrieveInstitutionById(dummyDelegationProdPagopa.getFrom())).thenReturn(institutionFrom);
         when(institutionService.retrieveInstitutionById(dummyDelegationProdPagopa.getTo())).thenReturn(institutionTo);
@@ -160,8 +171,8 @@ class DelegationServiceImplTest {
         assertEquals(dummyDelegationProdPagopa.getId(), response.getId());
         assertEquals(institutionTo.getTaxCode(), response.getToTaxCode());
         assertEquals(institutionFrom.getTaxCode(), response.getFromTaxCode());
-        assertEquals(institutionTo.getInstitutionType(), response.getBrokerType());
-        assertEquals(institutionFrom.getInstitutionType(), response.getInstitutionType());
+        assertEquals(institutionTo.getOnboarding().get(0).getInstitutionType(), response.getBrokerType());
+        assertEquals(institutionFrom.getOnboarding().get(0).getInstitutionType(), response.getInstitutionType());
     }
 
     /**
@@ -312,7 +323,6 @@ class DelegationServiceImplTest {
         Institution institutionTo = new Institution();
         institutionTo.setId("id");
         institutionTo.setTaxCode("taxCodeTo");
-        institutionTo.setInstitutionType(InstitutionType.PA);
         Onboarding onboarding = new Onboarding();
         onboarding.setProductId("prod-pagopa");
         onboarding.setInstitutionType(InstitutionType.GSP);
@@ -321,7 +331,6 @@ class DelegationServiceImplTest {
         Institution institutionFrom = new Institution();
         institutionFrom.setId("id");
         institutionFrom.setTaxCode("taxCodeFrom");
-        institutionFrom.setInstitutionType(InstitutionType.PA);
         institutionFrom.setOnboarding(List.of(onboarding));
         when(institutionService.getInstitutions(dummyDelegationTaxCode.getToTaxCode(), dummyDelegationTaxCode.getToSubunitCode())).thenReturn(List.of(institutionTo));
         when(institutionService.getInstitutions(dummyDelegationTaxCode.getFromTaxCode(), dummyDelegationTaxCode.getFromSubunitCode())).thenReturn(List.of(institutionFrom));

@@ -2,7 +2,6 @@ package it.pagopa.selfcare.mscore.core.strategy.input;
 
 import it.pagopa.selfcare.mscore.core.util.InstitutionPaSubunitType;
 import it.pagopa.selfcare.mscore.model.institution.InstitutionGeographicTaxonomies;
-import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import lombok.Builder;
 import lombok.Data;
 
@@ -18,7 +17,6 @@ public class CreateInstitutionStrategyInput {
     private InstitutionPaSubunitType subunitType;
     private List<InstitutionGeographicTaxonomies> geographicTaxonomies;
     private String subunitCode;
-    private InstitutionType institutionType;
     private String supportEmail;
     private String supportPhone;
     private String istatCode;

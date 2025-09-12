@@ -508,7 +508,6 @@ class InstitutionConnectorImplTest {
         onboardingEntityMock.setProductId(productIdMock);
         updatedInstitutionMock.setOnboarding(List.of(onboardingEntityMock));
         updatedInstitutionMock.setId(institutionIdMock);
-        updatedInstitutionMock.setInstitutionType(InstitutionType.PA);
         updatedInstitutionMock.setOrigin(Origin.IPA);
         when(institutionRepository.findAndModify(any(), any(), any(), any()))
                 .thenReturn(updatedInstitutionMock);
@@ -717,7 +716,6 @@ class InstitutionConnectorImplTest {
         institutionEntity.setGeographicTaxonomies(new ArrayList<>());
         institutionEntity.setId("42");
         institutionEntity.setImported(true);
-        institutionEntity.setInstitutionType(InstitutionType.PA);
         institutionEntity.setOnboarding(List.of(onboardingEntity));
         institutionEntity.setOrigin(Origin.MOCK);
         institutionEntity.setOriginId("42");

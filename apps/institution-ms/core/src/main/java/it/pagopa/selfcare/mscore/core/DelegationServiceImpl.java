@@ -90,14 +90,14 @@ public class DelegationServiceImpl implements DelegationService {
         /*
             Retrieve both delegator's and partner's institutions to set taxCodeFrom, fromType, taxCodeTo and toType
          */
-        Institution institutionTo = institutionMapper.toInstitutionFiltered(institutionService.retrieveInstitutionById(delegation.getTo()), delegation.getProductId());
-        Institution institutionFrom = institutionMapper.toInstitutionFiltered(institutionService.retrieveInstitutionById(delegation.getFrom()), delegation.getProductId());
+        Institution institutionTo = institutionService.retrieveInstitutionById(delegation.getTo());
+        Institution institutionFrom =institutionService.retrieveInstitutionById(delegation.getFrom());
 
         delegation.setToTaxCode(institutionTo.getTaxCode());
-        delegation.setBrokerType(institutionTo.getInstitutionType());
+        delegation.setBrokerType(institutionMapper.getInstitutionType(institutionTo, delegation.getProductId()));
 
         delegation.setFromTaxCode(institutionFrom.getTaxCode());
-        delegation.setInstitutionType(institutionFrom.getInstitutionType());
+        delegation.setInstitutionType(institutionMapper.getInstitutionType(institutionFrom, delegation.getProductId()));
     }
 
     @Override
@@ -112,11 +112,10 @@ public class DelegationServiceImpl implements DelegationService {
         Institution partner = institutionsTo.stream()
                 .filter(institution -> StringUtils.hasText(delegation.getToSubunitCode()) || !StringUtils.hasText(institution.getSubunitCode()))
                 .findFirst()
-                .map(institution ->  institutionMapper.toInstitutionFiltered(institution, delegation.getProductId()))
                 .orElseThrow(() -> new ResourceNotFoundException(String.format(INSTITUTION_TAX_CODE_NOT_FOUND.getMessage(), delegation.getTo()),
                         INSTITUTION_TAX_CODE_NOT_FOUND.getCode()));
         delegation.setTo(partner.getId());
-        delegation.setBrokerType(partner.getInstitutionType());
+        delegation.setBrokerType(institutionMapper.getInstitutionType(partner, delegation.getProductId()));
 
         // TODO: remove filter when getInstitutions API will be fixed.
         /*
@@ -127,11 +126,10 @@ public class DelegationServiceImpl implements DelegationService {
         Institution from = institutionsFrom.stream()
                 .filter(institution -> StringUtils.hasText(delegation.getFromSubunitCode()) || !StringUtils.hasText(institution.getSubunitCode()))
                 .findFirst()
-                .map(institution -> institutionMapper.toInstitutionFiltered(institution, delegation.getProductId()))
                 .orElseThrow(() -> new ResourceNotFoundException(String.format(INSTITUTION_TAX_CODE_NOT_FOUND.getMessage(), delegation.getTo()),
                         INSTITUTION_TAX_CODE_NOT_FOUND.getCode()));
         delegation.setFrom(from.getId());
-        delegation.setInstitutionType(from.getInstitutionType());
+        delegation.setInstitutionType(institutionMapper.getInstitutionType(from, delegation.getProductId()));
 
         return checkIfExistsAndSaveDelegation(delegation);
     }

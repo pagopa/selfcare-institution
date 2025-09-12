@@ -1,13 +1,12 @@
 package it.pagopa.selfcare.mscore.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.pagopa.selfcare.mscore.web.model.mapper.*;
-import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import it.pagopa.selfcare.mscore.constant.Origin;
 import it.pagopa.selfcare.mscore.core.InstitutionService;
 import it.pagopa.selfcare.mscore.model.institution.Billing;
 import it.pagopa.selfcare.mscore.model.institution.Institution;
 import it.pagopa.selfcare.mscore.web.model.institution.PdaInstitutionRequest;
+import it.pagopa.selfcare.mscore.web.model.mapper.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -73,7 +72,7 @@ public class InstitutionControllerPdaTest {
                 .perform(requestBuilder);
         actualPerformResult.andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-                .andExpect(MockMvcResultMatchers.content().string("{\"id\":\"42\",\"externalId\":\"42\",\"origin\":\"MOCK\",\"originId\":\"Ipa Code\",\"description\":\"The characteristics of someone or something\",\"institutionType\":\"PA\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"attributes\":[],\"imported\":true,\"delegation\":false}"));
+                .andExpect(MockMvcResultMatchers.content().string("{\"id\":\"42\",\"externalId\":\"42\",\"origin\":\"MOCK\",\"originId\":\"Ipa Code\",\"description\":\"The characteristics of someone or something\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"attributes\":[],\"imported\":true,\"delegation\":false}"));
     }
 
     public static Institution createSimpleInstitutionPda() {
@@ -86,7 +85,6 @@ public class InstitutionControllerPdaTest {
         institution.setDescription("The characteristics of someone or something");
         institution.setExternalId("42");
         institution.setId("42");
-        institution.setInstitutionType(InstitutionType.PA);
         institution.setOriginId("Ipa Code");
         institution.setOrigin(Origin.MOCK.name());
 

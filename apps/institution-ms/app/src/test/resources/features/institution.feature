@@ -193,7 +193,6 @@ Feature: Institution
       | taxCode                      | 00297110389                           |
       | origin                       | IPA                                   |
       | originId                     | c_d548                                |
-      | institutionType              | PA                                    |
       | istatCode                    | 038008                                |
       | digitalAddress               | comune.ferrara@cert.comune.fe.it      |
       | zipCode                      | 44121                                 |
@@ -238,7 +237,6 @@ Feature: Institution
       | taxCode                      | 00297110389                           |
       | origin                       | IPA                                   |
       | originId                     | c_d548                                |
-      | institutionType              | PA                                    |
       | istatCode                    | 038008                                |
       | digitalAddress               | comune.ferrara@cert.comune.fe.it      |
       | zipCode                      | 44121                                 |
@@ -292,7 +290,6 @@ Feature: Institution
       | taxCode                      | 00297110389                           |
       | origin                       | IPA                                   |
       | originId                     | A46A529                               |
-      | institutionType              | PA                                    |
       | istatCode                    | 038008                                |
       | digitalAddress               | comune.ferrara@cert.comune.fe.it      |
       | zipCode                      | 44121                                 |
@@ -327,7 +324,6 @@ Feature: Institution
             "desc": "second geo"
           }
         ],
-        "institutionType": "PA",
         "subunitCode": "A46A529",
         "subunitType": "AOO",
         "supportEmail": "updatedsupportmail@test.com",
@@ -343,7 +339,6 @@ Feature: Institution
       | taxCode                      | 00297110389                           |
       | origin                       | IPA                                   |
       | originId                     | A46A529                               |
-      | institutionType              | PA                                    |
       | istatCode                    | 038008                                |
       | digitalAddress               | comune.ferrara@cert.comune.fe.it      |
       | zipCode                      | 44121                                 |
@@ -385,7 +380,6 @@ Feature: Institution
             "desc": "second geo"
           }
         ],
-        "institutionType": "PA",
         "subunitCode": "3QOOYF",
         "subunitType": "UO",
         "supportEmail": "supportmail@test.com",
@@ -401,7 +395,6 @@ Feature: Institution
       | taxCode                      | 00297110389                                |
       | origin                       | IPA                                        |
       | originId                     | 3QOOYF                                     |
-      | institutionType              | PA                                         |
       | istatCode                    | 038008                                     |
       | digitalAddress               | personale@cert.comune.fe.it                |
       | zipCode                      | 44121                                      |
@@ -452,7 +445,6 @@ Feature: Institution
       | taxCode                      | 00297110389                                |
       | origin                       | IPA                                        |
       | originId                     | 3QOOYF                                     |
-      | institutionType              | PA                                         |
       | istatCode                    | 038008                                     |
       | digitalAddress               | personale@cert.comune.fe.it                |
       | zipCode                      | 44121                                      |
@@ -690,7 +682,6 @@ Feature: Institution
       | taxCode         | 123456789 |
       | origin          | IPA       |
       | originId        | c_d548    |
-      | institutionType | PA        |
     And The response body contains field "id"
 
   @RemoveInstitutionIdAfterScenario
@@ -712,7 +703,6 @@ Feature: Institution
       | istatCode       | 06068501219 |
       | origin          | INFOCAMERE  |
       | originId        | 01501320442 |
-      | institutionType | PG          |
     And The response body contains field "id"
 
   Scenario: Not found while creating institution from pda
@@ -948,7 +938,6 @@ Feature: Institution
       | istatCode       | 06068501219         |
       | origin          | ADE                 |
       | originId        | 0987654321          |
-      | institutionType | PG                  |
       | description     | Test PG Institution |
     And The response body contains field "id"
 
@@ -971,7 +960,6 @@ Feature: Institution
       | istatCode       | 06068501219 |
       | origin          | INFOCAMERE  |
       | originId        | 01501320442 |
-      | institutionType | PG          |
       | zipCode         | 00121       |
       | description     | test0       |
     And The response body contains field "id"
@@ -1013,7 +1001,6 @@ Feature: Institution
     Then The status code is 201
     And The response body contains:
       | externalId      | 00310810825 |
-      | institutionType | PA          |
       | origin          | IPA         |
       | taxCode         | 00310810825 |
 
@@ -1256,7 +1243,10 @@ Feature: Institution
         "tokenId": "123456789",
         "contractPath": "testContractPath",
         "activatedAt": "2025-02-28T15:00:00Z",
-        "isAggregator": false
+        "isAggregator": false,
+        "institutionType": "PA",
+        "origin": "MOCK",
+        "originId": "x1"
       }
       """
     When I send a POST request to "/institutions/{id}/onboarding"
@@ -1280,12 +1270,12 @@ Feature: Institution
     And The following request body:
       """
       {
-        "productId": "prod-pn",
+        "productId": "prod-io",
         "tokenId": "123456789",
         "contractPath": "testContractPath",
         "activatedAt": "2025-02-28T15:00:00Z",
         "isAggregator": false,
-        "institutionType": "PT",
+        "institutionType": "PA",
         "origin": "SELC",
         "originId": "xxx"
       }
@@ -1303,7 +1293,7 @@ Feature: Institution
       | prod-pagopa | ACTIVE    |
       | prod-idpay  | DELETED   |
       | prod-pn     | SUSPENDED |
-    And Onboarding for institutionId "123" and productId "prod-pn" was saved to db successfully with token "MOCK_TOKEN" contract "MOCK_CONTRACT", a module of 10, institutionType "PA", origin "MOCK" and originId "123x"
+    And Onboarding for institutionId "123" and productId "prod-io" was saved to db successfully with token "MOCK_TOKEN" contract "MOCK_CONTRACT", a module of 10, institutionType "PA", origin "MOCK" and originId "123x"
 
   Scenario: Do not persist PecNotification with PT institution type
     Given User login with username "j.doe" and password "test"
@@ -1312,7 +1302,8 @@ Feature: Institution
     And The following request body:
       """
       {
-        "productId": "prod-io"
+        "productId": "prod-io",
+        "institutionType": "PT"
       }
       """
     When I send a POST request to "/institutions/{id}/onboarding"
@@ -1324,6 +1315,30 @@ Feature: Institution
       | prod-interop |
     And The response body contains field "id"
     And Count of MailNotification with institutionId "067327d3-bdd6-408d-8655-87e8f1960046" is 0
+
+  @RemoveMockInstitutionAfterScenario
+  Scenario: Attempt to persistOnboarding with existing productId but different institutionType
+    Given User login with username "j.doe" and password "test"
+    And A mock institution with id "123"
+    And The following path params:
+      | id | 123 |
+    And The following request body:
+      """
+      {
+        "productId": "prod-pn",
+        "tokenId": "123456789",
+        "contractPath": "testContractPath",
+        "activatedAt": "2025-02-28T15:00:00Z",
+        "isAggregator": false,
+        "institutionType": "PT",
+        "origin": "SELC",
+        "originId": "xxx"
+      }
+      """
+    When I send a POST request to "/institutions/{id}/onboarding"
+    And The response body contains:
+      | status | 500                                                                  |
+      | detail | Conflicting institutionType for product prod-pn: existing=PA, new=PT |
 
   Scenario: Not found institution while persistOnboarding
     Given User login with username "j.doe" and password "test"
@@ -1475,7 +1490,6 @@ Feature: Institution
       | logo            | test-logo-url/c9a50656-f345-4c81-84be-5b2474470544/logo.png |
       | origin          | IPA                                                         |
       | originId        | c_c067                                                      |
-      | institutionType | PA                                                          |
       | description     | Comune di Castelbuono                                       |
       | taxCode         | 00310810825                                                 |
       | digitalAddress  | comune.castelbuono@pec.it                                   |
@@ -1515,7 +1529,6 @@ Feature: Institution
       | logo            | test-logo-url/c9a50656-f345-4c81-84be-5b2474470544/logo.png |
       | origin          | IPA                                                         |
       | originId        | c_c067                                                      |
-      | institutionType | PA                                                          |
       | description     | Comune di Castelbuono                                       |
       | taxCode         | 00310810825                                                 |
       | digitalAddress  | comune.castelbuono@pec.it                                   |
@@ -1712,12 +1725,10 @@ Feature: Institution
       | institutionType | PA      |
     When I send a GET request to "/institutions/{productId}/brokers/{institutionType}"
     Then The status code is 200
-    And The response body contains the list "" of size 4
+    And The response body contains the list "" of size 2
     And The response body contains at path "taxCode" the following list of values in any order:
       | 85000870064 |
       | 00310810825 |
-      | 94076720658 |
-      | 00313820540 |
 
   Scenario: Get institutions brokers with bad productId
     Given User login with username "j.doe" and password "test"

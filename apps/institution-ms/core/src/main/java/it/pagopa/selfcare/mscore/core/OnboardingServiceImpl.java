@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -85,7 +86,7 @@ public class OnboardingServiceImpl implements OnboardingService {
 
         Institution institution = persistAndGetInstitution(institutionId, productId, onboarding, httpStatus);
 
-        if (isMailNotificationEnabled(institution)) {
+        if (isMailNotificationEnabled(institution, productId)) {
             mailNotificationConnector.addMailNotification(institutionId, productId, institution.getDigitalAddress(),
                         calculateModuleDayOfTheEpoch(institutionSendMailConfig.getEpochDatePecNotification(), onboarding.getCreatedAt(),
                                 institutionSendMailConfig.getPecNotificationFrequency()));
@@ -107,13 +108,31 @@ public class OnboardingServiceImpl implements OnboardingService {
         //Verify if onboarding exists, in case onboarding must fail
         final Institution institution = institutionConnector.findById(institutionId);
 
-        if (Optional.ofNullable(institution.getOnboarding()).flatMap(onboardings -> onboardings.stream()
-                .filter(item -> item.getProductId().equals(productId) && UtilEnumList.VALID_RELATIONSHIP_STATES.contains(item.getStatus()))
-                .findAny()).isPresent()) {
+        Onboarding existingOnboarding = Optional.ofNullable(institution.getOnboarding())
+                .orElse(List.of())
+                .stream()
+                .filter(item -> productId.equals(item.getProductId())
+                        && UtilEnumList.VALID_RELATIONSHIP_STATES.contains(item.getStatus()))
+                .findFirst()
+                .orElse(null);
 
-            httpStatus.append(HttpStatus.OK.value());
-            return institution;
+        if (existingOnboarding != null) {
+            if (existingOnboarding.getInstitutionType().equals(onboarding.getInstitutionType())) {
+                log.info("Found existing onboarding for product {} with matching institutionType {}",
+                        productId, existingOnboarding.getInstitutionType());
+
+                httpStatus.append(HttpStatus.OK.value());
+                return institution;
+            } else {
+                throw new IllegalStateException(
+                        String.format("Conflicting institutionType for product %s: existing=%s, new=%s",
+                                productId,
+                                existingOnboarding.getInstitutionType(),
+                                onboarding.getInstitutionType())
+                );
+            }
         }
+
 
         try {
             //If not exists, persist a new onboarding for product
@@ -132,21 +151,15 @@ public class OnboardingServiceImpl implements OnboardingService {
     }
 
     private static void setOnboardingFields(Onboarding onboarding, Institution institution) {
-        //Setting institutionType if not present in request
         Optional.ofNullable(onboarding.getInstitutionType())
-                .ifPresentOrElse(
-                        value -> {}, // Do nothing if already present
-                        () -> onboarding.setInstitutionType(institution.getInstitutionType())
-                );
+                .ifPresent(onboarding::setInstitutionType);
 
-        //Setting origin if not present in request
         Optional.ofNullable(onboarding.getOrigin())
                 .ifPresentOrElse(
                         value -> {}, // Do nothing if already present
                         () -> onboarding.setOrigin(institution.getOrigin())
                 );
 
-        //Setting originId if not present in request
         Optional.ofNullable(onboarding.getOriginId())
                 .ifPresentOrElse(
                         value -> {}, // Do nothing if already present
@@ -154,13 +167,19 @@ public class OnboardingServiceImpl implements OnboardingService {
                 );
     }
 
-    private boolean isMailNotificationEnabled(Institution institution) {
+    private boolean isMailNotificationEnabled(Institution institution, String productId) {
+        // Mail notifications are disabled if the global property is enabled
         if (Boolean.TRUE.equals(institutionSendMailConfig.getPecNotificationDisabled())) {
-            // If property is enabled then mail notification is disabled
             return false;
         }
-        // If institution is of type PT then mail notification is disabled
-        return !InstitutionType.PT.equals(institution.getInstitutionType());
+
+        // Return false if there is any active onboarding for the product with institution type PT, true otherwise
+        final Onboarding onboarding = institution.getOnboarding().stream()
+                .filter(o -> productId.equals(o.getProductId()) && RelationshipState.ACTIVE.equals(o.getStatus()))
+                .findFirst()
+                .orElseThrow();
+        return !InstitutionType.PT.equals(onboarding.getInstitutionType());
+
     }
 
     @Override

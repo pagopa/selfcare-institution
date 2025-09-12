@@ -18,9 +18,9 @@ Feature: Management
     Then The status code is 200
     And The response body contains the list "found" of size 2
     And The response body contains at path "found" the following list of objects in any order:
-      | id                                   | externalId  | origin | originId        | institutionType | description           |
-      | 067327d3-bdd6-408d-8655-87e8f1960046 | 99000870064 | IPA    | c_d277          | PT              | comune di dernice     |
-      | 0b56686d-3e25-4851-86c8-b9ba0d4fe301 | 15555555555 | SELC   | PSP_15555555555 | PSP             | Comune di Castel Test |
+      | id                                   | externalId  | origin | originId        | description           |
+      | 067327d3-bdd6-408d-8655-87e8f1960046 | 99000870064 | IPA    | c_d277          | comune di dernice     |
+      | 0b56686d-3e25-4851-86c8-b9ba0d4fe301 | 15555555555 | SELC   | PSP_15555555555 | Comune di Castel Test |
     And The response body contains at path "found" the following list of objects in any order:
       | products.prod-io.product | products.prod-io.status | products.prod-io.origin | products.prod-io.originId | products.prod-io.institutionType |
       | prod-io                  | ACTIVE                  | IPA                     | c_d277                    | PT                               |

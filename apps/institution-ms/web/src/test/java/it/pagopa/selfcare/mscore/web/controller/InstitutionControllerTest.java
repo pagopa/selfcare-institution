@@ -94,7 +94,6 @@ class InstitutionControllerTest {
 
         Institution institution = new Institution();
         institution.setId("42");
-        institution.setInstitutionType(InstitutionType.PG);
         institution.setDescription("description");
         institution.setOnboarding(List.of(onboarding));
         institution.setAttributes(List.of(attribute));
@@ -140,7 +139,7 @@ class InstitutionControllerTest {
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
                 .andExpect(MockMvcResultMatchers.content()
                         .string(
-                                "{\"institutions\":[{\"id\":\"42\",\"externalId\":\"42\",\"origin\":\"MOCK\",\"originId\":\"Ipa Code\",\"description\":\"The characteristics of someone or something\",\"institutionType\":\"PA\",\"digitalAddress\":\"42 Main St\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"geographicTaxonomies\":[],\"attributes\":[],\"onboarding\":[],\"paymentServiceProvider\":{\"abiCode\":\"Abi Code\",\"businessRegisterNumber\":\"42\",\"legalRegisterNumber\":\"42\",\"legalRegisterName\":\"Legal Register Name\",\"vatNumberGroup\":true},\"dataProtectionOfficer\":{\"address\":\"42 Main St\",\"email\":\"jane.doe@example.org\",\"pec\":\"Pec\"},\"rea\":\"Rea\",\"shareCapital\":\"Share Capital\",\"imported\":false,\"delegation\":false}]}"));
+                                "{\"institutions\":[{\"id\":\"42\",\"externalId\":\"42\",\"origin\":\"MOCK\",\"originId\":\"Ipa Code\",\"description\":\"The characteristics of someone or something\",\"digitalAddress\":\"42 Main St\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"geographicTaxonomies\":[],\"attributes\":[],\"onboarding\":[],\"paymentServiceProvider\":{\"abiCode\":\"Abi Code\",\"businessRegisterNumber\":\"42\",\"legalRegisterNumber\":\"42\",\"legalRegisterName\":\"Legal Register Name\",\"vatNumberGroup\":true},\"dataProtectionOfficer\":{\"address\":\"42 Main St\",\"email\":\"jane.doe@example.org\",\"pec\":\"Pec\"},\"rea\":\"Rea\",\"shareCapital\":\"Share Capital\",\"imported\":false,\"delegation\":false}]}"));
     }
 
     @Test
@@ -164,7 +163,7 @@ class InstitutionControllerTest {
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
                 .andExpect(MockMvcResultMatchers.content()
                         .string(
-                                "{\"institutions\":[{\"id\":\"42\",\"externalId\":\"42\",\"origin\":\"MOCK\",\"originId\":\"Ipa Code\",\"description\":\"The characteristics of someone or something\",\"institutionType\":\"PA\",\"digitalAddress\":\"42 Main St\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"geographicTaxonomies\":[],\"attributes\":[],\"onboarding\":[],\"paymentServiceProvider\":{\"abiCode\":\"Abi Code\",\"businessRegisterNumber\":\"42\",\"legalRegisterNumber\":\"42\",\"legalRegisterName\":\"Legal Register Name\",\"vatNumberGroup\":true},\"dataProtectionOfficer\":{\"address\":\"42 Main St\",\"email\":\"jane.doe@example.org\",\"pec\":\"Pec\"},\"rootParent\":{\"description\":\"parentDescription\",\"id\":\"rootParentId\"},\"rea\":\"Rea\",\"shareCapital\":\"Share Capital\",\"imported\":false,\"subunitCode\":\"example\",\"subunitType\":\"UO\",\"delegation\":false}]}"));
+                                "{\"institutions\":[{\"id\":\"42\",\"externalId\":\"42\",\"origin\":\"MOCK\",\"originId\":\"Ipa Code\",\"description\":\"The characteristics of someone or something\",\"digitalAddress\":\"42 Main St\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"geographicTaxonomies\":[],\"attributes\":[],\"onboarding\":[],\"paymentServiceProvider\":{\"abiCode\":\"Abi Code\",\"businessRegisterNumber\":\"42\",\"legalRegisterNumber\":\"42\",\"legalRegisterName\":\"Legal Register Name\",\"vatNumberGroup\":true},\"dataProtectionOfficer\":{\"address\":\"42 Main St\",\"email\":\"jane.doe@example.org\",\"pec\":\"Pec\"},\"rootParent\":{\"description\":\"parentDescription\",\"id\":\"rootParentId\"},\"rea\":\"Rea\",\"shareCapital\":\"Share Capital\",\"imported\":false,\"subunitCode\":\"example\",\"subunitType\":\"UO\",\"delegation\":false}]}"));
     }
 
     @Test
@@ -188,7 +187,7 @@ class InstitutionControllerTest {
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
                 .andExpect(MockMvcResultMatchers.content()
                         .string(
-                                "{\"institutions\":[{\"id\":\"42\",\"externalId\":\"42\",\"origin\":\"MOCK\",\"originId\":\"Ipa Code\",\"description\":\"The characteristics of someone or something\",\"institutionType\":\"PA\",\"digitalAddress\":\"42 Main St\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"geographicTaxonomies\":[],\"attributes\":[],\"onboarding\":[],\"paymentServiceProvider\":{\"abiCode\":\"Abi Code\",\"businessRegisterNumber\":\"42\",\"legalRegisterNumber\":\"42\",\"legalRegisterName\":\"Legal Register Name\",\"vatNumberGroup\":true},\"dataProtectionOfficer\":{\"address\":\"42 Main St\",\"email\":\"jane.doe@example.org\",\"pec\":\"Pec\"},\"rootParent\":{\"description\":\"parentDescription\",\"id\":\"rootParentId\"},\"rea\":\"Rea\",\"shareCapital\":\"Share Capital\",\"imported\":false,\"subunitCode\":\"example\",\"subunitType\":\"UO\",\"delegation\":false}]}"));
+                                "{\"institutions\":[{\"id\":\"42\",\"externalId\":\"42\",\"origin\":\"MOCK\",\"originId\":\"Ipa Code\",\"description\":\"The characteristics of someone or something\",\"digitalAddress\":\"42 Main St\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"geographicTaxonomies\":[],\"attributes\":[],\"onboarding\":[],\"paymentServiceProvider\":{\"abiCode\":\"Abi Code\",\"businessRegisterNumber\":\"42\",\"legalRegisterNumber\":\"42\",\"legalRegisterName\":\"Legal Register Name\",\"vatNumberGroup\":true},\"dataProtectionOfficer\":{\"address\":\"42 Main St\",\"email\":\"jane.doe@example.org\",\"pec\":\"Pec\"},\"rootParent\":{\"description\":\"parentDescription\",\"id\":\"rootParentId\"},\"rea\":\"Rea\",\"shareCapital\":\"Share Capital\",\"imported\":false,\"subunitCode\":\"example\",\"subunitType\":\"UO\",\"delegation\":false}]}"));
     }
 
     @Test
@@ -212,7 +211,7 @@ class InstitutionControllerTest {
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
                 .andExpect(MockMvcResultMatchers.content()
                         .string(
-                                "{\"institutions\":[{\"id\":\"42\",\"externalId\":\"42\",\"origin\":\"MOCK\",\"originId\":\"Ipa Code\",\"description\":\"The characteristics of someone or something\",\"institutionType\":\"PA\",\"digitalAddress\":\"42 Main St\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"geographicTaxonomies\":[],\"attributes\":[],\"onboarding\":[],\"paymentServiceProvider\":{\"abiCode\":\"Abi Code\",\"businessRegisterNumber\":\"42\",\"legalRegisterNumber\":\"42\",\"legalRegisterName\":\"Legal Register Name\",\"vatNumberGroup\":true},\"dataProtectionOfficer\":{\"address\":\"42 Main St\",\"email\":\"jane.doe@example.org\",\"pec\":\"Pec\"},\"rootParent\":{\"description\":\"parentDescription\",\"id\":\"rootParentId\"},\"rea\":\"Rea\",\"shareCapital\":\"Share Capital\",\"imported\":false,\"subunitCode\":\"example\",\"subunitType\":\"UO\",\"delegation\":false}]}"));
+                                "{\"institutions\":[{\"id\":\"42\",\"externalId\":\"42\",\"origin\":\"MOCK\",\"originId\":\"Ipa Code\",\"description\":\"The characteristics of someone or something\",\"digitalAddress\":\"42 Main St\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"geographicTaxonomies\":[],\"attributes\":[],\"onboarding\":[],\"paymentServiceProvider\":{\"abiCode\":\"Abi Code\",\"businessRegisterNumber\":\"42\",\"legalRegisterNumber\":\"42\",\"legalRegisterName\":\"Legal Register Name\",\"vatNumberGroup\":true},\"dataProtectionOfficer\":{\"address\":\"42 Main St\",\"email\":\"jane.doe@example.org\",\"pec\":\"Pec\"},\"rootParent\":{\"description\":\"parentDescription\",\"id\":\"rootParentId\"},\"rea\":\"Rea\",\"shareCapital\":\"Share Capital\",\"imported\":false,\"subunitCode\":\"example\",\"subunitType\":\"UO\",\"delegation\":false}]}"));
     }
 
     @Test
@@ -236,7 +235,7 @@ class InstitutionControllerTest {
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
                 .andExpect(MockMvcResultMatchers.content()
                         .string(
-                                "{\"institutions\":[{\"id\":\"42\",\"externalId\":\"42\",\"origin\":\"MOCK\",\"originId\":\"Ipa Code\",\"description\":\"The characteristics of someone or something\",\"institutionType\":\"PA\",\"digitalAddress\":\"42 Main St\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"geographicTaxonomies\":[],\"attributes\":[],\"onboarding\":[],\"paymentServiceProvider\":{\"abiCode\":\"Abi Code\",\"businessRegisterNumber\":\"42\",\"legalRegisterNumber\":\"42\",\"legalRegisterName\":\"Legal Register Name\",\"vatNumberGroup\":true},\"dataProtectionOfficer\":{\"address\":\"42 Main St\",\"email\":\"jane.doe@example.org\",\"pec\":\"Pec\"},\"rootParent\":{\"description\":\"parentDescription\",\"id\":\"rootParentId\"},\"rea\":\"Rea\",\"shareCapital\":\"Share Capital\",\"imported\":false,\"subunitCode\":\"example\",\"subunitType\":\"UO\",\"delegation\":false}]}"));
+                                "{\"institutions\":[{\"id\":\"42\",\"externalId\":\"42\",\"origin\":\"MOCK\",\"originId\":\"Ipa Code\",\"description\":\"The characteristics of someone or something\",\"digitalAddress\":\"42 Main St\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"geographicTaxonomies\":[],\"attributes\":[],\"onboarding\":[],\"paymentServiceProvider\":{\"abiCode\":\"Abi Code\",\"businessRegisterNumber\":\"42\",\"legalRegisterNumber\":\"42\",\"legalRegisterName\":\"Legal Register Name\",\"vatNumberGroup\":true},\"dataProtectionOfficer\":{\"address\":\"42 Main St\",\"email\":\"jane.doe@example.org\",\"pec\":\"Pec\"},\"rootParent\":{\"description\":\"parentDescription\",\"id\":\"rootParentId\"},\"rea\":\"Rea\",\"shareCapital\":\"Share Capital\",\"imported\":false,\"subunitCode\":\"example\",\"subunitType\":\"UO\",\"delegation\":false}]}"));
     }
 
     @Test
@@ -316,7 +315,7 @@ class InstitutionControllerTest {
                 .perform(requestBuilder)
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-                .andExpect(MockMvcResultMatchers.content().string("{\"id\":\"42\",\"description\":\"description\",\"institutionType\":\"PG\",\"istatCode\":\"istatCode\",\"attributes\":[{\"origin\":null,\"code\":\"code\",\"description\":\"description\"}],\"onboarding\":[{\"productId\":\"example\",\"tokenId\":\"tokenId\",\"status\":\"ACTIVE\",\"billing\":{\"vatNumber\":\"example\",\"taxCodeInvoicing\":\"example\",\"recipientCode\":\"example\",\"publicServices\":false},\"createdAt\":null,\"updatedAt\":null,\"isAggregator\":true,\"institutionType\":\"PT\",\"origin\":\"origin\",\"originId\":\"originId\"}],\"imported\":false,\"delegation\":false}"));
+                .andExpect(MockMvcResultMatchers.content().string("{\"id\":\"42\",\"description\":\"description\",\"istatCode\":\"istatCode\",\"attributes\":[{\"origin\":null,\"code\":\"code\",\"description\":\"description\"}],\"onboarding\":[{\"productId\":\"example\",\"tokenId\":\"tokenId\",\"status\":\"ACTIVE\",\"billing\":{\"vatNumber\":\"example\",\"taxCodeInvoicing\":\"example\",\"recipientCode\":\"example\",\"publicServices\":false},\"createdAt\":null,\"updatedAt\":null,\"isAggregator\":true,\"institutionType\":\"PT\",\"origin\":\"origin\",\"originId\":\"originId\"}],\"imported\":false,\"delegation\":false}"));
     }
 
     @Test
@@ -357,7 +356,7 @@ class InstitutionControllerTest {
         institution.setParentDescription("parentDescription");
         institution.setRootParentId("rootParentId");
 
-        when(institutionService.createInstitutionFromIpa(any(), any(), any(), any(), any(), any(), any())).thenReturn(institution);
+        when(institutionService.createInstitutionFromIpa(any(), any(), any(), any(), any(), any())).thenReturn(institution);
 
         //Then
         MockHttpServletRequestBuilder requestBuilder = post("/institutions/from-ipa/")
@@ -368,11 +367,11 @@ class InstitutionControllerTest {
                 .perform(requestBuilder);
         actualPerformResult.andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-                .andExpect(MockMvcResultMatchers.content().string("{\"id\":\"42\",\"externalId\":\"42\",\"origin\":\"MOCK\",\"originId\":\"Ipa Code\",\"description\":\"The characteristics of someone or something\",\"institutionType\":\"PA\",\"digitalAddress\":\"42 Main St\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"geographicTaxonomies\":[],\"attributes\":[],\"onboarding\":[],\"paymentServiceProvider\":{\"abiCode\":\"Abi Code\",\"businessRegisterNumber\":\"42\",\"legalRegisterNumber\":\"42\",\"legalRegisterName\":\"Legal Register Name\",\"vatNumberGroup\":true},\"dataProtectionOfficer\":{\"address\":\"42 Main St\",\"email\":\"jane.doe@example.org\",\"pec\":\"Pec\"},\"rootParent\":{\"description\":\"parentDescription\",\"id\":\"rootParentId\"},\"rea\":\"Rea\",\"shareCapital\":\"Share Capital\",\"imported\":false,\"subunitCode\":\"1234\",\"subunitType\":\"AOO\",\"delegation\":false}"));
+                .andExpect(MockMvcResultMatchers.content().string("{\"id\":\"42\",\"externalId\":\"42\",\"origin\":\"MOCK\",\"originId\":\"Ipa Code\",\"description\":\"The characteristics of someone or something\",\"digitalAddress\":\"42 Main St\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"geographicTaxonomies\":[],\"attributes\":[],\"onboarding\":[],\"paymentServiceProvider\":{\"abiCode\":\"Abi Code\",\"businessRegisterNumber\":\"42\",\"legalRegisterNumber\":\"42\",\"legalRegisterName\":\"Legal Register Name\",\"vatNumberGroup\":true},\"dataProtectionOfficer\":{\"address\":\"42 Main St\",\"email\":\"jane.doe@example.org\",\"pec\":\"Pec\"},\"rootParent\":{\"description\":\"parentDescription\",\"id\":\"rootParentId\"},\"rea\":\"Rea\",\"shareCapital\":\"Share Capital\",\"imported\":false,\"subunitCode\":\"1234\",\"subunitType\":\"AOO\",\"delegation\":false}"));
 
         ArgumentCaptor<List<InstitutionGeographicTaxonomies>> captorGeo = ArgumentCaptor.forClass(List.class);
         verify(institutionService, times(1))
-                .createInstitutionFromIpa(any(),any(),any(),captorGeo.capture(), any(), any(), any());
+                .createInstitutionFromIpa(any(),any(),any(),captorGeo.capture(), any(), any());
         assertEquals(institutionFromIpaPost.getGeographicTaxonomies().size(), captorGeo.getValue().size());
         assertEquals(geoTaxonomies.getCode(), captorGeo.getValue().get(0).getCode());
         assertEquals(geoTaxonomies.getDesc(), captorGeo.getValue().get(0).getDesc());
@@ -406,7 +405,7 @@ class InstitutionControllerTest {
                 .perform(requestBuilder);
         actualPerformResult.andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-                .andExpect(MockMvcResultMatchers.content().string("{\"id\":\"42\",\"externalId\":\"42\",\"origin\":\"ANAC\",\"originId\":\"ANAC Code\",\"description\":\"The characteristics of someone or something\",\"institutionType\":\"SA\",\"digitalAddress\":\"42 Main St\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"geographicTaxonomies\":[],\"attributes\":[],\"onboarding\":[],\"paymentServiceProvider\":{\"abiCode\":\"Abi Code\",\"businessRegisterNumber\":\"42\",\"legalRegisterNumber\":\"42\",\"legalRegisterName\":\"Legal Register Name\",\"vatNumberGroup\":true},\"dataProtectionOfficer\":{\"address\":\"42 Main St\",\"email\":\"jane.doe@example.org\",\"pec\":\"Pec\"},\"rea\":\"Rea\",\"shareCapital\":\"Share Capital\",\"imported\":false,\"delegation\":false}"));
+                .andExpect(MockMvcResultMatchers.content().string("{\"id\":\"42\",\"externalId\":\"42\",\"origin\":\"ANAC\",\"originId\":\"ANAC Code\",\"description\":\"The characteristics of someone or something\",\"digitalAddress\":\"42 Main St\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"geographicTaxonomies\":[],\"attributes\":[],\"onboarding\":[],\"paymentServiceProvider\":{\"abiCode\":\"Abi Code\",\"businessRegisterNumber\":\"42\",\"legalRegisterNumber\":\"42\",\"legalRegisterName\":\"Legal Register Name\",\"vatNumberGroup\":true},\"dataProtectionOfficer\":{\"address\":\"42 Main St\",\"email\":\"jane.doe@example.org\",\"pec\":\"Pec\"},\"rea\":\"Rea\",\"shareCapital\":\"Share Capital\",\"imported\":false,\"delegation\":false}"));
     }
 
     /**
@@ -421,6 +420,7 @@ class InstitutionControllerTest {
         institutionRequest.setTaxCode("42");
         institutionRequest.setExternalId("42");
         institutionRequest.setIstatCode("42");
+        institutionRequest.setOriginId("origin");
 
         String content = objectMapper.writeValueAsString(institutionRequest);
 
@@ -437,7 +437,7 @@ class InstitutionControllerTest {
                 .perform(requestBuilder);
         actualPerformResult.andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-                .andExpect(MockMvcResultMatchers.content().string("{\"id\":\"42\",\"externalId\":\"42\",\"origin\":\"IVASS\",\"originId\":\"IVASS Code\",\"description\":\"The characteristics of someone or something\",\"institutionType\":\"AS\",\"digitalAddress\":\"42 Main St\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"geographicTaxonomies\":[],\"attributes\":[],\"onboarding\":[],\"paymentServiceProvider\":{\"abiCode\":\"Abi Code\",\"businessRegisterNumber\":\"42\",\"legalRegisterNumber\":\"42\",\"legalRegisterName\":\"Legal Register Name\",\"vatNumberGroup\":true},\"dataProtectionOfficer\":{\"address\":\"42 Main St\",\"email\":\"jane.doe@example.org\",\"pec\":\"Pec\"},\"rea\":\"Rea\",\"shareCapital\":\"Share Capital\",\"imported\":false,\"delegation\":false}"));
+                .andExpect(MockMvcResultMatchers.content().string("{\"id\":\"42\",\"externalId\":\"42\",\"origin\":\"IVASS\",\"originId\":\"IVASS Code\",\"description\":\"The characteristics of someone or something\",\"digitalAddress\":\"42 Main St\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"geographicTaxonomies\":[],\"attributes\":[],\"onboarding\":[],\"paymentServiceProvider\":{\"abiCode\":\"Abi Code\",\"businessRegisterNumber\":\"42\",\"legalRegisterNumber\":\"42\",\"legalRegisterName\":\"Legal Register Name\",\"vatNumberGroup\":true},\"dataProtectionOfficer\":{\"address\":\"42 Main St\",\"email\":\"jane.doe@example.org\",\"pec\":\"Pec\"},\"rea\":\"Rea\",\"shareCapital\":\"Share Capital\",\"imported\":false,\"delegation\":false}"));
     }
 
     /**
@@ -468,7 +468,7 @@ class InstitutionControllerTest {
                 .perform(requestBuilder);
         actualPerformResult.andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-                .andExpect(MockMvcResultMatchers.content().string("{\"id\":\"42\",\"externalId\":\"42\",\"origin\":\"MOCK\",\"originId\":\"Ipa Code\",\"description\":\"The characteristics of someone or something\",\"institutionType\":\"PA\",\"digitalAddress\":\"42 Main St\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"geographicTaxonomies\":[],\"attributes\":[],\"onboarding\":[],\"paymentServiceProvider\":{\"abiCode\":\"Abi Code\",\"businessRegisterNumber\":\"42\",\"legalRegisterNumber\":\"42\",\"legalRegisterName\":\"Legal Register Name\",\"vatNumberGroup\":true},\"dataProtectionOfficer\":{\"address\":\"42 Main St\",\"email\":\"jane.doe@example.org\",\"pec\":\"Pec\"},\"rea\":\"Rea\",\"shareCapital\":\"Share Capital\",\"imported\":false,\"delegation\":false}"));
+                .andExpect(MockMvcResultMatchers.content().string("{\"id\":\"42\",\"externalId\":\"42\",\"origin\":\"MOCK\",\"originId\":\"Ipa Code\",\"description\":\"The characteristics of someone or something\",\"digitalAddress\":\"42 Main St\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"geographicTaxonomies\":[],\"attributes\":[],\"onboarding\":[],\"paymentServiceProvider\":{\"abiCode\":\"Abi Code\",\"businessRegisterNumber\":\"42\",\"legalRegisterNumber\":\"42\",\"legalRegisterName\":\"Legal Register Name\",\"vatNumberGroup\":true},\"dataProtectionOfficer\":{\"address\":\"42 Main St\",\"email\":\"jane.doe@example.org\",\"pec\":\"Pec\"},\"rea\":\"Rea\",\"shareCapital\":\"Share Capital\",\"imported\":false,\"delegation\":false}"));
     }
 
     /**
@@ -546,7 +546,6 @@ class InstitutionControllerTest {
         institution.setExternalId("42");
         institution.setGeographicTaxonomies(new ArrayList<>());
         institution.setId("42");
-        institution.setInstitutionType(InstitutionType.PA);
         institution.setOriginId("Ipa Code");
         institution.setOnboarding(new ArrayList<>());
         institution.setPaymentServiceProvider(paymentServiceProvider);
@@ -608,7 +607,7 @@ class InstitutionControllerTest {
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
                 .andExpect(MockMvcResultMatchers.content()
                         .string(
-                                "{\"id\":\"42\",\"externalId\":\"42\",\"origin\":\"MOCK\",\"originId\":\"Ipa Code\",\"description\":\"The characteristics of someone or something\",\"institutionType\":\"PA\",\"digitalAddress\":\"42 Main St\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"geographicTaxonomies\":[],\"attributes\":[],\"onboarding\":[],\"paymentServiceProvider\":{\"abiCode\":\"Abi Code\",\"businessRegisterNumber\":\"42\",\"legalRegisterNumber\":\"42\",\"legalRegisterName\":\"Legal Register Name\",\"vatNumberGroup\":true},\"dataProtectionOfficer\":{\"address\":\"42 Main St\",\"email\":\"jane.doe@example.org\",\"pec\":\"Pec\"},\"rea\":\"Rea\",\"shareCapital\":\"Share Capital\",\"imported\":false,\"delegation\":false}"));
+                                "{\"id\":\"42\",\"externalId\":\"42\",\"origin\":\"MOCK\",\"originId\":\"Ipa Code\",\"description\":\"The characteristics of someone or something\",\"digitalAddress\":\"42 Main St\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"geographicTaxonomies\":[],\"attributes\":[],\"onboarding\":[],\"paymentServiceProvider\":{\"abiCode\":\"Abi Code\",\"businessRegisterNumber\":\"42\",\"legalRegisterNumber\":\"42\",\"legalRegisterName\":\"Legal Register Name\",\"vatNumberGroup\":true},\"dataProtectionOfficer\":{\"address\":\"42 Main St\",\"email\":\"jane.doe@example.org\",\"pec\":\"Pec\"},\"rea\":\"Rea\",\"shareCapital\":\"Share Capital\",\"imported\":false,\"delegation\":false}"));
     }
 
     /**
@@ -705,7 +704,6 @@ class InstitutionControllerTest {
         institution.setExternalId("42");
         institution.setGeographicTaxonomies(new ArrayList<>());
         institution.setId("42");
-        institution.setInstitutionType(InstitutionType.PA);
         institution.setOriginId("Ipa Code");
         institution.setOnboarding(new ArrayList<>());
         institution.setPaymentServiceProvider(paymentServiceProvider);
@@ -788,7 +786,6 @@ class InstitutionControllerTest {
         institution.setExternalId("42");
         institution.setGeographicTaxonomies(new ArrayList<>());
         institution.setId("42");
-        institution.setInstitutionType(InstitutionType.PA);
         institution.setOriginId("Ipa Code");
         institution.setOnboarding(new ArrayList<>());
         institution.setPaymentServiceProvider(paymentServiceProvider);
@@ -835,7 +832,7 @@ class InstitutionControllerTest {
                 .perform(requestBuilder)
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-                .andExpect(MockMvcResultMatchers.content().string("{\"id\":\"42\",\"externalId\":\"42\",\"originId\":\"Ipa Code\",\"description\":\"The characteristics of someone or something\",\"institutionType\":\"PA\",\"digitalAddress\":\"42 Main St\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"geographicTaxonomies\":[],\"attributes\":[],\"onboarding\":[],\"paymentServiceProvider\":{\"abiCode\":\"Abi Code\",\"businessRegisterNumber\":\"42\",\"legalRegisterNumber\":\"42\",\"legalRegisterName\":\"Legal Register Name\",\"vatNumberGroup\":true},\"dataProtectionOfficer\":{\"address\":\"42 Main St\",\"email\":\"jane.doe@example.org\",\"pec\":\"Pec\"},\"imported\":false,\"delegation\":false}"));
+                .andExpect(MockMvcResultMatchers.content().string("{\"id\":\"42\",\"externalId\":\"42\",\"originId\":\"Ipa Code\",\"description\":\"The characteristics of someone or something\",\"digitalAddress\":\"42 Main St\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"geographicTaxonomies\":[],\"attributes\":[],\"onboarding\":[],\"paymentServiceProvider\":{\"abiCode\":\"Abi Code\",\"businessRegisterNumber\":\"42\",\"legalRegisterNumber\":\"42\",\"legalRegisterName\":\"Legal Register Name\",\"vatNumberGroup\":true},\"dataProtectionOfficer\":{\"address\":\"42 Main St\",\"email\":\"jane.doe@example.org\",\"pec\":\"Pec\"},\"imported\":false,\"delegation\":false}"));
     }
 
     /**
@@ -1170,7 +1167,7 @@ class InstitutionControllerTest {
                 .perform(requestBuilder)
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-                .andExpect(MockMvcResultMatchers.content().string("{\"id\":\"42\",\"externalId\":\"42\",\"origin\":\"MOCK\",\"originId\":\"Pg Code\",\"description\":\"The characteristics of someone or something\",\"institutionType\":\"PG\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"imported\":false,\"delegation\":false}"));
+                .andExpect(MockMvcResultMatchers.content().string("{\"id\":\"42\",\"externalId\":\"42\",\"origin\":\"MOCK\",\"originId\":\"Pg Code\",\"description\":\"The characteristics of someone or something\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"imported\":false,\"delegation\":false}"));
     }
 
     /**
@@ -1326,7 +1323,7 @@ class InstitutionControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
                 .andExpect(MockMvcResultMatchers.content()
-                        .string("{\"items\":[{\"id\":\"42\",\"externalId\":null,\"origin\":null,\"originId\":null,\"description\":\"description\",\"institutionType\":\"PG\",\"digitalAddress\":null,\"address\":null,\"zipCode\":null,\"taxCode\":null,\"onboardings\":{\"example\":{\"productId\":\"example\",\"tokenId\":\"tokenId\",\"status\":\"ACTIVE\",\"contract\":\"contract\",\"pricingPlan\":\"setPricingPlan\",\"billing\":{\"vatNumber\":\"example\",\"taxCodeInvoicing\":\"example\",\"recipientCode\":\"example\",\"publicServices\":false},\"createdAt\":null,\"updatedAt\":null,\"closedAt\":null,\"isAggregator\":true,\"institutionType\":\"PT\",\"origin\":\"origin\",\"originId\":\"originId\"}},\"geographicTaxonomies\":null,\"attributes\":[{\"origin\":null,\"code\":\"code\",\"description\":\"description\"}],\"paymentServiceProvider\":null,\"dataProtectionOfficer\":null,\"rea\":null,\"shareCapital\":null,\"businessRegisterPlace\":null,\"supportEmail\":null,\"supportPhone\":null,\"imported\":false,\"subunitCode\":null,\"subunitType\":null,\"aooParentCode\":null,\"createdAt\":null,\"updatedAt\":null}]}"));
+                        .string("{\"items\":[{\"id\":\"42\",\"externalId\":null,\"origin\":null,\"originId\":null,\"description\":\"description\",\"institutionType\":null,\"digitalAddress\":null,\"address\":null,\"zipCode\":null,\"taxCode\":null,\"onboardings\":{\"example\":{\"productId\":\"example\",\"tokenId\":\"tokenId\",\"status\":\"ACTIVE\",\"contract\":\"contract\",\"pricingPlan\":\"setPricingPlan\",\"billing\":{\"vatNumber\":\"example\",\"taxCodeInvoicing\":\"example\",\"recipientCode\":\"example\",\"publicServices\":false},\"createdAt\":null,\"updatedAt\":null,\"closedAt\":null,\"isAggregator\":true,\"institutionType\":\"PT\",\"origin\":\"origin\",\"originId\":\"originId\"}},\"geographicTaxonomies\":null,\"attributes\":[{\"origin\":null,\"code\":\"code\",\"description\":\"description\"}],\"paymentServiceProvider\":null,\"dataProtectionOfficer\":null,\"rea\":null,\"shareCapital\":null,\"businessRegisterPlace\":null,\"supportEmail\":null,\"supportPhone\":null,\"imported\":false,\"subunitCode\":null,\"subunitType\":null,\"aooParentCode\":null,\"createdAt\":null,\"updatedAt\":null}]}"));
         // Then
         verify(institutionService, times(1))
                 .getInstitutionsByProductId(productIdMock, pageMock, sizeMock);

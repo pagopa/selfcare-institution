@@ -26,8 +26,6 @@ public class BulkInstitution {
     @NotNull
     private String description;
 
-    private String institutionType;
-
     @NotNull
     private String digitalAddress;
 

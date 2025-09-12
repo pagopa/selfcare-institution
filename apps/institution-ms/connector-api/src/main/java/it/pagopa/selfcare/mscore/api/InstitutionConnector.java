@@ -20,8 +20,6 @@ public interface InstitutionConnector {
 
     void findAndDeleteOnboarding(String institutionId, String productId);
 
-    List<Institution> findByTaxCodeSubunitCodeAndOrigin(String taxtCode, String subunitCode, String origin, String originId);
-
     Boolean existsByTaxCodeAndSubunitCodeAndProductAndStatusList(String taxtCode, String subunitCode, Optional<String> productId, List<RelationshipState> validRelationshipStates);
 
     Optional<Institution> findByExternalId(String externalId);
