@@ -52,6 +52,7 @@
         @GetMapping(value = {"", "delegations-with-pagination"}, produces = MediaType.APPLICATION_JSON_VALUE)
         @Tag(name = "external-v2")
         @Tag(name = "support")
+        @Tag(name = "internal-v1")
         @Tag(name = "Delegation")
         public ResponseEntity<DelegationWithPaginationResponse> getDelegations(@ApiParam("${swagger.mscore.institutions.model.institutionId}")
                                                                        @RequestParam(name = "institutionId", required = false) String institutionId,
