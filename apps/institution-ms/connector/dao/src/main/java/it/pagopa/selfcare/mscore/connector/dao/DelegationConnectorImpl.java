@@ -181,6 +181,7 @@ public class DelegationConnectorImpl implements DelegationConnector {
         if (Objects.nonNull(institutionUpdate.getParentDescription())) {
             updateTo.set(DelegationEntity.Fields.institutionFromRootName.name(), institutionUpdate.getParentDescription());
         }
+        updateTo.set(DelegationEntity.Fields.updatedAt.name(), OffsetDateTime.now());
         repository.updateMulti(queryTo, updateTo, DelegationEntity.class);
 
     }
