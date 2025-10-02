@@ -39,6 +39,7 @@ import java.util.Optional;
 
 import static it.pagopa.selfcare.mscore.constant.GenericError.CREATE_DELEGATION_ERROR;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -73,12 +74,14 @@ class DelegationConnectorImplTest {
         DelegationEntity delegationEntity = new DelegationEntity();
         delegationEntity.setId("id");
         delegationEntity.setType(DelegationType.PT);
+        delegationEntity.setIsTest(true);
         when(delegationRepository.save(Mockito.any())).thenReturn(delegationEntity);
         Delegation response = delegationConnectorImpl.save(new Delegation());
         assertNotNull(response);
         assertNotNull(response.getId());
         assertEquals(response.getId(), delegationEntity.getId());
         assertEquals(response.getType(), delegationEntity.getType());
+        assertEquals(response.getIsTest(), delegationEntity.getIsTest());
     }
 
     @Test
@@ -213,10 +216,12 @@ class DelegationConnectorImplTest {
         delegationEntity.setTo("to");
         delegationEntity.setProductId("prod-io");
         delegationEntity.setStatus(DelegationState.ACTIVE);
+        delegationEntity.setIsTest(true);
         when(delegationRepository.findAndModify(any(), any(), any(), any())).thenReturn(delegationEntity);
-        Delegation delegation = delegationConnectorImpl.findAndActivate(delegationEntity.getFrom(), delegationEntity.getTo(), delegationEntity.getProductId());
+        Delegation delegation = delegationConnectorImpl.findAndActivate(delegationEntity.getFrom(), delegationEntity.getTo(), delegationEntity.getProductId(), delegationEntity.getIsTest());
         assertNotNull(delegation);
         assertEquals(delegation.getId(), delegationEntity.getId());
+        assertEquals(delegation.getIsTest(), delegationEntity.getIsTest());
     }
 
     @Test

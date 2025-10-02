@@ -3189,6 +3189,9 @@
           "institutionType" : {
             "type" : "string"
           },
+          "isTest" : {
+            "type" : "boolean"
+          },
           "productId" : {
             "type" : "string"
           },
