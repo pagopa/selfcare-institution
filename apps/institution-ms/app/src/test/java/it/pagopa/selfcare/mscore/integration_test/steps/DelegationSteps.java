@@ -52,8 +52,8 @@ public class DelegationSteps {
         Optional.ofNullable(mockDelegationId).ifPresent(delegationRepository::deleteById);
     }
 
-    @And("A pair of mock institutions with id {string},{string} and taxcode {string},{string} with subunitCode {string},{string} with an onboarding on product {string}")
-    public void createPairOfMockInstitutionWithId(String id1, String id2, String taxCode1, String taxCode2, String subCode1, String subCode2, String productId) {
+    @And("A pair of mock institutions with id {string},{string} and taxcode {string},{string} with subunitCode {string},{string} with an onboarding on product {string} and isTest {string}, {string}")
+    public void createPairOfMockInstitutionWithId(String id1, String id2, String taxCode1, String taxCode2, String subCode1, String subCode2, String productId, String isTest1, String isTest2) {
         final OnboardingEntity onboardingEntity = new OnboardingEntity();
         onboardingEntity.setProductId(productId);
         onboardingEntity.setInstitutionType(InstitutionType.PT);
@@ -66,6 +66,7 @@ public class DelegationSteps {
         entity1.setTaxCode(taxCode1);
         entity1.setSubunitCode(subCode1);
         entity1.setOnboarding(List.of(onboardingEntity));
+        entity1.setIsTest(Boolean.parseBoolean(isTest1));
         final InstitutionEntity savedEntity1 = institutionRepository.save(entity1);
         mockInstitutionId1 = savedEntity1.getId();
 
@@ -77,6 +78,7 @@ public class DelegationSteps {
         entity2.setTaxCode(taxCode2);
         entity2.setSubunitCode(subCode2);
         entity2.setOnboarding(List.of(onboardingEntity));
+        entity2.setIsTest(Boolean.parseBoolean(isTest2));
         final InstitutionEntity savedEntity2 = institutionRepository.save(entity2);
         mockInstitutionId2 = savedEntity2.getId();
     }

@@ -32,5 +32,6 @@ public class DelegationEntity {
     private DelegationState status;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
+    private Boolean isTest;
 
 }
