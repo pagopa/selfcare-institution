@@ -100,6 +100,9 @@ public class DelegationSteps {
         delegation.setToType(toInstitution.getOnboarding().stream().filter(onb -> productId.equals(onb.getProductId())).map(onb -> onb.getInstitutionType().name()).findFirst().orElse(null));
         delegation.setProductId(productId);
         delegation.setStatus(status);
+        if(status == DelegationState.DELETED){
+            delegation.setClosedAt(OffsetDateTime.now());
+        }
         delegation.setType(delegationType);
         final DelegationEntity savedDelegation = delegationRepository.save(delegation);
         mockDelegationId = savedDelegation.getId();
@@ -131,10 +134,11 @@ public class DelegationSteps {
         Assertions.assertEquals(expectedValue, institution.isDelegation());
     }
 
-    @And("The delegation with id {string} is in state {} on db")
+    @And("The delegation with id {string} is in state {} and closedAt is not null on db")
     public void checkDelegationState(String delegationId, DelegationState delegationState) {
         final DelegationEntity delegation = delegationRepository.findById(delegationId).orElseThrow();
         Assertions.assertEquals(delegationState, delegation.getStatus());
+        Assertions.assertNotNull(delegation.getClosedAt());
     }
 
     @And("The delegation from institution {string} to institution {string} for product {string} was saved to db successfully")
@@ -150,6 +154,7 @@ public class DelegationSteps {
         Assertions.assertEquals(onboardingTo.getInstitutionType().name(), delegation.getFromType());
         Assertions.assertEquals(onboardingFrom.getInstitutionType().name(), delegation.getToType());
         Assertions.assertEquals(DelegationState.ACTIVE, delegation.getStatus());
+        Assertions.assertNull(delegation.getClosedAt());
     }
 
 }

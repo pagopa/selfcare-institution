@@ -36,5 +36,5 @@ public class Delegation {
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
     private Boolean isTest;
-
+    private OffsetDateTime closedAt;
 }

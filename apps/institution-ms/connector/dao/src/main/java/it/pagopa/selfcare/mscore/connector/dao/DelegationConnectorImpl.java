@@ -143,6 +143,13 @@ public class DelegationConnectorImpl implements DelegationConnector {
         Update update = new Update();
         update.set(DelegationEntity.Fields.updatedAt.name(), OffsetDateTime.now());
         update.set(DelegationEntity.Fields.status.name(), status);
+
+        if(Objects.equals(status, DelegationState.DELETED)){
+            update.set(DelegationEntity.Fields.closedAt.name(), OffsetDateTime.now());
+        } else {
+            update.set(DelegationEntity.Fields.closedAt.name(), null);
+        }
+
         FindAndModifyOptions findAndModifyOptions = FindAndModifyOptions.options().upsert(false);
         return delegationMapper.convertToDelegation(repository.findAndModify(query, update, findAndModifyOptions, DelegationEntity.class));
     }
@@ -158,6 +165,7 @@ public class DelegationConnectorImpl implements DelegationConnector {
         Query query = Query.query(Criteria.where(DelegationEntity.Fields.from.name()).is(from).and(DelegationEntity.Fields.to.name()).is(to).and(DelegationEntity.Fields.productId.name()).is(productId));
         Update update = new Update();
         update.set(DelegationEntity.Fields.updatedAt.name(), OffsetDateTime.now());
+        update.set(DelegationEntity.Fields.closedAt.name(), null);
         update.set(DelegationEntity.Fields.status.name(), DelegationState.ACTIVE);
         update.set(DelegationEntity.Fields.isTest.name(), isTest);
         FindAndModifyOptions findAndModifyOptions = FindAndModifyOptions.options().upsert(false).returnNew(true);
