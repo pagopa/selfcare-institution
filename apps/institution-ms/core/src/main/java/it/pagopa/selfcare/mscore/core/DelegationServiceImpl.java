@@ -99,9 +99,9 @@ public class DelegationServiceImpl implements DelegationService {
         delegation.setFromTaxCode(institutionFrom.getTaxCode());
         delegation.setInstitutionType(institutionMapper.getInstitutionType(institutionFrom, delegation.getProductId()));
 
-        delegation.setIsTest(
-                Optional.ofNullable(institutionTo.getIsTest()).orElse(false) ||
-                        Optional.ofNullable(institutionFrom.getIsTest()).orElse(false));
+        if (Boolean.TRUE.equals(institutionTo.getIsTest()) || Boolean.TRUE.equals(institutionFrom.getIsTest())) {
+            delegation.setIsTest(true);
+        }
     }
 
     @Override
@@ -135,9 +135,9 @@ public class DelegationServiceImpl implements DelegationService {
         delegation.setFrom(from.getId());
         delegation.setInstitutionType(institutionMapper.getInstitutionType(from, delegation.getProductId()));
 
-        delegation.setIsTest(
-                Optional.ofNullable(partner.getIsTest()).orElse(false) ||
-                        Optional.ofNullable(from.getIsTest()).orElse(false));
+        if (Boolean.TRUE.equals(partner.getIsTest()) || Boolean.TRUE.equals(from.getIsTest())) {
+            delegation.setIsTest(true);
+        }
 
         return checkIfExistsAndSaveDelegation(delegation);
     }
