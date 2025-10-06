@@ -1140,6 +1140,28 @@ Feature: Institution
       | zipCode                             | Updated zipCode                  |
       | onboarding[0].billing.vatNumber     | Updated vatNumber                |
 
+  @RemoveMockInstitutionAfterScenario
+  Scenario: Successfully update institution description and delegation updatedAt
+    Given User login with username "j.doe" and password "test"
+    And A mock institution with id "bf4dcdb6-f223-4996-bfbc-326b119dd202"
+    And The following path params:
+      | id | bf4dcdb6-f223-4996-bfbc-326b119dd202 |
+    And The following request body:
+      """
+      {
+        "description": "Updated institution description"
+      }
+      """
+    When I send a PUT request to "/institutions/{id}"
+    Then The status code is 200
+    Given User login with username "j.doe" and password "test"
+    And The following query params:
+      | institutionId | bf4dcdb6-f223-4996-bfbc-326b119dd202 |
+    And I send a GET request to "/v2/delegations"
+    Then The status code is 200
+    And The response body contains the list "delegations" of size 1
+    And The response body contains field "delegations.updatedAt"
+
   Scenario Outline: Bad request while updating institution with invalid onboarding fields
     Given User login with username "j.doe" and password "test"
     And The following path params:

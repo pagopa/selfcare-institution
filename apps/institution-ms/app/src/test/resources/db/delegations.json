@@ -190,5 +190,22 @@
     "createdAt": "2024-10-25T11:52:18.4743374Z",
     "updatedAt": "2024-10-25T11:52:18.4763148Z",
     "_class": "it.pagopa.selfcare.mscore.connector.dao.model.DelegationEntity"
+  },
+  {
+    "_id": "104c18ce-300e-454e-ae9d-7e87c019ba3b",
+    "from": "bf4dcdb6-f223-4996-bfbc-326b119dd202",
+    "institutionFromName": "Comune di Assisi",
+    "institutionToName": "Comune di Vasanello",
+    "institutionFromRootName": "parent test",
+    "to": "1a0529b8-bf7d-491e-8c5e-a62a4e909b0a",
+    "toTaxCode": "00221130560",
+    "fromTaxCode": "00313820540",
+    "toType": "PT",
+    "fromType": "PA",
+    "productId": "prod-io",
+    "type": "EA",
+    "status": "ACTIVE",
+    "createdAt": "2024-10-25T11:52:18.4743374Z",
+    "_class": "it.pagopa.selfcare.mscore.connector.dao.model.DelegationEntity"
   }
 ]
