@@ -72,7 +72,7 @@ public class DelegationServiceImpl implements DelegationService {
         Delegation savedDelegation;
         try {
             if(checkIfExistsWithStatus(delegation, DelegationState.DELETED)){
-                savedDelegation = delegationConnector.findAndActivate(delegation.getFrom(), delegation.getTo(), delegation.getProductId());
+                savedDelegation = delegationConnector.findAndActivate(delegation.getFrom(), delegation.getTo(), delegation.getProductId(), delegation.getIsTest());
             } else {
                 delegation.setCreatedAt(OffsetDateTime.now());
                 delegation.setUpdatedAt(OffsetDateTime.now());
@@ -98,6 +98,10 @@ public class DelegationServiceImpl implements DelegationService {
 
         delegation.setFromTaxCode(institutionFrom.getTaxCode());
         delegation.setInstitutionType(institutionMapper.getInstitutionType(institutionFrom, delegation.getProductId()));
+
+        if (Boolean.TRUE.equals(institutionTo.getIsTest()) || Boolean.TRUE.equals(institutionFrom.getIsTest())) {
+            delegation.setIsTest(true);
+        }
     }
 
     @Override
@@ -130,6 +134,10 @@ public class DelegationServiceImpl implements DelegationService {
                         INSTITUTION_TAX_CODE_NOT_FOUND.getCode()));
         delegation.setFrom(from.getId());
         delegation.setInstitutionType(institutionMapper.getInstitutionType(from, delegation.getProductId()));
+
+        if (Boolean.TRUE.equals(partner.getIsTest()) || Boolean.TRUE.equals(from.getIsTest())) {
+            delegation.setIsTest(true);
+        }
 
         return checkIfExistsAndSaveDelegation(delegation);
     }

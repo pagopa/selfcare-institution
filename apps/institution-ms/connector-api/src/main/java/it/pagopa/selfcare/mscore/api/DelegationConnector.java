@@ -22,7 +22,7 @@ public interface DelegationConnector {
 
     boolean checkIfDelegationsAreActive(String institutionId);
 
-    Delegation findAndActivate(String from, String to, String productId);
+    Delegation findAndActivate(String from, String to, String productId, Boolean isTest);
 
     void updateDelegation(Institution update);
 
