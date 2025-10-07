@@ -253,7 +253,7 @@ class DelegationConnectorImplTest {
     }
 
     @Test
-    void findAndActivate() {
+    void findAndActivate_shouldSetIsTest() {
         DelegationEntity delegationEntity = new DelegationEntity();
         delegationEntity.setId("id");
         delegationEntity.setFrom("from");
@@ -261,11 +261,42 @@ class DelegationConnectorImplTest {
         delegationEntity.setProductId("prod-io");
         delegationEntity.setStatus(DelegationState.ACTIVE);
         delegationEntity.setIsTest(true);
-        when(delegationRepository.findAndModify(any(), any(), any(), any())).thenReturn(delegationEntity);
+        ArgumentCaptor<Update> updateCaptor = ArgumentCaptor.forClass(Update.class);
+        when(delegationRepository.findAndModify(any(), updateCaptor.capture(), any(), any())).thenReturn(delegationEntity);
         Delegation delegation = delegationConnectorImpl.findAndActivate(delegationEntity.getFrom(), delegationEntity.getTo(), delegationEntity.getProductId(), delegationEntity.getIsTest());
+        Update update = updateCaptor.getValue();
+        Document updateDoc = update.getUpdateObject();
+
+        assertTrue(updateDoc.containsKey("$set"));
+        Document setDoc = (Document) updateDoc.get("$set");
+        assertTrue(setDoc.containsKey(DelegationEntity.Fields.isTest.name()));
+        assertNotNull(setDoc.get(DelegationEntity.Fields.isTest.name()));
+        assertEquals(delegationEntity.getIsTest(), setDoc.get(DelegationEntity.Fields.isTest.name()));
         assertNotNull(delegation);
         assertEquals(delegation.getId(), delegationEntity.getId());
         assertEquals(delegation.getIsTest(), delegationEntity.getIsTest());
+    }
+
+    @Test
+    void findAndActivate_shouldNotSetIsTest() {
+        DelegationEntity delegationEntity = new DelegationEntity();
+        delegationEntity.setId("id");
+        delegationEntity.setFrom("from");
+        delegationEntity.setTo("to");
+        delegationEntity.setProductId("prod-io");
+        delegationEntity.setStatus(DelegationState.ACTIVE);
+        ArgumentCaptor<Update> updateCaptor = ArgumentCaptor.forClass(Update.class);
+        when(delegationRepository.findAndModify(any(), updateCaptor.capture(), any(), any())).thenReturn(delegationEntity);
+        Delegation delegation = delegationConnectorImpl.findAndActivate(delegationEntity.getFrom(), delegationEntity.getTo(), delegationEntity.getProductId(), delegationEntity.getIsTest());
+        Update update = updateCaptor.getValue();
+        Document updateDoc = update.getUpdateObject();
+
+        assertTrue(updateDoc.containsKey("$set"));
+        Document setDoc = (Document) updateDoc.get("$set");
+        assertFalse(setDoc.containsKey(DelegationEntity.Fields.isTest.name()));
+        assertNull(setDoc.get(DelegationEntity.Fields.isTest.name()));
+        assertNotNull(delegation);
+        assertEquals(delegation.getId(), delegationEntity.getId());
     }
 
     @Test
