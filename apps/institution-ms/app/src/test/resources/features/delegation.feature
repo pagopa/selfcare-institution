@@ -565,7 +565,7 @@ Feature: Delegation
     Then The status code is 204
     And The delegation flag for institution "123" is false on db
     And The delegation flag for institution "456" is false on db
-    And The delegation with id "123456" is in state DELETED on db
+    And The delegation with id "123456" is in state DELETED and closedAt is not null on db
 
   @RemovePairOfMockInstitutionAfterScenario
   Scenario: Not found delegationId while deleting delegation
@@ -587,7 +587,7 @@ Feature: Delegation
       | delegationId | 123456 |
     When I send a DELETE request to "/delegations/{delegationId}"
     Then The status code is 204
-    And The delegation with id "123456" is in state DELETED on db
+    And The delegation with id "123456" is in state DELETED and closedAt is not null on db
 
 # GET /delegations/delegators/{institutionId}
 

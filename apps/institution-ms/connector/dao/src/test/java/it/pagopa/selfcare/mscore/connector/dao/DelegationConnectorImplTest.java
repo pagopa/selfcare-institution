@@ -16,10 +16,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.Spy;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -28,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -152,6 +150,52 @@ class DelegationConnectorImplTest {
         Delegation delegation = delegationConnectorImpl.findByIdAndModifyStatus(delegationEntity.getId(), DelegationState.DELETED);
         assertNotNull(delegation);
         assertEquals(delegation.getId(), delegationEntity.getId());
+    }
+
+    @Test
+    void findByIdAndModifyStatus_whenDeleted_shouldSetClosedAt() {
+        DelegationEntity delegationEntity = new DelegationEntity();
+        delegationEntity.setId("id");
+        delegationEntity.setStatus(DelegationState.ACTIVE);
+        ArgumentCaptor<Update> updateCaptor = ArgumentCaptor.forClass(Update.class);
+
+        when(delegationRepository.findAndModify(any(), updateCaptor.capture(), any(), any()))
+                .thenReturn(delegationEntity);
+
+        delegationConnectorImpl.findByIdAndModifyStatus(delegationEntity.getId(), DelegationState.DELETED);
+
+        Update update = updateCaptor.getValue();
+
+        Document updateDoc = update.getUpdateObject();
+
+        assertTrue(update.modifies(DelegationEntity.Fields.closedAt.name()));
+        assertTrue(updateDoc.containsKey("$set"));
+        Document setDoc = (Document) updateDoc.get("$set");
+        assertTrue(setDoc.containsKey(DelegationEntity.Fields.closedAt.name()));
+        assertNotNull(setDoc.get(DelegationEntity.Fields.closedAt.name()));
+    }
+
+    @Test
+    void findByIdAndModifyStatus_whenActivated_shouldSetClosedAtToNull() {
+        DelegationEntity delegationEntity = new DelegationEntity();
+        delegationEntity.setId("id");
+        delegationEntity.setStatus(DelegationState.DELETED);
+        ArgumentCaptor<Update> updateCaptor = ArgumentCaptor.forClass(Update.class);
+
+        when(delegationRepository.findAndModify(any(), updateCaptor.capture(), any(), any()))
+                .thenReturn(delegationEntity);
+
+        delegationConnectorImpl.findByIdAndModifyStatus("id", DelegationState.ACTIVE);
+
+        Update update = updateCaptor.getValue();
+
+        Document updateDoc = update.getUpdateObject();
+
+        assertTrue(update.modifies(DelegationEntity.Fields.closedAt.name()));
+        assertTrue(updateDoc.containsKey("$set"));
+        Document setDoc = (Document) updateDoc.get("$set");
+        assertTrue(setDoc.containsKey(DelegationEntity.Fields.closedAt.name()));
+        assertNull(setDoc.get(DelegationEntity.Fields.closedAt.name()));
     }
 
     @Test
