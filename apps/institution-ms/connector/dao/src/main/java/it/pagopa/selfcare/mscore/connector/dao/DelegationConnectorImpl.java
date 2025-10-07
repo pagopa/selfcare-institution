@@ -167,7 +167,9 @@ public class DelegationConnectorImpl implements DelegationConnector {
         update.set(DelegationEntity.Fields.updatedAt.name(), OffsetDateTime.now());
         update.set(DelegationEntity.Fields.closedAt.name(), null);
         update.set(DelegationEntity.Fields.status.name(), DelegationState.ACTIVE);
-        update.set(DelegationEntity.Fields.isTest.name(), isTest);
+        if(Boolean.TRUE.equals(isTest)){
+            update.set(DelegationEntity.Fields.isTest.name(), true);
+        }
         FindAndModifyOptions findAndModifyOptions = FindAndModifyOptions.options().upsert(false).returnNew(true);
         return delegationMapper.convertToDelegation(repository.findAndModify(query, update, findAndModifyOptions, DelegationEntity.class));
     }
