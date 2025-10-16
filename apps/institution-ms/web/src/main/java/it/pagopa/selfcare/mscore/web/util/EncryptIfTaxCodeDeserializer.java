@@ -37,7 +37,7 @@ public class EncryptIfTaxCodeDeserializer extends JsonDeserializer<String> {
         }
 
         if (UUID_PATTERN.matcher(value).matches() && userRegistryConnector != null) {
-            User user = userRegistryConnector.getUserByInternalId(value);
+            User user = userRegistryConnector.getUserByFiscalCode(value);
             return user != null ? user.getFiscalCode() : null;
         }
 
