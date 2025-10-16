@@ -12,6 +12,7 @@
     import it.pagopa.selfcare.mscore.model.delegation.GetDelegationParameters;
     import it.pagopa.selfcare.mscore.web.model.delegation.DelegationWithPaginationResponse;
     import it.pagopa.selfcare.mscore.web.model.mapper.DelegationMapper;
+    import it.pagopa.selfcare.mscore.web.util.EncryptedTaxCodeParam;
     import lombok.extern.slf4j.Slf4j;
     import org.springframework.http.HttpStatus;
     import org.springframework.http.MediaType;
@@ -63,7 +64,7 @@
                                                                        @ApiParam("${swagger.mscore.institutions.model.description}")
                                                                        @RequestParam(name = "search", required = false) String search,
                                                                        @ApiParam("${swagger.mscore.institutions.model.taxCode}")
-                                                                       @RequestParam(name = "taxCode", required = false) String taxCode,
+                                                                       @RequestParam(name = "taxCode", required = false) @EncryptedTaxCodeParam String taxCode,
                                                                        @ApiParam("${swagger.mscore.institutions.delegations.order}")
                                                                        @RequestParam(name = "order", required = false, defaultValue = "NONE") Order order,
                                                                        @RequestParam (name = "page", required = false, defaultValue = "0") @Min(0) Integer page,

@@ -17,6 +17,7 @@ import it.pagopa.selfcare.mscore.web.model.delegation.DelegationRequestFromTaxco
 import it.pagopa.selfcare.mscore.web.model.delegation.DelegationResponse;
 import it.pagopa.selfcare.mscore.web.model.mapper.DelegationMapper;
 import it.pagopa.selfcare.mscore.web.util.CustomExceptionMessage;
+import it.pagopa.selfcare.mscore.web.util.EncryptedTaxCodeParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -110,7 +111,7 @@ public class DelegationController {
                                                                    @ApiParam("${swagger.mscore.institutions.model.description}")
                                                                    @RequestParam(name = "search", required = false) String search,
                                                                    @ApiParam("${swagger.mscore.institutions.model.taxCode}")
-                                                                   @RequestParam(name = "taxCode", required = false) String taxCode,
+                                                                   @RequestParam(name = "taxCode", required = false) @EncryptedTaxCodeParam String taxCode,
                                                                    @ApiParam("${swagger.mscore.institutions.delegations.order}")
                                                                    @RequestParam(name = "order", required = false) Optional<Order> order,
                                                                    @RequestParam(name = "page", required = false) Optional<Integer> page,
