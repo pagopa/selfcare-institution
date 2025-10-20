@@ -297,6 +297,42 @@ Feature: Delegation
     And The delegation flag for institution "456" is true on db
     And The delegation from institution "123" to institution "456" for product "prod-io" was saved to db successfully
 
+  @RemovePairOfMockInstitutionAfterScenario
+  @RemoveCreatedDelegationAfterScenario
+  Scenario: Successfully create delegation from fiscal codes
+    Given User login with username "j.doe" and password "test"
+    And A pair of mock institutions with id "123","456" and taxcode "97a511a7-2acc-47b9-afed-2f3c65753b4a","35a78332-d038-4bfa-8e85-2cba7f6b7bf7" with subunitCode "S1","S2" with an onboarding on product "prod-io" and isTest "true", "false"
+    And The following request body:
+      """
+        {
+          "fromTaxCode": "PRVTNT80A41H401T",
+          "toTaxCode": "BLBRKY67C30H501B",
+          "institutionFromName": "PRV CF 1",
+          "institutionToName": "PRV CF 2",
+          "productId": "prod-io",
+          "type": "PT",
+          "fromSubunitCode": "S1",
+          "toSubunitCode": "S2"
+        }
+      """
+    When I send a POST request to "/delegations/from-taxcode"
+    Then The status code is 201
+    And The response body contains:
+      | institutionId   | 123              |
+      | institutionName | PRV CF 1         |
+      | type            | PT               |
+      | productId       | prod-io          |
+      | brokerId        | 456              |
+      | brokerName      | PRV CF 2         |
+      | status          | ACTIVE           |
+    And The response body contains field "id"
+    And The response body contains field "createdAt"
+    And The response body contains field "updatedAt"
+    And The response body contains field "isTest"
+    And The delegation flag for institution "123" is false on db
+    And The delegation flag for institution "456" is true on db
+    And The delegation from institution "123" to institution "456" for product "prod-io" was saved to db successfully
+
   Scenario: Institution (fromTaxCode) not found while creating delegation from taxcode
     Given User login with username "j.doe" and password "test"
     And The following request body:
@@ -333,7 +369,7 @@ Feature: Delegation
     Then The status code is 404
     And The response body contains:
       | status | 404                                        |
-      | detail | Cannot find Institution using taxCode null |
+      | detail | Cannot find Institution using taxCode 123 |
 
   @RemovePairOfMockInstitutionAfterScenario
   @RemoveCreatedDelegationAfterScenario
@@ -665,6 +701,28 @@ Feature: Delegation
     When I send a GET request to "/delegations/delegators/{institutionId}"
     Then The status code is 200
     And The response body contains the list "" of size 0
+
+  Scenario: Successfully get delegators with fiscal code
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | institutionId | 0c6d2a5e-9c42-4b2f-9c3f-94c5cb2b6d1a |
+    And The following query params:
+      | productId | prod-io |
+      | size      | 1       |
+    When I send a GET request to "/delegations/delegators/{institutionId}"
+    Then The status code is 200
+    And The response body contains the list "" of size 1
+    And The response body contains:
+      | [0].id                          | 1735127539474                        |
+      | [0].delegationId                | 204c18ce-310f-454e-ae0e-7e87c019ba5c |
+      | [0].delegationType              | PT                                   |
+      | [0].delegationProductId         | prod-io                              |
+      | [0].institution.id              | c7a9a8e2-36e3-4ad5-9e63-6d482b74d1d7 |
+      | [0].institution.digitalAddress  | test@test.com                        |
+      | [0].institution.description     | Privato CF 1                         |
+      | [0].institution.institutionType | PRV_PF                               |
+      | [0].institution.origin          | IPA                                  |
+      | [0].institution.originId        | isticom                              |
 
   Scenario: Bad request while getting delegators with invalid type
     Given User login with username "j.doe" and password "test"

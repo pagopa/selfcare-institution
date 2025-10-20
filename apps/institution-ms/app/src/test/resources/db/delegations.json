@@ -207,5 +207,21 @@
     "status": "ACTIVE",
     "createdAt": "2024-10-25T11:52:18.4743374Z",
     "_class": "it.pagopa.selfcare.mscore.connector.dao.model.DelegationEntity"
+  },
+  {
+    "_id": "204c18ce-310f-454e-ae0e-7e87c019ba5c",
+    "from": "c7a9a8e2-36e3-4ad5-9e63-6d482b74d1d7",
+    "institutionFromName": "Privato CF 1",
+    "institutionToName": "Privato CF 2",
+    "to": "0c6d2a5e-9c42-4b2f-9c3f-94c5cb2b6d1a",
+    "toTaxCode": "35a78332-d038-4bfa-8e85-2cba7f6b7bf7",
+    "fromTaxCode": "97a511a7-2acc-47b9-afed-2f3c65753b4a",
+    "toType": "PRV_PF",
+    "fromType": "PRV_PF",
+    "productId": "prod-io",
+    "type": "PT",
+    "status": "ACTIVE",
+    "createdAt": "2024-12-25T11:52:19.4743374Z",
+    "_class": "it.pagopa.selfcare.mscore.connector.dao.model.DelegationEntity"
   }
 ]

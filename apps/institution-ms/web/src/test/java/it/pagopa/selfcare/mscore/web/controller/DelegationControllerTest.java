@@ -2,24 +2,18 @@ package it.pagopa.selfcare.mscore.web.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import it.pagopa.selfcare.mscore.api.UserRegistryConnector;
 import it.pagopa.selfcare.mscore.constant.DelegationType;
 import it.pagopa.selfcare.mscore.core.DelegationService;
 import it.pagopa.selfcare.mscore.model.delegation.Delegation;
 import it.pagopa.selfcare.mscore.model.delegation.DelegationInstitution;
 import it.pagopa.selfcare.mscore.model.institution.Institution;
 import it.pagopa.selfcare.mscore.model.institution.Onboarding;
-import it.pagopa.selfcare.mscore.model.user.User;
 import it.pagopa.selfcare.mscore.web.model.delegation.DelegationInstitutionResponse;
 import it.pagopa.selfcare.mscore.web.model.delegation.DelegationRequest;
 import it.pagopa.selfcare.mscore.web.model.delegation.DelegationRequestFromTaxcode;
 import it.pagopa.selfcare.mscore.web.model.delegation.DelegationResponse;
 import it.pagopa.selfcare.mscore.web.model.mapper.*;
-import it.pagopa.selfcare.mscore.web.util.DecryptIfUuidSerializer;
-import it.pagopa.selfcare.mscore.web.util.EncryptIfTaxCodeDeserializer;
 import it.pagopa.selfcare.onboarding.common.InstitutionType;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -29,9 +23,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -57,39 +49,18 @@ class DelegationControllerTest {
     @Mock
     private DelegationService delegationService;
 
-    @Mock
-    private UserRegistryConnector userRegistryConnector;
-
     private final InstitutionUpdateMapper institutionUpdateMapper = new InstitutionUpdateMapperImpl();
     private final OnboardingResourceMapper onboardingResourceMapper = new OnboardingResourceMapperImpl(institutionUpdateMapper);
     private final InstitutionResourceMapper institutionResourceMapper = new InstitutionResourceMapperImpl(onboardingResourceMapper);
-    private final DecryptIfUuidSerializer serializer = new DecryptIfUuidSerializer(userRegistryConnector);
-    private final EncryptIfTaxCodeDeserializer deserializer = new EncryptIfTaxCodeDeserializer(userRegistryConnector);
 
     @Spy
     private final DelegationMapper delegationResourceMapper = new DelegationMapperImpl(institutionResourceMapper);
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private MockMvc mockMvc;
-
     final String FROM1 = "from1";
     final String FROM2 = "from2";
     final String TO1 = "to1";
-    @BeforeEach
-    void setUp() {
-        SimpleModule module = new SimpleModule();
-        module.addSerializer(String.class, new DecryptIfUuidSerializer(userRegistryConnector));
-        module.addDeserializer(String.class, new EncryptIfTaxCodeDeserializer(userRegistryConnector));
-
-        objectMapper.registerModule(module);
-
-        mockMvc = MockMvcBuilders.standaloneSetup(delegationController)
-                .setMessageConverters(new MappingJackson2HttpMessageConverter(objectMapper))
-                .build();
-    }
-
-
 
     /**
      * Method under test: {@link DelegationController#createDelegation(DelegationRequest)}
@@ -198,10 +169,10 @@ class DelegationControllerTest {
                 .get("/delegations?&productId={productId}", "productId");
 
         assertThrows(NestedServletException.class, () ->
-            MockMvcBuilders.standaloneSetup(delegationController)
-                    .build()
-                    .perform(requestBuilder));
-        
+                MockMvcBuilders.standaloneSetup(delegationController)
+                        .build()
+                        .perform(requestBuilder));
+
     }
 
     /**
@@ -355,66 +326,6 @@ class DelegationControllerTest {
         assertNotNull(response);
         assertNotNull(response.getId());
         assertEquals(delegation.getId(), response.getId());
-    }
-
-    @Test
-    void testCreateDelegationUsingFiscalCode() throws Exception {
-
-        String fromTaxCode = "OOOOOO00A01D522W";
-        String toTaxCode = "AAAAAA00A41F271A";
-        String toUuid = "5e8c3f1a-9d2e-4c7b-8b6f-2e5f1c0b9a3c";
-        String fromUuid = "3f47a2b1-6c9e-4a2d-9f3b-0e1c2d4f5a6b";
-
-        Delegation delegation = new Delegation();
-        delegation.setId("id");
-        delegation.setTo("toTaxCode");
-        delegation.setFrom("from");
-        delegation.setTaxCode(fromUuid);
-        delegation.setBrokerTaxCode(toUuid);
-        when(delegationService.createDelegationFromInstitutionsTaxCode(any())).thenReturn(delegation);
-
-        DelegationRequestFromTaxcode delegationRequest = new DelegationRequestFromTaxcode();
-        delegationRequest.setFromTaxCode(fromTaxCode);
-        delegationRequest.setToTaxCode(toTaxCode);
-        delegationRequest.setInstitutionFromName("Test name");
-        delegationRequest.setInstitutionToName("Test to name");
-        delegationRequest.setProductId("productId");
-        delegationRequest.setType(DelegationType.PT);
-        String content = (new ObjectMapper()).writeValueAsString(delegationRequest);
-
-        User userTo = new User();
-        userTo.setId(toUuid);
-        userTo.setFiscalCode(toTaxCode);
-
-        User userFrom = new User();
-        userFrom.setId(fromUuid);
-        userFrom.setFiscalCode(fromTaxCode);
-
-        when(userRegistryConnector.getUserByInternalId(toUuid)).thenReturn(userTo);
-        when(userRegistryConnector.getUserByInternalId(fromUuid)).thenReturn(userFrom);
-
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
-                .post("/delegations/from-taxcode")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(content);
-        MvcResult result =  MockMvcBuilders.standaloneSetup(delegationController)
-                .build()
-                .perform(requestBuilder)
-                .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-                .andReturn();
-
-
-        DelegationResponse response = objectMapper.readValue(
-                result.getResponse().getContentAsString(),
-                new TypeReference<>() {
-                });
-
-        assertNotNull(response);
-        assertNotNull(response.getId());
-        assertEquals(delegation.getId(), response.getId());
-        assertEquals(fromTaxCode, response.getTaxCode());
-        assertEquals(toTaxCode, response.getBrokerTaxCode());
     }
 
     @Test

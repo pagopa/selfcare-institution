@@ -64,7 +64,7 @@
                                                                        @ApiParam("${swagger.mscore.institutions.model.description}")
                                                                        @RequestParam(name = "search", required = false) String search,
                                                                        @ApiParam("${swagger.mscore.institutions.model.taxCode}")
-                                                                       @RequestParam(name = "taxCode", required = false) @EncryptedTaxCodeParam String taxCode,
+                                                                       @EncryptedTaxCodeParam String taxCode,
                                                                        @ApiParam("${swagger.mscore.institutions.delegations.order}")
                                                                        @RequestParam(name = "order", required = false, defaultValue = "NONE") Order order,
                                                                        @RequestParam (name = "page", required = false, defaultValue = "0") @Min(0) Integer page,

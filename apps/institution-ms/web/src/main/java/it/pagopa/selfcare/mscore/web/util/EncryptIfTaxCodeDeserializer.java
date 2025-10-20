@@ -5,27 +5,17 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import it.pagopa.selfcare.mscore.api.UserRegistryConnector;
 import it.pagopa.selfcare.mscore.model.user.User;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.regex.Pattern;
 
-@Component
 public class EncryptIfTaxCodeDeserializer extends JsonDeserializer<String> {
 
     private static final Pattern UUID_PATTERN =
             Pattern.compile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
-
-    private final UserRegistryConnector userRegistryConnector;
-
-    @Autowired
-    public EncryptIfTaxCodeDeserializer(UserRegistryConnector userRegistryConnector) {
-        this.userRegistryConnector = userRegistryConnector;
-    }
+    private static final Pattern LETTER_PATTERN = Pattern.compile(".*[A-Za-z].*");
 
     public EncryptIfTaxCodeDeserializer() {
-        this.userRegistryConnector = null;
     }
 
     @Override
@@ -36,9 +26,11 @@ public class EncryptIfTaxCodeDeserializer extends JsonDeserializer<String> {
             return null;
         }
 
-        if (UUID_PATTERN.matcher(value).matches() && userRegistryConnector != null) {
+        UserRegistryConnector userRegistryConnector = SpringContext.getBean(UserRegistryConnector.class);
+
+        if (!UUID_PATTERN.matcher(value).matches() && LETTER_PATTERN.matcher(value).matches()) {
             User user = userRegistryConnector.getUserByFiscalCode(value);
-            return user != null ? user.getFiscalCode() : null;
+            return user != null ? user.getId() : null;
         }
 
         return value;

@@ -5,24 +5,16 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import it.pagopa.selfcare.mscore.api.UserRegistryConnector;
 import it.pagopa.selfcare.mscore.model.user.User;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.UUID;
+import java.util.regex.Pattern;
 
-@Component
 public class DecryptIfUuidSerializer extends JsonSerializer<String> {
 
-    private final UserRegistryConnector userRegistryConnector;
-
-    @Autowired
-    public DecryptIfUuidSerializer(UserRegistryConnector userRegistryConnector) {
-        this.userRegistryConnector = userRegistryConnector;
-    }
+    private static final Pattern UUID_PATTERN =
+            Pattern.compile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
 
     public DecryptIfUuidSerializer() {
-        this.userRegistryConnector = null;
     }
 
     @Override
@@ -32,21 +24,13 @@ public class DecryptIfUuidSerializer extends JsonSerializer<String> {
             return;
         }
 
-        if (isUuid(value) && userRegistryConnector != null) {
-            User user = userRegistryConnector.getUserByInternalId(value);
+        UserRegistryConnector userRegistryConnector = SpringContext.getBean(UserRegistryConnector.class);
+
+        if (UUID_PATTERN.matcher(value).matches()) {
+            User user = userRegistryConnector.getUserByInternalIdWithFiscalCode(value);
             gen.writeString(user != null ? user.getFiscalCode() : null);
         } else {
             gen.writeString(value);
         }
     }
-
-    private boolean isUuid(String value) {
-        try {
-            UUID.fromString(value);
-            return true;
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
-    }
 }
-

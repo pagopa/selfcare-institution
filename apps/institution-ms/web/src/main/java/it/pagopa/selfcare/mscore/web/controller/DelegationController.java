@@ -111,7 +111,7 @@ public class DelegationController {
                                                                    @ApiParam("${swagger.mscore.institutions.model.description}")
                                                                    @RequestParam(name = "search", required = false) String search,
                                                                    @ApiParam("${swagger.mscore.institutions.model.taxCode}")
-                                                                   @RequestParam(name = "taxCode", required = false) @EncryptedTaxCodeParam String taxCode,
+                                                                   @EncryptedTaxCodeParam String taxCode,
                                                                    @ApiParam("${swagger.mscore.institutions.delegations.order}")
                                                                    @RequestParam(name = "order", required = false) Optional<Order> order,
                                                                    @RequestParam(name = "page", required = false) Optional<Integer> page,

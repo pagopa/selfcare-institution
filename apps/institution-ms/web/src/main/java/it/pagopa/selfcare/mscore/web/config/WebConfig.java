@@ -6,7 +6,6 @@ import it.pagopa.selfcare.commons.web.config.BaseWebConfig;
 import it.pagopa.selfcare.mscore.web.util.EncryptedTaxCodeParamResolver;
 import lombok.NonNull;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -19,13 +18,6 @@ import java.util.List;
 @Import(BaseWebConfig.class)
 public class WebConfig implements BeanPostProcessor, WebMvcConfigurer {
 
-    private final EncryptedTaxCodeParamResolver encryptedTaxCodeParamResolver;
-
-    @Autowired
-    public WebConfig(EncryptedTaxCodeParamResolver encryptedTaxCodeParamResolver) {
-        this.encryptedTaxCodeParamResolver = encryptedTaxCodeParamResolver;
-    }
-
     @Override
     public Object postProcessAfterInitialization(@NonNull Object bean, @NonNull String beanName) throws BeansException {
         if (bean instanceof ObjectMapper) {
@@ -36,6 +28,6 @@ public class WebConfig implements BeanPostProcessor, WebMvcConfigurer {
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(encryptedTaxCodeParamResolver);
+        resolvers.add(0, new EncryptedTaxCodeParamResolver());
     }
 }
