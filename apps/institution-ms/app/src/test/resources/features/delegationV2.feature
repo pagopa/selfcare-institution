@@ -40,10 +40,11 @@ Feature: DelegationV2
         | pageInfo.pageNo        | 1     |
         | pageInfo.pageSize      | 10    |
 
-  Scenario: Successfully get delegations with institutionId
+  Scenario: Successfully get delegations with institutionId and taxCode as a fiscal code
     Given User login with username "j.doe" and password "test"
     And The following query params:
       | institutionId | c7a9a8e2-36e3-4ad5-9e63-6d482b74d1d7 |
+      | taxCode       | BLBRKY67C30H501B                     |
     When I send a GET request to "/v2/delegations"
     Then The status code is 200
     And The response body contains the list "delegations" of size 1
