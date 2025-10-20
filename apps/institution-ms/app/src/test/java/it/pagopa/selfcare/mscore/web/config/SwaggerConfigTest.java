@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.mscore.web.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.pagopa.selfcare.mscore.api.UserRegistryConnector;
 import it.pagopa.selfcare.mscore.core.DelegationService;
 import it.pagopa.selfcare.mscore.core.ExternalService;
 import it.pagopa.selfcare.mscore.core.InstitutionService;
@@ -56,6 +57,9 @@ class SwaggerConfigTest {
 
     @MockBean
     DelegationService delegationService;
+
+    @MockBean
+    private UserRegistryConnector userRegistryConnector;
 
     @MockBean
     private EncryptedTaxCodeParamResolver encryptedTaxCodeParamResolver;
