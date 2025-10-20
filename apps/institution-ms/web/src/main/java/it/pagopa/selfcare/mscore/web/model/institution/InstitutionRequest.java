@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.mscore.web.model.institution;
 
 import it.pagopa.selfcare.mscore.model.onboarding.OnboardingRequest;
+import it.pagopa.selfcare.mscore.web.util.EncryptIfTaxCode;
 import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import lombok.Data;
 
@@ -22,6 +23,7 @@ public class InstitutionRequest {
     private String city;
     private String county;
     private String country;
+    @EncryptIfTaxCode
     private String taxCode;
     private BillingRequest billing;
     private List<OnboardingRequest> onboarding;

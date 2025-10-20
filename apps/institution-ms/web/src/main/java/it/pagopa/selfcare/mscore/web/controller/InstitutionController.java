@@ -16,6 +16,7 @@ import it.pagopa.selfcare.mscore.web.model.mapper.InstitutionResourceMapper;
 import it.pagopa.selfcare.mscore.web.model.mapper.OnboardingResourceMapper;
 import it.pagopa.selfcare.mscore.web.model.onboarding.OnboardedProducts;
 import it.pagopa.selfcare.mscore.web.util.CustomExceptionMessage;
+import it.pagopa.selfcare.mscore.web.util.EncryptedTaxCodeParam;
 import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.StringEscapeUtils;
@@ -77,7 +78,7 @@ public class InstitutionController {
     @ApiOperation(value = "${swagger.mscore.institutions}", notes = "${swagger.mscore.institutions}")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<InstitutionsResponse> getInstitutions(@ApiParam("${swagger.mscore.institutions.model.taxCode}")
-                                                                @RequestParam(value = "taxCode", required = false) String taxCode,
+                                                                @EncryptedTaxCodeParam String taxCode,
                                                                 @ApiParam("${swagger.mscore.institutions.model.subunitCode}")
                                                                 @RequestParam(value = "subunitCode", required = false) String subunitCode,
                                                                 @RequestParam(value = "origin", required = false) String origin,

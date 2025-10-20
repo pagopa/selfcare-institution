@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.mscore.web.model.institution;
 
+import it.pagopa.selfcare.mscore.web.util.DecryptIfUuid;
 import lombok.Data;
 
 import java.time.OffsetDateTime;
@@ -18,6 +19,7 @@ public class InstitutionOnboardingResponse {
     private String digitalAddress;
     private String address;
     private String zipCode;
+    @DecryptIfUuid
     private String taxCode;
     private Map<String, OnboardingResponse> onboardings;
     private List<GeoTaxonomies> geographicTaxonomies;
