@@ -8,4 +8,6 @@ import java.lang.annotation.*;
 public @interface EncryptedTaxCodeParam {
 
     String value() default "";
+
+    boolean required() default false;
 }
