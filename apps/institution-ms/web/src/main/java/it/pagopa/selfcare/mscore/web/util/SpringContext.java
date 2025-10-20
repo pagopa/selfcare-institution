@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.mscore.web.util;
 
+import lombok.Setter;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class SpringContext implements ApplicationContextAware {
 
+    @Setter
     private static ApplicationContext context;
 
     @Override
