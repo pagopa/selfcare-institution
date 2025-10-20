@@ -3,8 +3,8 @@ package it.pagopa.selfcare.mscore.web.util;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
-import feign.FeignException;
 import it.pagopa.selfcare.mscore.api.UserRegistryConnector;
+import it.pagopa.selfcare.mscore.exception.ResourceNotFoundException;
 import it.pagopa.selfcare.mscore.model.user.User;
 
 import java.io.IOException;
@@ -33,7 +33,7 @@ public class EncryptIfTaxCodeDeserializer extends JsonDeserializer<String> {
             try {
                 User user = userRegistryConnector.getUserByFiscalCode(value);
                 return user != null ? user.getId() : null;
-            } catch (FeignException.NotFound e) {
+            } catch (ResourceNotFoundException e) {
                 // 404: user not found →  return the original taxCode
                 return value;
             }

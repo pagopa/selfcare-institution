@@ -1,7 +1,7 @@
 package it.pagopa.selfcare.mscore.web.util;
 
-import feign.FeignException;
 import it.pagopa.selfcare.mscore.api.UserRegistryConnector;
+import it.pagopa.selfcare.mscore.exception.ResourceNotFoundException;
 import it.pagopa.selfcare.mscore.model.user.User;
 import org.springframework.core.MethodParameter;
 import org.springframework.util.StringUtils;
@@ -58,7 +58,7 @@ public class EncryptedTaxCodeParamResolver implements HandlerMethodArgumentResol
             try {
                 User user = userRegistryConnector.getUserByFiscalCode(taxCode);
                 return user != null ? user.getId() : null;
-            } catch (FeignException.NotFound e) {
+            } catch (ResourceNotFoundException e) {
                 // 404: user not found →  return the original taxCode
                 return taxCode;
             }

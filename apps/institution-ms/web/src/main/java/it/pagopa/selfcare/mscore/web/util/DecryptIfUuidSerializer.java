@@ -3,8 +3,8 @@ package it.pagopa.selfcare.mscore.web.util;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import feign.FeignException;
 import it.pagopa.selfcare.mscore.api.UserRegistryConnector;
+import it.pagopa.selfcare.mscore.exception.ResourceNotFoundException;
 import it.pagopa.selfcare.mscore.model.user.User;
 
 import java.io.IOException;
@@ -32,7 +32,7 @@ public class DecryptIfUuidSerializer extends JsonSerializer<String> {
                 User user = userRegistryConnector.getUserByInternalIdWithFiscalCode(value);
                 // If the user is not found in UserRegistry, return the original value
                 gen.writeString(user != null ? user.getFiscalCode() : value);
-            } catch (FeignException.NotFound e) {
+            } catch (ResourceNotFoundException e) {
                 // 404: user not found → return the original value
                 gen.writeString(value);
             }
