@@ -65,7 +65,7 @@ public class TestUtils {
         institution.setOnboarding(new ArrayList<>());
 
         institution.setPaymentServiceProvider(createSimplePaymentServiceProvider());
-        institution.setTaxCode("Tax Code");
+        institution.setTaxCode("1234");
         institution.setZipCode("21654");
         institution.setShareCapital("Share Capital");
         institution.setRea("Rea");
@@ -91,7 +91,7 @@ public class TestUtils {
         institution.setOnboarding(new ArrayList<>());
 
         institution.setPaymentServiceProvider(createSimplePaymentServiceProvider());
-        institution.setTaxCode("Tax Code");
+        institution.setTaxCode("1234");
         institution.setZipCode("21654");
         institution.setShareCapital("Share Capital");
         institution.setRea("Rea");
@@ -117,7 +117,7 @@ public class TestUtils {
         institution.setOnboarding(new ArrayList<>());
 
         institution.setPaymentServiceProvider(createSimplePaymentServiceProvider());
-        institution.setTaxCode("Tax Code");
+        institution.setTaxCode("1234");
         institution.setZipCode("21654");
         institution.setShareCapital("Share Capital");
         institution.setRea("Rea");
@@ -136,7 +136,7 @@ public class TestUtils {
         institution.setOriginId("Pg Code");
         institution.setOrigin(Origin.MOCK.name());
 
-       institution.setTaxCode("Tax Code");
+       institution.setTaxCode("1234");
         institution.setZipCode("21654");
 
         return institution;
@@ -157,7 +157,7 @@ public class TestUtils {
         institution.setOrigin(Origin.MOCK.name());
         institution.setOnboarding(new ArrayList<>());
 
-        institution.setTaxCode("Tax Code");
+        institution.setTaxCode("1234");
         institution.setZipCode("21654");
         institution.setShareCapital("Share Capital");
         institution.setRea("Rea");

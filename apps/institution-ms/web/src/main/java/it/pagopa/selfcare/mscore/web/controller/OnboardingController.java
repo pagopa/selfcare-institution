@@ -7,6 +7,7 @@ import it.pagopa.selfcare.mscore.constant.GenericError;
 import it.pagopa.selfcare.mscore.core.OnboardingService;
 import it.pagopa.selfcare.mscore.model.onboarding.VerifyOnboardingFilters;
 import it.pagopa.selfcare.mscore.web.util.CustomExceptionMessage;
+import it.pagopa.selfcare.mscore.web.util.EncryptedTaxCodeParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -62,7 +63,7 @@ public class OnboardingController {
     @ApiOperation(value = "${swagger.mscore.onboarding.verify}", notes = "${swagger.mscore.onboarding.verify}")
     @RequestMapping(method = {RequestMethod.HEAD}, value = "")
     public ResponseEntity<Void> verifyOnboardingInfo(@ApiParam("${swagger.mscore.institutions.model.taxCode}")
-                                                     @RequestParam(value = "taxCode") String taxCode,
+                                                     @EncryptedTaxCodeParam String taxCode,
                                                      @ApiParam("${swagger.mscore.institutions.model.subunitCode}")
                                                      @RequestParam(value = "subunitCode", required = false) String subunitCode,
                                                      @ApiParam("${swagger.mscore.institutions.model.productId}")
@@ -80,7 +81,7 @@ public class OnboardingController {
                                                        @ApiParam("${swagger.mscore.institutions.model.externalId}")
                                                        @RequestParam(value = "externalId", required = false) String externalId,
                                                        @ApiParam("${swagger.mscore.institutions.model.taxCode}")
-                                                       @RequestParam(value = "taxCode", required = false) String taxCode,
+                                                       @EncryptedTaxCodeParam String taxCode,
                                                        @ApiParam("${swagger.mscore.institutions.model.origin}")
                                                        @RequestParam(value = "origin", required = false) String origin,
                                                        @ApiParam("${swagger.mscore.institutions.model.originId}")
