@@ -62,7 +62,7 @@ public class OnboardingController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiOperation(value = "${swagger.mscore.onboarding.verify}", notes = "${swagger.mscore.onboarding.verify}")
     @RequestMapping(method = {RequestMethod.HEAD}, value = "")
-    public ResponseEntity<Void> verifyOnboardingInfo(@ApiParam("${swagger.mscore.institutions.model.taxCode}")
+    public ResponseEntity<Void> verifyOnboardingInfo(@ApiParam(value = "${swagger.mscore.institutions.model.taxCode}", required = true)
                                                      @EncryptedTaxCodeParam(required = true) String taxCode,
                                                      @ApiParam("${swagger.mscore.institutions.model.subunitCode}")
                                                      @RequestParam(value = "subunitCode", required = false) String subunitCode,

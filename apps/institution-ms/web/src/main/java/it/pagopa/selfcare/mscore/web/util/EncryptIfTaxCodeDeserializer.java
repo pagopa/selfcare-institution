@@ -3,6 +3,7 @@ package it.pagopa.selfcare.mscore.web.util;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
+import feign.FeignException;
 import it.pagopa.selfcare.mscore.api.UserRegistryConnector;
 import it.pagopa.selfcare.mscore.model.user.User;
 
@@ -29,8 +30,13 @@ public class EncryptIfTaxCodeDeserializer extends JsonDeserializer<String> {
         UserRegistryConnector userRegistryConnector = SpringContext.getBean(UserRegistryConnector.class);
 
         if (!UUID_PATTERN.matcher(value).matches() && LETTER_PATTERN.matcher(value).matches()) {
-            User user = userRegistryConnector.getUserByFiscalCode(value);
-            return user != null ? user.getId() : null;
+            try {
+                User user = userRegistryConnector.getUserByFiscalCode(value);
+                return user != null ? user.getId() : null;
+            } catch (FeignException.NotFound e) {
+                // 404: user not found →  return the original taxCode
+                return value;
+            }
         }
 
         return value;

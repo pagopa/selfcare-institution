@@ -3,6 +3,7 @@ package it.pagopa.selfcare.mscore.web.util;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import feign.FeignException;
 import it.pagopa.selfcare.mscore.api.UserRegistryConnector;
 import it.pagopa.selfcare.mscore.model.user.User;
 
@@ -27,8 +28,14 @@ public class DecryptIfUuidSerializer extends JsonSerializer<String> {
         UserRegistryConnector userRegistryConnector = SpringContext.getBean(UserRegistryConnector.class);
 
         if (UUID_PATTERN.matcher(value).matches()) {
-            User user = userRegistryConnector.getUserByInternalIdWithFiscalCode(value);
-            gen.writeString(user != null ? user.getFiscalCode() : null);
+            try {
+                User user = userRegistryConnector.getUserByInternalIdWithFiscalCode(value);
+                // If the user is not found in UserRegistry, return the original value
+                gen.writeString(user != null ? user.getFiscalCode() : value);
+            } catch (FeignException.NotFound e) {
+                // 404: user not found → return the original value
+                gen.writeString(value);
+            }
         } else {
             gen.writeString(value);
         }

@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.mscore.web.util;
 
+import feign.FeignException;
 import it.pagopa.selfcare.mscore.api.UserRegistryConnector;
 import it.pagopa.selfcare.mscore.model.user.User;
 import org.springframework.core.MethodParameter;
@@ -54,8 +55,13 @@ public class EncryptedTaxCodeParamResolver implements HandlerMethodArgumentResol
         }
 
         if (CF_PATTERN.matcher(taxCode).matches() && !UUID_PATTERN.matcher(taxCode).matches()) {
-            User user = userRegistryConnector.getUserByFiscalCode(taxCode);
-            return user != null ? user.getId() : null;
+            try {
+                User user = userRegistryConnector.getUserByFiscalCode(taxCode);
+                return user != null ? user.getId() : null;
+            } catch (FeignException.NotFound e) {
+                // 404: user not found →  return the original taxCode
+                return taxCode;
+            }
         }
 
         return taxCode;
