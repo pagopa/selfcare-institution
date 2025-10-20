@@ -17,6 +17,12 @@ public class EncryptedTaxCodeParamResolver implements HandlerMethodArgumentResol
             Pattern.compile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
     private static final Pattern CF_PATTERN = Pattern.compile(".*[A-Za-z].*");
 
+    private final UserRegistryConnector userRegistryConnector;
+
+    public EncryptedTaxCodeParamResolver(UserRegistryConnector userRegistryConnector) {
+        this.userRegistryConnector = userRegistryConnector;
+    }
+
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return parameter.hasParameterAnnotation(EncryptedTaxCodeParam.class)
@@ -40,8 +46,6 @@ public class EncryptedTaxCodeParamResolver implements HandlerMethodArgumentResol
         if (!StringUtils.hasText(taxCode)) {
             return null;
         }
-
-        UserRegistryConnector userRegistryConnector = SpringContext.getBean(UserRegistryConnector.class);
 
         if (CF_PATTERN.matcher(taxCode).matches() && !UUID_PATTERN.matcher(taxCode).matches()) {
             User user = userRegistryConnector.getUserByFiscalCode(taxCode);

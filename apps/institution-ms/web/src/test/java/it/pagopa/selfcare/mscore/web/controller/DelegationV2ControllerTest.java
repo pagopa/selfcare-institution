@@ -2,6 +2,7 @@ package it.pagopa.selfcare.mscore.web.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.pagopa.selfcare.mscore.api.UserRegistryConnector;
 import it.pagopa.selfcare.mscore.constant.DelegationType;
 import it.pagopa.selfcare.mscore.constant.Order;
 import it.pagopa.selfcare.mscore.core.DelegationService;
@@ -9,11 +10,14 @@ import it.pagopa.selfcare.mscore.model.delegation.Delegation;
 import it.pagopa.selfcare.mscore.model.delegation.DelegationWithPagination;
 import it.pagopa.selfcare.mscore.model.delegation.GetDelegationParameters;
 import it.pagopa.selfcare.mscore.model.delegation.PageInfo;
+import it.pagopa.selfcare.mscore.model.user.User;
 import it.pagopa.selfcare.mscore.web.model.delegation.DelegationResponse;
 import it.pagopa.selfcare.mscore.web.model.delegation.DelegationWithPaginationResponse;
 import it.pagopa.selfcare.mscore.web.model.mapper.*;
+import it.pagopa.selfcare.mscore.web.util.EncryptedTaxCodeParamResolver;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -31,7 +35,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ContextConfiguration(classes = {DelegationV2Controller.class})
@@ -254,8 +258,33 @@ class DelegationV2ControllerTest {
 
     }
 
+    @Test
+    void getDelegationsWithEncryptedTaxCode() throws Exception {
+        final UserRegistryConnector userRegistryConnector = mock(UserRegistryConnector.class);
 
+        final User user = new User();
+        user.setId("userUid");
+        when(userRegistryConnector.getUserByFiscalCode("RSSMRA00R20H501M")).thenReturn(user);
 
+        final ArgumentCaptor<GetDelegationParameters> captor = ArgumentCaptor.forClass(GetDelegationParameters.class);
+        final DelegationWithPagination delegationWithPagination = new DelegationWithPagination(new ArrayList<>(), new PageInfo(0,0,0,0));
+        when(delegationService.getDelegationsV2(any())).thenReturn(delegationWithPagination);
+
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+                .get("/v2/delegations?institutionId={institutionId}&taxCode={taxCode}", "institutionId", "RSSMRA00R20H501M");
+        MvcResult result = MockMvcBuilders.standaloneSetup(delegationController)
+                .setCustomArgumentResolvers(new EncryptedTaxCodeParamResolver(userRegistryConnector))
+                .build()
+                .perform(requestBuilder)
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+                .andReturn();
+
+        verify(delegationService).getDelegationsV2(captor.capture());
+        final GetDelegationParameters params = captor.getValue();
+        assertEquals("userUid", params.getTaxCode());
+        assertEquals("institutionId", params.getFrom());
+    }
 
     private Delegation dummyDelegation() {
         Delegation delegation = new Delegation();
