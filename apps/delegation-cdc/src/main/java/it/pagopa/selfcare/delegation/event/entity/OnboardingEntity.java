@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.delegation.event.entity;
 
+import it.pagopa.selfcare.delegation.event.constant.RelationshipState;
 import lombok.Data;
 import lombok.experimental.FieldNameConstants;
 

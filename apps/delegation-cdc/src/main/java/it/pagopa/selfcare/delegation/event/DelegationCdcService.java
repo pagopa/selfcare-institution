@@ -16,6 +16,8 @@ import io.quarkus.runtime.Startup;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import it.pagopa.selfcare.delegation.event.config.ConfigUtilsBean;
+import it.pagopa.selfcare.delegation.event.constant.DelegationType;
+import it.pagopa.selfcare.delegation.event.constant.RelationshipState;
 import it.pagopa.selfcare.delegation.event.entity.*;
 import it.pagopa.selfcare.delegation.event.entity.mapper.DelegationMapper;
 import it.pagopa.selfcare.delegation.event.repository.DelegationRepository;

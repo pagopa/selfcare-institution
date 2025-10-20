@@ -2,9 +2,9 @@ package it.pagopa.selfcare.delegation.event.repository;
 
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
-import it.pagopa.selfcare.delegation.event.entity.DelegationType;
+import it.pagopa.selfcare.delegation.event.constant.DelegationType;
 import it.pagopa.selfcare.delegation.event.entity.DelegationsEntity;
-import it.pagopa.selfcare.delegation.event.entity.RelationshipState;
+import it.pagopa.selfcare.delegation.event.constant.RelationshipState;
 import it.pagopa.selfcare.delegation.event.entity.filter.DelegationsFilter;
 import jakarta.enterprise.context.ApplicationScoped;
 import lombok.RequiredArgsConstructor;

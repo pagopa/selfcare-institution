@@ -24,6 +24,8 @@ public interface DelegationMapper {
         @Mapping(target = "status", source = "delegationPT.status")
         @Mapping(target = "createdAt", source = "delegationPT.createdAt")
         @Mapping(target = "updatedAt", source = "delegationPT.updatedAt")
+        @Mapping(target = "closedAt", source = "delegationPT.closedAt")
+        @Mapping(target = "isTest", source = "delegationPT.isTest")
         DelegationsEntity toDelegationAggregatePT(DelegationsEntity delegationAggregate, DelegationsEntity delegationPT);
 
 }
