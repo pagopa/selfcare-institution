@@ -718,5 +718,35 @@
         "institutionType": "PRV_PF"
       }
     ]
+  },
+  {
+    "_id": "0c6d2a5e-9c42-4b2f-9c3f-94c5cb2b6d1a",
+    "externalId": "35a78332-d038-4bfa-8e85-2cba7f6b7bf7",
+    "origin": "IPA",
+    "originId": "isticom",
+    "description": "Privato CF 2",
+    "digitalAddress": "test@test.com",
+    "address": "Via Roma, 1",
+    "zipCode": "00000",
+    "taxCode": "35a78332-d038-4bfa-8e85-2cba7f6b7bf7",
+    "istatCode": "01234",
+    "imported": false,
+    "isTest": true,
+    "createdAt": "2023-11-10T11:45:21.226522053Z",
+    "_class": "it.pagopa.selfcare.mscore.connector.dao.model.InstitutionEntity",
+    "updatedAt": "2024-06-04T13:39:01.379003912Z",
+    "onboarding": [
+      {
+        "productId": "prod-io",
+        "tokenId": "afb6c11d-67f8-44f9-b04f-88d47e0d2fc3",
+        "status": "ACTIVE",
+        "createdAt": "2017-12-22T00:00:00Z",
+        "updatedAt": "2024-02-24T12:56:40.645708542Z",
+        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding",
+        "origin": "IPA",
+        "originId": "isticom",
+        "institutionType": "PRV_PF"
+      }
+    ]
   }
 ]

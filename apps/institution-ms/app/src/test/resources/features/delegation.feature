@@ -723,6 +723,7 @@ Feature: Delegation
       | [0].institution.institutionType | PRV_PF                               |
       | [0].institution.origin          | IPA                                  |
       | [0].institution.originId        | isticom                              |
+      | [0].institution.taxCode         | PRVTNT80A41H401T                     |
 
   Scenario: Bad request while getting delegators with invalid type
     Given User login with username "j.doe" and password "test"
@@ -775,6 +776,29 @@ Feature: Delegation
       | [0].institution.institutionType | PT                                   |
       | [0].institution.origin          | IPA                                  |
       | [0].institution.originId        | isticom                              |
+
+  Scenario: Successfully get delegates with fiscal code
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | institutionId | c7a9a8e2-36e3-4ad5-9e63-6d482b74d1d7 |
+    And The following query params:
+      | productId | prod-io |
+      | size      | 1       |
+    When I send a GET request to "/delegations/delegates/{institutionId}"
+    Then The status code is 200
+    And The response body contains the list "" of size 1
+    And The response body contains:
+      | [0].id                          | 1735127539474                        |
+      | [0].delegationId                | 204c18ce-310f-454e-ae0e-7e87c019ba5c |
+      | [0].delegationType              | PT                                   |
+      | [0].delegationProductId         | prod-io                              |
+      | [0].institution.id              | 0c6d2a5e-9c42-4b2f-9c3f-94c5cb2b6d1a |
+      | [0].institution.digitalAddress  | test@test.com                        |
+      | [0].institution.description     | Privato CF 2                         |
+      | [0].institution.institutionType | PRV_PF                               |
+      | [0].institution.origin          | IPA                                  |
+      | [0].institution.originId        | isticom                              |
+      | [0].institution.taxCode         | blbrki80A41H401T                     |
 
   Scenario: Successfully get delegates with cursor
     Given User login with username "j.doe" and password "test"
