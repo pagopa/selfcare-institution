@@ -15,7 +15,7 @@ Feature: Onboarding
     Given User login with username "j.doe" and password "test"
     And The following path params:
       | externalId | 94076720658#UF5D7W |
-      | productId  | prod-io |
+      | productId  | prod-io            |
     When I send a HEAD request to "/onboarding/institution/{externalId}/products/{productId}"
     Then The status code is 404
 
@@ -42,6 +42,14 @@ Feature: Onboarding
     And The following query params:
       | taxCode   | 99000870064 |
       | productId | prod-pagopa |
+    When I send a HEAD request to "/onboarding"
+    Then The status code is 204
+
+  Scenario: Successfully verify onboarding status given taxcode (as fiscal code) and productId
+    Given User login with username "j.doe" and password "test"
+    And The following query params:
+      | taxCode   | VRDMRA22T71F205A    |
+      | productId | prod-idpay-merchant |
     When I send a HEAD request to "/onboarding"
     Then The status code is 204
 
@@ -118,13 +126,11 @@ Feature: Onboarding
     When I send a HEAD request to "/onboarding/verify"
     Then The status code is 204
 
-  Scenario: Successfully verify onboarding status with filter productId, taxCode, subunitCode, origin
+  Scenario: Successfully verify onboarding status with filter productId, taxCode (as fiscal code)
     Given User login with username "j.doe" and password "test"
     And The following query params:
-      | taxCode     | 01726610056 |
-      | productId   | prod-io     |
-      | subunitCode | AVO36EJ     |
-      | origin      | IPA         |
+      | taxCode     | VRDMRA22T71F205A    |
+      | productId   | prod-idpay-merchant |
     When I send a HEAD request to "/onboarding/verify"
     Then The status code is 204
 
@@ -152,7 +158,7 @@ Feature: Onboarding
       | productId   | prod-pagopa |
       | externalId  | 99000870064 |
       | subunitCode | 456         |
-      | taxCode     | ABCDEFGHI   |
+      | taxCode     | 123456789   |
       | origin      | XXX         |
       | originId    | 123456      |
     When I send a HEAD request to "/onboarding/verify"

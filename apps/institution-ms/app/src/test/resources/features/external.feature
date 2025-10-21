@@ -6,15 +6,16 @@ Feature: External
   Scenario: Successfully retrieve institutions data by ids
     Given User login with username "j.doe" and password "test"
     And The following query params:
-      | ids | b4705659-3a01-430a-a19b-7bdb4e340223,fc5466e5-df00-4800-9ad5-aa2e7d9344f9,c9a50656-f345-4c81-84be-5b2474470544,000 |
+      | ids | b4705659-3a01-430a-a19b-7bdb4e340223,fc5466e5-df00-4800-9ad5-aa2e7d9344f9,c9a50656-f345-4c81-84be-5b2474470544,000,c7a9a8e2-36e3-4ad5-9e63-6d482b74d1d7 |
     When I send a GET request to "/external/institutions"
     Then The status code is 200
-    And The response body contains the list "" of size 3
+    And The response body contains the list "" of size 4
     And The response body contains at path "" the following list of objects in any order:
-      | id                                   | externalId         | origin | originId | description                             | digitalAddress               | address            | zipCode | taxCode     | imported | supportEmail | delegation | subunitCode | subunitType |
-      | b4705659-3a01-430a-a19b-7bdb4e340223 | 94076720658#UF5D7W | IPA    | UF5D7W   | Uff_eFatturaPA                          | saic8bu00x@pec.istruzione.it | Via San Pietro, 10 | 84014   | 94076720658 | false    |              | false      | UF5D7W      | UO          |
-      | c9a50656-f345-4c81-84be-5b2474470544 | 00310810825        | IPA    | c_c067   | Comune di Castelbuono                   | comune.castelbuono@pec.it    | Via Sant' Anna, 25 | 90013   | 00310810825 | false    | a@l.it       | false      |             |             |
-      | fc5466e5-df00-4800-9ad5-aa2e7d9344f9 | 94076720658        | IPA    | isticom  | 3 Istituto Comprensivo Nocera Inferiore | saic8bu00x@pec.istruzione.it | Via San Pietro, 10 | 84014   | 94076720658 | false    |              | false      |             |             |
+      | id                                   | externalId                           | origin | originId | description                             | digitalAddress               | address            | zipCode | taxCode          | imported | supportEmail | delegation | subunitCode | subunitType |
+      | b4705659-3a01-430a-a19b-7bdb4e340223 | 94076720658#UF5D7W                   | IPA    | UF5D7W   | Uff_eFatturaPA                          | saic8bu00x@pec.istruzione.it | Via San Pietro, 10 | 84014   | 94076720658      | false    |              | false      | UF5D7W      | UO          |
+      | c9a50656-f345-4c81-84be-5b2474470544 | 00310810825                          | IPA    | c_c067   | Comune di Castelbuono                   | comune.castelbuono@pec.it    | Via Sant' Anna, 25 | 90013   | 00310810825      | false    | a@l.it       | false      |             |             |
+      | fc5466e5-df00-4800-9ad5-aa2e7d9344f9 | 94076720658                          | IPA    | isticom  | 3 Istituto Comprensivo Nocera Inferiore | saic8bu00x@pec.istruzione.it | Via San Pietro, 10 | 84014   | 94076720658      | false    |              | false      |             |             |
+      | c7a9a8e2-36e3-4ad5-9e63-6d482b74d1d7 | 97a511a7-2acc-47b9-afed-2f3c65753b4a | IPA    | isticom  | Privato CF 1                            | test@test.com                | Via Roma, 1        | 00000   | PRVTNT80A41H401T | false    |              | false      |             |             |
 
   Scenario: Successfully retrieve institutions onboarding data by ids
     Given User login with username "j.doe" and password "test"
@@ -198,6 +199,29 @@ Feature: External
       | billing.taxCodeInvoicing |                                       |
       | billing.recipientCode    | c_i580                                |
       | billing.publicServices   | false                                 |
+
+  Scenario: Successfully retrieve billing data by externalId as a fiscal code and productId
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | externalId |  35a78332-d038-4bfa-8e85-2cba7f6b7bf7 |
+      | productId  | prod-io                               |
+    When I send a GET request to "/external/institutions/{externalId}/products/{productId}/billing"
+    Then The status code is 200
+    And The response body contains:
+      | institutionId            | 0c6d2a5e-9c42-4b2f-9c3f-94c5cb2b6d1a  |
+      | externalId               | 35a78332-d038-4bfa-8e85-2cba7f6b7bf7  |
+      | origin                   |                                       |
+      | originId                 |                                       |
+      | description              | Privato CF 2                          |
+      | institutionType          | PRV_PF                                |
+      | digitalAddress           | test@test.com                         |
+      | address                  | Via Roma, 1                           |
+      | zipCode                  | 00000                                 |
+      | taxCode                  | blbrki80A41H401T                      |
+      | pricingPlan              |                                       |
+      | subunitCode              |                                       |
+      | subunitType              |                                       |
+      | aooParentCode            |                                       |
 
   Scenario: Not Found billing data with non existing externalId
     Given User login with username "j.doe" and password "test"

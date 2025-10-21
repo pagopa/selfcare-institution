@@ -30,6 +30,23 @@ Feature: Institution
       | institutions[0].onboarding[0].productId | prod-io |
       | institutions[1].onboarding[0].productId | prod-io |
 
+  Scenario: Successfully getInstitutions with taxCode as a fiscal Code
+    Given User login with username "j.doe" and password "test"
+    And The following query params:
+      | taxCode        | PRVTNT80A41H401T |
+    When I send a GET request to "/institutions"
+    Then The status code is 200
+    And The response body contains the list "institutions" of size 1
+    And The response body contains at path "institutions.id" the following list of values in any order:
+      | c7a9a8e2-36e3-4ad5-9e63-6d482b74d1d7 |
+    And The response body contains at path "institutions.taxCode" the following list of values in any order:
+      | PRVTNT80A41H401T |
+    And The response body contains at path "institutions.isTest" the following list of values in any order:
+      | false |
+    And The response body contains the list "institutions[0].onboarding" of size 1
+    And The response body contains:
+      | institutions[0].onboarding[0].productId | prod-io |
+
   Scenario: Validation error in getInstitutions with enableSubunits without taxCode
     Given User login with username "j.doe" and password "test"
     And The following query params:
@@ -1730,6 +1747,17 @@ Feature: Institution
     Then The status code is 200
     And The response body contains the list "items" of size 4
 
+  Scenario: Successfully get institutions with productId to retrieve institution with fiscal code
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | productId | prod-idpay-merchant |
+    When I send a GET request to "/institutions/products/{productId}"
+    Then The status code is 200
+    And The response body contains the list "items" of size 1
+    And The response body contains at path "items" the following list of objects in any order:
+      | id                                   | externalId                           | origin          | originId                             | institutionType | description  | digitalAddress  | zipCode | taxCode          | supportEmail |
+      | 5d1a4e8e-0b3d-4e71-9a3f-91aab8c54c17 | 6f8b2d3a-4c1e-44d8-bf92-1a7f8e2c3d5b | PDND_INFOCAMERE | 6f8b2d3a-4c1e-44d8-bf92-1a7f8e2c3d5b | PRV_PF          | Privato CF 3 | test@test.com   | 00000   | VRDMRA22T71F205A |              |
+
   Scenario: Get institutions with non existent productId
     Given User login with username "j.doe" and password "test"
     And The following path params:
@@ -1751,6 +1779,18 @@ Feature: Institution
     And The response body contains at path "taxCode" the following list of values in any order:
       | 85000870064 |
       | 00310810825 |
+
+  Scenario: Successfully get institutions brokers with fiscal codes
+    Given User login with username "j.doe" and password "test"
+    And The following path params:
+      | productId       | prod-io |
+      | institutionType | PRV_PF  |
+    When I send a GET request to "/institutions/{productId}/brokers/{institutionType}"
+    Then The status code is 200
+    And The response body contains the list "" of size 2
+    And The response body contains at path "taxCode" the following list of values in any order:
+      | blbrki80A41H401T |
+      | PRVTNT80A41H401T |
 
   Scenario: Get institutions brokers with bad productId
     Given User login with username "j.doe" and password "test"
