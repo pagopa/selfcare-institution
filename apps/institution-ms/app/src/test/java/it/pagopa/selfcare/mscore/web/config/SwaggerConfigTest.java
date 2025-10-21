@@ -1,6 +1,9 @@
 package it.pagopa.selfcare.mscore.web.config;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import it.pagopa.selfcare.mscore.api.UserRegistryConnector;
 import it.pagopa.selfcare.mscore.core.DelegationService;
 import it.pagopa.selfcare.mscore.core.ExternalService;
@@ -26,6 +29,8 @@ import springfox.documentation.oas.annotations.EnableOpenApi;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,43 +48,61 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @TestPropertySource(locations = "classpath:config/application.yml")
 class SwaggerConfigTest {
 
-    @MockBean
-    ExternalService externalService;
+    @MockBean ExternalService externalService;
+    @MockBean InstitutionService institutionService;
+    @MockBean OnboardingService onboardingService;
+    @MockBean DelegationService delegationService;
+    @MockBean private UserRegistryConnector userRegistryConnector;
+    @MockBean private EncryptedTaxCodeParamResolver encryptedTaxCodeParamResolver;
 
-    @MockBean
-    InstitutionService institutionService;
-
-    @MockBean
-    OnboardingService onboardingService;
-
-    @Autowired
-    WebApplicationContext context;
-
-    @MockBean
-    DelegationService delegationService;
-
-    @MockBean
-    private UserRegistryConnector userRegistryConnector;
-
-    @MockBean
-    private EncryptedTaxCodeParamResolver encryptedTaxCodeParamResolver;
-
-    @Autowired
-    private ObjectMapper objectMapper;
+    @Autowired private WebApplicationContext context;
+    @Autowired private ObjectMapper objectMapper;
 
     @Test
     void swaggerSpringPlugin() throws Exception {
         MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
         mockMvc.perform(MockMvcRequestBuilders.get("/v3/api-docs").accept(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful()).andDo(result -> {
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
+                .andDo(result -> {
                     assertNotNull(result);
                     assertNotNull(result.getResponse());
-                    final String content = result.getResponse().getContentAsString();
+
+                    String content = result.getResponse().getContentAsString();
                     checkPlaceholders(content);
                     assertFalse(content.isBlank());
                     assertFalse(content.contains("${"), "Generated swagger contains placeholders");
-                    Object swagger = objectMapper.readValue(result.getResponse().getContentAsString(), Object.class);
-                    String formatted = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(swagger);
+
+                    // Leggi JSON
+                    JsonNode rootNode = objectMapper.readTree(content);
+
+                    // Trasforma tutti i parametri con //@EncryptedPathVariable in path param
+                    JsonNode pathsNode = rootNode.path("paths");
+                    Iterator<Map.Entry<String, JsonNode>> pathEntries = pathsNode.fields();
+                    while (pathEntries.hasNext()) {
+                        Map.Entry<String, JsonNode> pathEntry = pathEntries.next();
+                        JsonNode operationsNode = pathEntry.getValue();
+                        for (Iterator<Map.Entry<String, JsonNode>> itOp = operationsNode.fields(); itOp.hasNext(); ) {
+                            Map.Entry<String, JsonNode> opEntry = itOp.next();
+                            JsonNode parameters = opEntry.getValue().path("parameters");
+                            if (parameters.isArray()) {
+                                ArrayNode paramArray = (ArrayNode) parameters;
+                                for (JsonNode paramNode : paramArray) {
+                                    if (paramNode.has("description") && paramNode.get("description").asText().contains("//@EncryptedPathVariable")) {
+                                        ObjectNode paramObj = (ObjectNode) paramNode;
+                                        paramObj.put("in", "path");
+                                        paramObj.put("required", true);
+                                        paramObj.put("style", "simple"); // <- aggiunto
+                                        // pulizia del commento
+                                        String cleanedDesc = paramNode.get("description").asText().replace("//@EncryptedPathVariable", "").trim();
+                                        paramObj.put("description", cleanedDesc);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Salva JSON modificato
+                    String formatted = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(rootNode);
                     Path basePath = Paths.get("src/main/docs/");
                     Files.createDirectories(basePath);
                     Files.write(basePath.resolve("openapi.json"), formatted.getBytes());
@@ -94,4 +117,3 @@ class SwaggerConfigTest {
         }
     }
 }
-
