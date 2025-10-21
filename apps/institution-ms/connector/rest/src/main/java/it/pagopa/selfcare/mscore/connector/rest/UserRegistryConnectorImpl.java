@@ -7,6 +7,7 @@ import it.pagopa.selfcare.mscore.connector.rest.mapper.UserMapperClient;
 import it.pagopa.selfcare.mscore.model.user.User;
 import it.pagopa.selfcare.user_registry.generated.openapi.v1.dto.*;
 import lombok.extern.slf4j.Slf4j;
+import org.owasp.encoder.Encode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -65,7 +66,7 @@ public class UserRegistryConnectorImpl implements UserRegistryConnector {
 
     @Override
     public User getUserByFiscalCode(String fiscalCode) {
-        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getUserByFiscalCode fiscalCode = {}", fiscalCode);
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getUserByFiscalCode fiscalCode = {}", Encode.forJava(fiscalCode));
         Assert.hasText(fiscalCode, USER_REQUIRED_MESSAGE);
         UserResource result = restClient._searchUsingPOST(USERS_FIELD_LIST, new UserSearchDto().fiscalCode(fiscalCode))
                 .getBody();
