@@ -688,5 +688,95 @@
         "institutionType": "PT"
       }
     ]
+  },
+  {
+    "_id": "c7a9a8e2-36e3-4ad5-9e63-6d482b74d1d7",
+    "externalId": "97a511a7-2acc-47b9-afed-2f3c65753b4a",
+    "origin": "IPA",
+    "originId": "isticom",
+    "description": "Privato CF 1",
+    "digitalAddress": "test@test.com",
+    "address": "Via Roma, 1",
+    "zipCode": "00000",
+    "taxCode": "97a511a7-2acc-47b9-afed-2f3c65753b4a",
+    "istatCode": "01234",
+    "imported": false,
+    "isTest": false,
+    "createdAt": "2023-11-10T11:45:21.226522053Z",
+    "_class": "it.pagopa.selfcare.mscore.connector.dao.model.InstitutionEntity",
+    "updatedAt": "2024-06-04T13:39:01.379003912Z",
+    "onboarding": [
+      {
+        "productId": "prod-io",
+        "tokenId": "afb6c11d-67f8-44f9-b04f-88d47e0d2fc3",
+        "status": "ACTIVE",
+        "createdAt": "2017-12-22T00:00:00Z",
+        "updatedAt": "2024-02-24T12:56:40.645708542Z",
+        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding",
+        "origin": "IPA",
+        "originId": "isticom",
+        "institutionType": "PRV_PF"
+      }
+    ]
+  },
+  {
+    "_id": "0c6d2a5e-9c42-4b2f-9c3f-94c5cb2b6d1a",
+    "externalId": "35a78332-d038-4bfa-8e85-2cba7f6b7bf7",
+    "origin": "IPA",
+    "originId": "isticom",
+    "description": "Privato CF 2",
+    "digitalAddress": "test@test.com",
+    "address": "Via Roma, 1",
+    "zipCode": "00000",
+    "taxCode": "35a78332-d038-4bfa-8e85-2cba7f6b7bf7",
+    "istatCode": "01234",
+    "imported": false,
+    "isTest": false,
+    "createdAt": "2023-11-10T11:45:21.226522053Z",
+    "_class": "it.pagopa.selfcare.mscore.connector.dao.model.InstitutionEntity",
+    "updatedAt": "2024-06-04T13:39:01.379003912Z",
+    "onboarding": [
+      {
+        "productId": "prod-io",
+        "tokenId": "afb6c11d-67f8-44f9-b04f-88d47e0d2fc3",
+        "status": "ACTIVE",
+        "createdAt": "2017-12-22T00:00:00Z",
+        "updatedAt": "2024-02-24T12:56:40.645708542Z",
+        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding",
+        "origin": "IPA",
+        "originId": "isticom",
+        "institutionType": "PRV_PF"
+      }
+    ]
+  },
+  {
+    "_id": "5d1a4e8e-0b3d-4e71-9a3f-91aab8c54c17",
+    "externalId": "6f8b2d3a-4c1e-44d8-bf92-1a7f8e2c3d5b",
+    "origin": "PDND_INFOCAMERE",
+    "originId": "6f8b2d3a-4c1e-44d8-bf92-1a7f8e2c3d5b",
+    "description": "Privato CF 3",
+    "digitalAddress": "test@test.com",
+    "address": "Via Roma, 1",
+    "zipCode": "00000",
+    "taxCode": "6f8b2d3a-4c1e-44d8-bf92-1a7f8e2c3d5b",
+    "istatCode": "01234",
+    "imported": false,
+    "isTest": false,
+    "createdAt": "2023-11-10T11:45:21.226522053Z",
+    "_class": "it.pagopa.selfcare.mscore.connector.dao.model.InstitutionEntity",
+    "updatedAt": "2024-06-04T13:39:01.379003912Z",
+    "onboarding": [
+      {
+        "productId": "prod-idpay-merchant",
+        "tokenId": "afb6c11d-67f8-44f9-b04f-88d47e0d2fc3",
+        "status": "ACTIVE",
+        "createdAt": "2017-12-25T00:00:00Z",
+        "updatedAt": "2024-12-25T12:56:40.645708542Z",
+        "_class": "it.pagopa.selfcare.mscore.model.institution.Onboarding",
+        "origin": "PDND_INFOCAMERE",
+        "originId": "6f8b2d3a-4c1e-44d8-bf92-1a7f8e2c3d5b",
+        "institutionType": "PRV_PF"
+      }
+    ]
   }
 ]

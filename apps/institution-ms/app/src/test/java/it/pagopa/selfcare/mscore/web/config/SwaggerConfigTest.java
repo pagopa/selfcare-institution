@@ -1,7 +1,12 @@
 package it.pagopa.selfcare.mscore.web.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.pagopa.selfcare.mscore.core.*;
+import it.pagopa.selfcare.mscore.connector.rest.UserRegistryConnectorImpl;
+import it.pagopa.selfcare.mscore.core.DelegationService;
+import it.pagopa.selfcare.mscore.core.ExternalService;
+import it.pagopa.selfcare.mscore.core.InstitutionService;
+import it.pagopa.selfcare.mscore.core.OnboardingService;
+import it.pagopa.selfcare.mscore.web.util.EncryptedTaxCodeParamResolver;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +57,12 @@ class SwaggerConfigTest {
 
     @MockBean
     DelegationService delegationService;
+
+    @MockBean
+    private EncryptedTaxCodeParamResolver encryptedTaxCodeParamResolver;
+
+    @MockBean
+    private UserRegistryConnectorImpl userRegistryConnector;
 
     @Autowired
     private ObjectMapper objectMapper;

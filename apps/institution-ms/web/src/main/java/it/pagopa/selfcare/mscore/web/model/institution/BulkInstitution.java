@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.mscore.web.model.institution;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import it.pagopa.selfcare.mscore.web.util.DecryptIfUuid;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
@@ -36,6 +37,7 @@ public class BulkInstitution {
     private String zipCode;
 
     @NotNull
+    @DecryptIfUuid
     private String taxCode;
 
     private List<AttributesResponse> attributes;

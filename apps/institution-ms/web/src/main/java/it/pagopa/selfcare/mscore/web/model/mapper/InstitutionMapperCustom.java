@@ -199,20 +199,6 @@ public class InstitutionMapperCustom {
         return response;
     }
 
-    private static Map<String, ProductsManagement> toProductsMap(List<Onboarding> onboarding, Institution institution) {
-        Map<String, ProductsManagement> map = new HashMap<>();
-        if (onboarding != null) {
-            for (Onboarding o : onboarding) {
-                ProductsManagement productsManagement = new ProductsManagement();
-                productsManagement.setProduct(o.getProductId());
-                productsManagement.setPricingPlan(o.getPricingPlan());
-                productsManagement.setBilling(toBillingResponse(o.getBilling(), institution));
-                map.put(o.getProductId(), productsManagement);
-            }
-        }
-        return map;
-    }
-
     private static Map<String, OnboardingResponse> toOnboardingMap(List<Onboarding> onboarding, Institution institution) {
         Map<String, OnboardingResponse> map = new HashMap<>();
         if (onboarding != null) {

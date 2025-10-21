@@ -2,6 +2,7 @@ package it.pagopa.selfcare.mscore.web.model.institution;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import it.pagopa.selfcare.mscore.web.model.onboarding.OnboardedProductResponse;
+import it.pagopa.selfcare.mscore.web.util.DecryptIfUuid;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -24,6 +25,7 @@ public class InstitutionResponse {
     private String digitalAddress;
     private String address;
     private String zipCode;
+    @DecryptIfUuid
     private String taxCode;
     private String city;
     private String county;

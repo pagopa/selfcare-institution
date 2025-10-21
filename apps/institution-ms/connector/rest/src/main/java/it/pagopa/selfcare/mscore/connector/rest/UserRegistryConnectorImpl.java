@@ -7,6 +7,7 @@ import it.pagopa.selfcare.mscore.connector.rest.mapper.UserMapperClient;
 import it.pagopa.selfcare.mscore.model.user.User;
 import it.pagopa.selfcare.user_registry.generated.openapi.v1.dto.*;
 import lombok.extern.slf4j.Slf4j;
+import org.owasp.encoder.Encode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ public class UserRegistryConnectorImpl implements UserRegistryConnector {
     private final UserMapperClient userMapper;
     public static final String USERS_FIELD_LIST = "fiscalCode,name,familyName,workContacts";
     public static final String USERS_FIELD_LIST_WITHOUT_FISCAL_CODE = "name,familyName,workContacts";
+    public static final String USER_REQUIRED_MESSAGE = "A userId is required";
 
     @Autowired
     public UserRegistryConnectorImpl(UserRegistryRestClient restClient, UserMapperClient userMapper) {
@@ -34,7 +36,7 @@ public class UserRegistryConnectorImpl implements UserRegistryConnector {
     @Override
     public User getUserByInternalIdWithFiscalCode(String userId) {
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getUserByInternalIdWithFiscalCode userId = {}", userId);
-        Assert.hasText(userId, "A userId is required");
+        Assert.hasText(userId, USER_REQUIRED_MESSAGE);
         ResponseEntity<UserResource> result = restClient._findByIdUsingGET(USERS_FIELD_LIST, userId);
         User user = userMapper.toUser(result.getBody());
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getUserByInternalIdWithFiscalCode result = {}", result);
@@ -44,7 +46,7 @@ public class UserRegistryConnectorImpl implements UserRegistryConnector {
     @Override
     public User getUserByInternalId(String userId) {
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getUserByInternalId userId = {}", userId);
-        Assert.hasText(userId, "A userId is required");
+        Assert.hasText(userId, USER_REQUIRED_MESSAGE);
         ResponseEntity<UserResource> result = restClient._findByIdUsingGET(USERS_FIELD_LIST_WITHOUT_FISCAL_CODE, userId);
         User user = userMapper.toUser(result.getBody());
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getUserByInternalId result = {}", result);
@@ -54,7 +56,7 @@ public class UserRegistryConnectorImpl implements UserRegistryConnector {
     @Override
     public User getUserByInternalIdWithCustomFields(String userId, String fieldList) {
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getUserByInternalId userId = {}", userId);
-        Assert.hasText(userId, "A userId is required");
+        Assert.hasText(userId, USER_REQUIRED_MESSAGE);
         ResponseEntity<UserResource> result = restClient._findByIdUsingGET(fieldList, userId);
         User user = userMapper.toUser(result.getBody());
         log.debug(LogUtils.CONFIDENTIAL_MARKER, "getUserByInternalId result = {}", result);
@@ -64,8 +66,8 @@ public class UserRegistryConnectorImpl implements UserRegistryConnector {
 
     @Override
     public User getUserByFiscalCode(String fiscalCode) {
-        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getUserByFiscalCode fiscalCode = {}", fiscalCode);
-        Assert.hasText(fiscalCode, "A userId is required");
+        log.debug(LogUtils.CONFIDENTIAL_MARKER, "getUserByFiscalCode fiscalCode = {}", Encode.forJava(fiscalCode));
+        Assert.hasText(fiscalCode, USER_REQUIRED_MESSAGE);
         UserResource result = restClient._searchUsingPOST(USERS_FIELD_LIST, new UserSearchDto().fiscalCode(fiscalCode))
                 .getBody();
         User user = userMapper.toUser(result);
@@ -79,21 +81,21 @@ public class UserRegistryConnectorImpl implements UserRegistryConnector {
         Assert.hasText(fiscalCode, "A fiscalCode is required");
 
         SaveUserDto.SaveUserDtoBuilder saveUserDtoBuilder = SaveUserDto.builder()
-                .name(CertifiableFieldResourceOfstring.builder()
+                .name(NameCertifiableSchema.builder()
                         .value(name)
-                        .certification(CertifiableFieldResourceOfstring.CertificationEnum.NONE)
+                        .certification(NameCertifiableSchema.CertificationEnum.NONE)
                         .build())
-                .familyName(CertifiableFieldResourceOfstring.builder()
+                .familyName(FamilyNameCertifiableSchema.builder()
                         .value(familyName)
-                        .certification(CertifiableFieldResourceOfstring.CertificationEnum.NONE)
+                        .certification(FamilyNameCertifiableSchema.CertificationEnum.NONE)
                         .build())
                 .fiscalCode(fiscalCode);
 
         Optional.ofNullable(email).ifPresent(emailValue -> saveUserDtoBuilder
             .workContacts(Map.of(institutionId, WorkContactResource.builder()
-                    .email(CertifiableFieldResourceOfstring.builder()
+                    .email(EmailCertifiableSchema.builder()
                             .value(emailValue)
-                            .certification(CertifiableFieldResourceOfstring.CertificationEnum.NONE)
+                            .certification(EmailCertifiableSchema.CertificationEnum.NONE)
                             .build())
                     .build())));
 
@@ -109,9 +111,9 @@ public class UserRegistryConnectorImpl implements UserRegistryConnector {
         UserId result = restClient._saveUsingPATCH(SaveUserDto.builder()
                         .fiscalCode(fiscalCode)
                         .workContacts(Map.of(institutionId, WorkContactResource.builder()
-                                .email(CertifiableFieldResourceOfstring.builder()
+                                .email(EmailCertifiableSchema.builder()
                                         .value(email)
-                                        .certification(CertifiableFieldResourceOfstring.CertificationEnum.NONE)
+                                        .certification(EmailCertifiableSchema.CertificationEnum.NONE)
                                         .build())
                                 .build()))
                         .build())

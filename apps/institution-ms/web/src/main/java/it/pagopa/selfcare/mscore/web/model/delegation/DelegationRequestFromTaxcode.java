@@ -1,6 +1,7 @@
 package it.pagopa.selfcare.mscore.web.model.delegation;
 
 import it.pagopa.selfcare.mscore.constant.DelegationType;
+import it.pagopa.selfcare.mscore.web.util.EncryptIfTaxCode;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -9,8 +10,10 @@ import javax.validation.constraints.NotNull;
 @Data
 public class DelegationRequestFromTaxcode {
 
+    @EncryptIfTaxCode
     @NotBlank
     private String fromTaxCode;
+    @EncryptIfTaxCode
     @NotBlank
     private String toTaxCode;
     @NotBlank

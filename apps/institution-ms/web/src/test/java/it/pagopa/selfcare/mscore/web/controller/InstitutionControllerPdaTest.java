@@ -7,12 +7,15 @@ import it.pagopa.selfcare.mscore.model.institution.Billing;
 import it.pagopa.selfcare.mscore.model.institution.Institution;
 import it.pagopa.selfcare.mscore.web.model.institution.PdaInstitutionRequest;
 import it.pagopa.selfcare.mscore.web.model.mapper.*;
+import it.pagopa.selfcare.mscore.web.util.SpringContext;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.ResultActions;
@@ -23,6 +26,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.ArrayList;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
@@ -44,6 +48,11 @@ public class InstitutionControllerPdaTest {
     @Spy
     private InstitutionResourceMapper institutionResourceMapper = new InstitutionResourceMapperImpl(onboardingResourceMapper);
 
+    @BeforeEach
+    void setup() {
+        ApplicationContext ctx = mock(ApplicationContext.class);
+        SpringContext.setContext(ctx);
+    }
 
 
     /**
@@ -55,7 +64,7 @@ public class InstitutionControllerPdaTest {
         PdaInstitutionRequest institutionRequest = new PdaInstitutionRequest();
         institutionRequest.setInjectionInstitutionType("EC");
         institutionRequest.setDescription("test ec");
-        institutionRequest.setTaxCode("taxCode");
+        institutionRequest.setTaxCode("1234");
         institutionRequest.setIstatCode("42");
         String content = objectMapper.writeValueAsString(institutionRequest);
 
@@ -72,7 +81,7 @@ public class InstitutionControllerPdaTest {
                 .perform(requestBuilder);
         actualPerformResult.andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-                .andExpect(MockMvcResultMatchers.content().string("{\"id\":\"42\",\"externalId\":\"42\",\"origin\":\"MOCK\",\"originId\":\"Ipa Code\",\"description\":\"The characteristics of someone or something\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"Tax Code\",\"istatCode\":\"42\",\"attributes\":[],\"imported\":true,\"delegation\":false}"));
+                .andExpect(MockMvcResultMatchers.content().string("{\"id\":\"42\",\"externalId\":\"42\",\"origin\":\"MOCK\",\"originId\":\"Ipa Code\",\"description\":\"The characteristics of someone or something\",\"address\":\"42 Main St\",\"zipCode\":\"21654\",\"taxCode\":\"1234\",\"istatCode\":\"42\",\"attributes\":[],\"imported\":true,\"delegation\":false}"));
     }
 
     public static Institution createSimpleInstitutionPda() {
@@ -88,7 +97,7 @@ public class InstitutionControllerPdaTest {
         institution.setOriginId("Ipa Code");
         institution.setOrigin(Origin.MOCK.name());
 
-        institution.setTaxCode("Tax Code");
+        institution.setTaxCode("1234");
         institution.setZipCode("21654");
         institution.setImported(true);
 

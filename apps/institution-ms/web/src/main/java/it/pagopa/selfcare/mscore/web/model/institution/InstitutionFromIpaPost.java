@@ -1,7 +1,7 @@
 package it.pagopa.selfcare.mscore.web.model.institution;
 
-import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import it.pagopa.selfcare.mscore.core.util.InstitutionPaSubunitType;
+import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;

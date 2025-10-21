@@ -116,7 +116,7 @@ public class DelegationServiceImpl implements DelegationService {
         Institution partner = institutionsTo.stream()
                 .filter(institution -> StringUtils.hasText(delegation.getToSubunitCode()) || !StringUtils.hasText(institution.getSubunitCode()))
                 .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException(String.format(INSTITUTION_TAX_CODE_NOT_FOUND.getMessage(), delegation.getTo()),
+                .orElseThrow(() -> new ResourceNotFoundException(String.format(INSTITUTION_TAX_CODE_NOT_FOUND.getMessage(), delegation.getToTaxCode()),
                         INSTITUTION_TAX_CODE_NOT_FOUND.getCode()));
         delegation.setTo(partner.getId());
         delegation.setBrokerType(institutionMapper.getInstitutionType(partner, delegation.getProductId()));

@@ -3,6 +3,7 @@ package it.pagopa.selfcare.mscore.web.model.delegation;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import it.pagopa.selfcare.mscore.constant.DelegationState;
 import it.pagopa.selfcare.mscore.constant.DelegationType;
+import it.pagopa.selfcare.mscore.web.util.DecryptIfUuid;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -23,10 +24,12 @@ public class DelegationResponse {
     private DelegationType type;
     @NotBlank
     private String productId;
+    @DecryptIfUuid
     private String taxCode;
     private String institutionType;
     @NotBlank
     private String brokerId;
+    @DecryptIfUuid
     private String brokerTaxCode;
     private String brokerType;
     private String brokerName;

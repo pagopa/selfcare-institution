@@ -40,6 +40,23 @@ Feature: DelegationV2
         | pageInfo.pageNo        | 1     |
         | pageInfo.pageSize      | 10    |
 
+  Scenario: Successfully get delegations with institutionId and taxCode as a fiscal code
+    Given User login with username "j.doe" and password "test"
+    And The following query params:
+      | institutionId | c7a9a8e2-36e3-4ad5-9e63-6d482b74d1d7 |
+      | taxCode       | BLBRKY67C30H501B                     |
+    When I send a GET request to "/v2/delegations"
+    Then The status code is 200
+    And The response body contains the list "delegations" of size 1
+    And The response body contains at path "delegations" the following list of objects in any order:
+      | id                                   | institutionId                        | institutionName | type | productId | taxCode          | institutionType | brokerId                             | brokerTaxCode    | brokerType | brokerName           | status |
+      | 204c18ce-310f-454e-ae0e-7e87c019ba5c | c7a9a8e2-36e3-4ad5-9e63-6d482b74d1d7 | Privato CF 1    | PT   | prod-io   | PRVTNT80A41H401T | PRV_PF          | 0c6d2a5e-9c42-4b2f-9c3f-94c5cb2b6d1a | blbrki80A41H401T | PRV_PF     | Privato CF 2         | ACTIVE |
+    And The response body contains:
+      | pageInfo.totalElements | 1     |
+      | pageInfo.totalPages    | 1     |
+      | pageInfo.pageNo        | 0     |
+      | pageInfo.pageSize      | 10000 |
+
   Scenario: Not found delegations
     Given User login with username "j.doe" and password "test"
     And The following query params:

@@ -13,7 +13,9 @@ import it.pagopa.selfcare.mscore.web.model.delegation.DelegationRequest;
 import it.pagopa.selfcare.mscore.web.model.delegation.DelegationRequestFromTaxcode;
 import it.pagopa.selfcare.mscore.web.model.delegation.DelegationResponse;
 import it.pagopa.selfcare.mscore.web.model.mapper.*;
+import it.pagopa.selfcare.mscore.web.util.SpringContext;
 import it.pagopa.selfcare.onboarding.common.InstitutionType;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -22,6 +24,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MvcResult;
@@ -61,6 +64,12 @@ class DelegationControllerTest {
     final String FROM1 = "from1";
     final String FROM2 = "from2";
     final String TO1 = "to1";
+
+    @BeforeEach
+    void setup() {
+        ApplicationContext ctx = mock(ApplicationContext.class);
+        SpringContext.setContext(ctx);
+    }
 
     /**
      * Method under test: {@link DelegationController#createDelegation(DelegationRequest)}
@@ -169,10 +178,10 @@ class DelegationControllerTest {
                 .get("/delegations?&productId={productId}", "productId");
 
         assertThrows(NestedServletException.class, () ->
-            MockMvcBuilders.standaloneSetup(delegationController)
-                    .build()
-                    .perform(requestBuilder));
-        
+                MockMvcBuilders.standaloneSetup(delegationController)
+                        .build()
+                        .perform(requestBuilder));
+
     }
 
     /**
