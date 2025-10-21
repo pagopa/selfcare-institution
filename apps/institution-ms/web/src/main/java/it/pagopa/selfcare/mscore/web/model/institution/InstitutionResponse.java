@@ -15,6 +15,7 @@ public class InstitutionResponse {
 
     @NotBlank
     private String id;
+    @DecryptIfUuid
     private String externalId;
     @NotBlank
     private String origin;

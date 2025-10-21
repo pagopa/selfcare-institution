@@ -1632,7 +1632,7 @@
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "$ref" : "#/components/schemas/InstitutionToOnboard"
+                    "$ref" : "#/components/schemas/InstitutionToOnboardResponse"
                   }
                 }
               }
@@ -3791,6 +3791,18 @@
       },
       "InstitutionToOnboard" : {
         "title" : "InstitutionToOnboard",
+        "type" : "object",
+        "properties" : {
+          "cfImpresa" : {
+            "type" : "string"
+          },
+          "denominazione" : {
+            "type" : "string"
+          }
+        }
+      },
+      "InstitutionToOnboardResponse" : {
+        "title" : "InstitutionToOnboardResponse",
         "type" : "object",
         "properties" : {
           "cfImpresa" : {

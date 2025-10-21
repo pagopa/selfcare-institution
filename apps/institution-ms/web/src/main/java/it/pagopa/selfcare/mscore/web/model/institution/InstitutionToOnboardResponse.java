@@ -1,14 +1,14 @@
 package it.pagopa.selfcare.mscore.web.model.institution;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import it.pagopa.selfcare.mscore.web.util.EncryptIfTaxCode;
+import it.pagopa.selfcare.mscore.web.util.DecryptIfUuid;
 import lombok.Data;
 
 @Data
-public class InstitutionToOnboard {
+public class InstitutionToOnboardResponse {
 
     @JsonProperty("cfImpresa")
-    @EncryptIfTaxCode
+    @DecryptIfUuid
     private String id;
 
     @JsonProperty("denominazione")

@@ -5,15 +5,20 @@ import it.pagopa.selfcare.mscore.exception.ResourceNotFoundException;
 import it.pagopa.selfcare.mscore.model.user.User;
 import org.springframework.core.MethodParameter;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.bind.MissingPathVariableException;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import org.springframework.web.servlet.HandlerMapping;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
-public class EncryptedTaxCodeParamResolver implements HandlerMethodArgumentResolver {
+public class EncryptedPathVariableResolver implements HandlerMethodArgumentResolver {
 
     private static final Pattern UUID_PATTERN =
             Pattern.compile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
@@ -21,13 +26,13 @@ public class EncryptedTaxCodeParamResolver implements HandlerMethodArgumentResol
 
     private final UserRegistryConnector userRegistryConnector;
 
-    public EncryptedTaxCodeParamResolver(UserRegistryConnector userRegistryConnector) {
+    public EncryptedPathVariableResolver(UserRegistryConnector userRegistryConnector) {
         this.userRegistryConnector = userRegistryConnector;
     }
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(EncryptedTaxCodeParam.class)
+        return parameter.hasParameterAnnotation(EncryptedPathVariable.class)
                 && String.class.equals(parameter.getParameterType());
     }
 
@@ -35,20 +40,32 @@ public class EncryptedTaxCodeParamResolver implements HandlerMethodArgumentResol
     public Object resolveArgument(MethodParameter parameter,
                                   ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest,
-                                  WebDataBinderFactory binderFactory) throws MissingServletRequestParameterException {
+                                  WebDataBinderFactory binderFactory) throws Exception {
 
-        EncryptedTaxCodeParam annotation = parameter.getParameterAnnotation(EncryptedTaxCodeParam.class);
+        EncryptedPathVariable annotation = parameter.getParameterAnnotation(EncryptedPathVariable.class);
         String paramName = (annotation != null && !annotation.value().isEmpty())
                 ? annotation.value()
                 : parameter.getParameterName();
-        boolean required = annotation != null && annotation.required();
+        boolean required = annotation == null || annotation.required();
 
-        assert paramName != null;
-        String taxCode = webRequest.getParameter(paramName);
+
+        Map<String, String> uriVariables = webRequest.getAttribute(
+                HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE,
+                RequestAttributes.SCOPE_REQUEST) instanceof Map<?, ?> map
+                ? map.entrySet().stream()
+                .filter(e -> e.getKey() instanceof String && e.getValue() instanceof String)
+                .collect(Collectors.toMap(
+                        e -> (String) e.getKey(),
+                        e -> (String) e.getValue()))
+                : Collections.emptyMap();
+
+
+        String taxCode = uriVariables.get(paramName);
 
         if (!StringUtils.hasText(taxCode)) {
             if (required) {
-                throw new MissingServletRequestParameterException(String.format("Missing required field %s", paramName), "0000");
+                assert paramName != null;
+                throw new MissingPathVariableException(paramName, parameter);
             } else {
                 return null;
             }
@@ -67,3 +84,4 @@ public class EncryptedTaxCodeParamResolver implements HandlerMethodArgumentResol
         return taxCode;
     }
 }
+

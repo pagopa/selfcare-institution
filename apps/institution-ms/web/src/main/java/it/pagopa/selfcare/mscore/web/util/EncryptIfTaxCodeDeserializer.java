@@ -32,7 +32,7 @@ public class EncryptIfTaxCodeDeserializer extends JsonDeserializer<String> {
         if (!UUID_PATTERN.matcher(value).matches() && LETTER_PATTERN.matcher(value).matches()) {
             try {
                 User user = userRegistryConnector.getUserByFiscalCode(value);
-                return user != null ? user.getId() : null;
+                return user != null ? user.getId() : value;
             } catch (ResourceNotFoundException e) {
                 // 404: user not found →  return the original taxCode
                 return value;

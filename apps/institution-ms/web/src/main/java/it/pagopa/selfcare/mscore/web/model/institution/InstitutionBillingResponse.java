@@ -7,6 +7,7 @@ import lombok.Data;
 @Data
 public class InstitutionBillingResponse {
     private String institutionId;
+    @DecryptIfUuid
     private String externalId;
     private Origin origin;
     private String originId;

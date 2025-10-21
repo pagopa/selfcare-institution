@@ -16,6 +16,7 @@ public class BulkInstitution {
     private String id;
 
     @NotNull
+    @DecryptIfUuid
     private String externalId;
 
     @NotNull
