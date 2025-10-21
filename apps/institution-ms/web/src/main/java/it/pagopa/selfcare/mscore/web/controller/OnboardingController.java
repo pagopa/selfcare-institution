@@ -3,13 +3,10 @@ package it.pagopa.selfcare.mscore.web.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import it.pagopa.selfcare.mscore.constant.GenericError;
 import it.pagopa.selfcare.mscore.core.OnboardingService;
 import it.pagopa.selfcare.mscore.model.onboarding.VerifyOnboardingFilters;
 import it.pagopa.selfcare.mscore.web.util.CustomExceptionMessage;
-import it.pagopa.selfcare.mscore.web.util.EncryptedPathVariable;
 import it.pagopa.selfcare.mscore.web.util.EncryptedTaxCodeParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -41,8 +38,8 @@ public class OnboardingController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiOperation(value = "${swagger.mscore.onboarding.verify}", notes = "${swagger.mscore.onboarding.verify}")
     @RequestMapping(method = {RequestMethod.HEAD}, value = "/institution/{externalId}/products/{productId}")
-    public ResponseEntity<Void> verifyOnboardingInfo(@Parameter(name = "externalId", description = "${swagger.mscore.institutions.model.externalIdPath}", in = ParameterIn.PATH, required = true)
-                                                     @EncryptedPathVariable String externalId,
+    public ResponseEntity<Void> verifyOnboardingInfo(@ApiParam("${swagger.mscore.institutions.model.externalId}")
+                                                     @PathVariable(value = "externalId") String externalId,
                                                      @ApiParam("${swagger.mscore.institutions.model.productId}")
                                                      @PathVariable(value = "productId") String productId) {
         CustomExceptionMessage.setCustomMessage(GenericError.ONBOARDING_VERIFICATION_ERROR);
@@ -82,7 +79,7 @@ public class OnboardingController {
     public ResponseEntity<Void> verifyOnboardingInfoByFilters(@ApiParam("${swagger.mscore.institutions.model.productId}")
                                                        @RequestParam(value = "productId") String productId,
                                                        @ApiParam("${swagger.mscore.institutions.model.externalId}")
-                                                       @EncryptedTaxCodeParam String externalId,
+                                                       @RequestParam(value = "externalId", required = false) String externalId,
                                                        @ApiParam("${swagger.mscore.institutions.model.taxCode}")
                                                        @EncryptedTaxCodeParam String taxCode,
                                                        @ApiParam("${swagger.mscore.institutions.model.origin}")

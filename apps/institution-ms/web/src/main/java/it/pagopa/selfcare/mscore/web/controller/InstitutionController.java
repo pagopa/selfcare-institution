@@ -478,7 +478,7 @@ public class InstitutionController {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "${swagger.mscore.institutions.valid}", notes = "${swagger.mscore.institutions.valid}")
     @PostMapping(value = "/onboarded/{productId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<InstitutionToOnboardResponse>> getValidInstitutionToOnboard(@RequestBody List<InstitutionToOnboard> institutions,
+    public ResponseEntity<List<InstitutionToOnboard>> getValidInstitutionToOnboard(@RequestBody List<InstitutionToOnboard> institutions,
                                                                                    @PathVariable(value = "productId") String productId) {
         List<ValidInstitution> validInstitutions = institutionService.retrieveInstitutionByExternalIds(InstitutionMapperCustom.toValidInstitutions(institutions), productId);
         return ResponseEntity.ok().body(InstitutionMapperCustom.toInstitutionToOnboardList(validInstitutions));

@@ -226,14 +226,14 @@ public class InstitutionMapperCustom {
         return map;
     }
 
-    public static List<InstitutionToOnboardResponse> toInstitutionToOnboardList(List<ValidInstitution> validInstitutions) {
+    public static List<InstitutionToOnboard> toInstitutionToOnboardList(List<ValidInstitution> validInstitutions) {
         return validInstitutions.stream()
                 .map(InstitutionMapperCustom::toInstitutionToOnboard)
                 .toList();
     }
 
-    public static InstitutionToOnboardResponse toInstitutionToOnboard(ValidInstitution validInstitutions) {
-        InstitutionToOnboardResponse institution = new InstitutionToOnboardResponse();
+    public static InstitutionToOnboard toInstitutionToOnboard(ValidInstitution validInstitutions) {
+        InstitutionToOnboard institution = new InstitutionToOnboard();
         institution.setDescription(validInstitutions.getDescription());
         institution.setId(validInstitutions.getId());
         return institution;

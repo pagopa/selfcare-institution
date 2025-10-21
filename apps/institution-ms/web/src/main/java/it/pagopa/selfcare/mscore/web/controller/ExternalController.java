@@ -3,8 +3,6 @@ package it.pagopa.selfcare.mscore.web.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import it.pagopa.selfcare.mscore.constant.RelationshipState;
 import it.pagopa.selfcare.mscore.core.ExternalService;
 import it.pagopa.selfcare.mscore.model.institution.GeographicTaxonomies;
@@ -16,7 +14,6 @@ import it.pagopa.selfcare.mscore.web.model.mapper.InstitutionMapperCustom;
 import it.pagopa.selfcare.mscore.web.model.mapper.InstitutionResourceMapper;
 import it.pagopa.selfcare.mscore.web.model.onboarding.OnboardedProducts;
 import it.pagopa.selfcare.mscore.web.util.CustomExceptionMessage;
-import it.pagopa.selfcare.mscore.web.util.EncryptedPathVariable;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -55,8 +52,8 @@ public class ExternalController {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value ="${swagger.mscore.external.institution}", notes = "${swagger.mscore.external.institution}")
     @GetMapping(value = "/{externalId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<InstitutionResponse> getByExternalId(@Parameter(name = "externalId", description = "${swagger.mscore.institutions.model.externalIdPath}", in = ParameterIn.PATH, required = true)
-                                                               @EncryptedPathVariable String externalId) {
+    public ResponseEntity<InstitutionResponse> getByExternalId(@ApiParam("${swagger.mscore.institutions.model.externalId}")
+                                                               @PathVariable("externalId") String externalId) {
         CustomExceptionMessage.setCustomMessage(GET_INSTITUTION_BY_EXTERNAL_ID_ERROR);
         Institution institution = externalService.getInstitutionByExternalId(externalId);
         return ResponseEntity.ok().body(institutionResourceMapper.toInstitutionResponse(institution));
@@ -77,8 +74,8 @@ public class ExternalController {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "${swagger.mscore.external.institution.billing}", notes = "${swagger.mscore.external.institution.billing}")
     @GetMapping(value = "/{externalId}/products/{productId}/billing", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<InstitutionBillingResponse> getBillingInstitutionByExternalId(@Parameter(name = "externalId", description = "${swagger.mscore.institutions.model.externalIdPath}", in = ParameterIn.PATH, required = true)
-                                                                                        @EncryptedPathVariable String externalId,
+    public ResponseEntity<InstitutionBillingResponse> getBillingInstitutionByExternalId(@ApiParam("${swagger.mscore.institutions.model.externalId}")
+                                                                                        @PathVariable("externalId") String externalId,
                                                                                         @ApiParam("${swagger.mscore.institutions.model.productId}")
                                                                                         @PathVariable("productId") String productId) {
         CustomExceptionMessage.setCustomMessage(INSTITUTION_BILLING_ERROR);
@@ -101,8 +98,8 @@ public class ExternalController {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "${swagger.mscore.external.institution.products}", notes = "${swagger.mscore.external.institution.products}")
     @GetMapping(value = "/{externalId}/products", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<OnboardedProducts> retrieveInstitutionProductsByExternalId(@Parameter(name = "externalId", description = "${swagger.mscore.institutions.model.externalIdPath}", in = ParameterIn.PATH, required = true)
-                                                                                     @EncryptedPathVariable String externalId,
+    public ResponseEntity<OnboardedProducts> retrieveInstitutionProductsByExternalId(@ApiParam("${swagger.mscore.institutions.model.externalId}")
+                                                                                     @PathVariable("externalId") String externalId,
                                                                                      @RequestParam(value = "states", required = false) List<RelationshipState> states) {
         CustomExceptionMessage.setCustomMessage(GET_PRODUCTS_ERROR);
         List<Onboarding> page = externalService.retrieveInstitutionProductsByExternalId(externalId, states);
@@ -121,8 +118,8 @@ public class ExternalController {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "${swagger.mscore.external.geotaxonomies}", notes = "${swagger.mscore.external.geotaxonomies}")
     @GetMapping(value = "/{externalId}/geotaxonomies", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<GeographicTaxonomies>> retrieveInstitutionGeoTaxonomiesByExternalId(@Parameter(name = "externalId", description = "${swagger.mscore.institutions.model.externalIdPath}", in = ParameterIn.PATH, required = true)
-                                                                                                   @EncryptedPathVariable String externalId) {
+    public ResponseEntity<List<GeographicTaxonomies>> retrieveInstitutionGeoTaxonomiesByExternalId(@ApiParam("${swagger.mscore.institutions.model.externalId}")
+                                                                                                   @PathVariable("externalId") String externalId) {
         CustomExceptionMessage.setCustomMessage(RETRIEVE_GEO_TAXONOMIES_ERROR);
         List<GeographicTaxonomies> list = externalService.retrieveInstitutionGeoTaxonomiesByExternalId(externalId);
         return ResponseEntity.ok(list);

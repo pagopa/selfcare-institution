@@ -11,7 +11,6 @@ import java.util.Map;
 public class InstitutionOnboardingResponse {
 
     private String id;
-    @DecryptIfUuid
     private String externalId;
     private String origin;
     private String originId;

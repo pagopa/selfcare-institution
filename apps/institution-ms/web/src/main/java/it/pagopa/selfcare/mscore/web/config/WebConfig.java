@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pagopa.selfcare.commons.web.config.BaseWebConfig;
 import it.pagopa.selfcare.mscore.api.UserRegistryConnector;
-import it.pagopa.selfcare.mscore.web.util.EncryptedPathVariableResolver;
 import it.pagopa.selfcare.mscore.web.util.EncryptedTaxCodeParamResolver;
 import lombok.NonNull;
 import org.springframework.beans.BeansException;
@@ -37,6 +36,5 @@ public class WebConfig implements BeanPostProcessor, WebMvcConfigurer {
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(new EncryptedTaxCodeParamResolver(userRegistryConnector));
-        resolvers.add(new EncryptedPathVariableResolver(userRegistryConnector));
     }
 }
