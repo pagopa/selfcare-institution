@@ -18,7 +18,7 @@ public class EncryptedTaxCodeParamResolver implements HandlerMethodArgumentResol
 
     private static final Pattern UUID_PATTERN =
             Pattern.compile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
-    private static final Pattern CF_PATTERN = Pattern.compile(".*[A-Za-z].*");
+    private static final Pattern CF_PATTERN = Pattern.compile("[A-Za-z]");
 
     private final UserRegistryConnector userRegistryConnector;
 
@@ -55,7 +55,7 @@ public class EncryptedTaxCodeParamResolver implements HandlerMethodArgumentResol
             }
         }
 
-        if (CF_PATTERN.matcher(taxCode).matches() && !UUID_PATTERN.matcher(taxCode).matches()) {
+        if (!UUID_PATTERN.matcher(taxCode).matches() && CF_PATTERN.matcher(taxCode).find()) {
             try {
                 User user = userRegistryConnector.getUserByFiscalCode(taxCode);
                 return user != null ? user.getId() : taxCode;

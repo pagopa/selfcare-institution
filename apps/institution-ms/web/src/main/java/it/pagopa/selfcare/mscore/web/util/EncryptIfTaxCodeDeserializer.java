@@ -15,7 +15,7 @@ public class EncryptIfTaxCodeDeserializer extends JsonDeserializer<String> {
 
     private static final Pattern UUID_PATTERN =
             Pattern.compile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
-    private static final Pattern LETTER_PATTERN = Pattern.compile(".*[A-Za-z].*");
+    private static final Pattern CF_PATTERN = Pattern.compile("[A-Za-z]");
 
     public EncryptIfTaxCodeDeserializer() {
     }
@@ -30,7 +30,7 @@ public class EncryptIfTaxCodeDeserializer extends JsonDeserializer<String> {
 
         UserRegistryConnector userRegistryConnector = SpringContext.getBean(UserRegistryConnector.class);
 
-        if (!UUID_PATTERN.matcher(value).matches() && LETTER_PATTERN.matcher(value).matches()) {
+        if (!UUID_PATTERN.matcher(value).matches() && CF_PATTERN.matcher(value).find()) {
             try {
                 User user = userRegistryConnector.getUserByFiscalCode(value);
                 return user != null ? user.getId() : value;
