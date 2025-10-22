@@ -38,6 +38,7 @@ public class OnboardingController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiOperation(value = "${swagger.mscore.onboarding.verify}", notes = "${swagger.mscore.onboarding.verify}")
     @RequestMapping(method = {RequestMethod.HEAD}, value = "/institution/{externalId}/products/{productId}")
+    @Deprecated
     public ResponseEntity<Void> verifyOnboardingInfo(@ApiParam("${swagger.mscore.institutions.model.externalId}")
                                                      @PathVariable(value = "externalId") String externalId,
                                                      @ApiParam("${swagger.mscore.institutions.model.productId}")
@@ -62,6 +63,7 @@ public class OnboardingController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiOperation(value = "${swagger.mscore.onboarding.verify}", notes = "${swagger.mscore.onboarding.verify}")
     @RequestMapping(method = {RequestMethod.HEAD}, value = "")
+    @Deprecated
     public ResponseEntity<Void> verifyOnboardingInfo(@ApiParam(value = "${swagger.mscore.institutions.model.taxCode}", required = true)
                                                      @EncryptedTaxCodeParam(required = true) String taxCode,
                                                      @ApiParam("${swagger.mscore.institutions.model.subunitCode}")
@@ -79,13 +81,13 @@ public class OnboardingController {
     public ResponseEntity<Void> verifyOnboardingInfoByFilters(@ApiParam("${swagger.mscore.institutions.model.productId}")
                                                        @RequestParam(value = "productId") String productId,
                                                        @ApiParam("${swagger.mscore.institutions.model.externalId}")
-                                                       @RequestParam(value = "externalId", required = false) String externalId,
+                                                       @EncryptedTaxCodeParam String externalId,
                                                        @ApiParam("${swagger.mscore.institutions.model.taxCode}")
                                                        @EncryptedTaxCodeParam String taxCode,
                                                        @ApiParam("${swagger.mscore.institutions.model.origin}")
                                                        @RequestParam(value = "origin", required = false) String origin,
                                                        @ApiParam("${swagger.mscore.institutions.model.originId}")
-                                                       @RequestParam(value = "originId", required = false) String originId,
+                                                       @EncryptedTaxCodeParam String originId,
                                                        @ApiParam("${swagger.mscore.institutions.model.subunitCode}")
                                                        @RequestParam(value = "subunitCode", required = false) String subunitCode) {
         CustomExceptionMessage.setCustomMessage(GenericError.ONBOARDING_VERIFICATION_ERROR);

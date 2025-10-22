@@ -82,7 +82,8 @@ public class InstitutionController {
                                                                 @ApiParam("${swagger.mscore.institutions.model.subunitCode}")
                                                                 @RequestParam(value = "subunitCode", required = false) String subunitCode,
                                                                 @RequestParam(value = "origin", required = false) String origin,
-                                                                @RequestParam(value = "originId", required = false) String originId,
+                                                                @ApiParam("${swagger.mscore.institutions.model.originId}")
+                                                                @EncryptedTaxCodeParam String originId,
                                                                 @RequestParam(value = "productId", required = false) String productId,
                                                                 @RequestParam(value = "enableSubunits", required = false) Boolean enableSubunits) {
 
@@ -478,6 +479,7 @@ public class InstitutionController {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "${swagger.mscore.institutions.valid}", notes = "${swagger.mscore.institutions.valid}")
     @PostMapping(value = "/onboarded/{productId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Deprecated
     public ResponseEntity<List<InstitutionToOnboard>> getValidInstitutionToOnboard(@RequestBody List<InstitutionToOnboard> institutions,
                                                                                    @PathVariable(value = "productId") String productId) {
         List<ValidInstitution> validInstitutions = institutionService.retrieveInstitutionByExternalIds(InstitutionMapperCustom.toValidInstitutions(institutions), productId);

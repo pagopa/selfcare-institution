@@ -74,6 +74,7 @@ public class ExternalController {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "${swagger.mscore.external.institution.billing}", notes = "${swagger.mscore.external.institution.billing}")
     @GetMapping(value = "/{externalId}/products/{productId}/billing", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Deprecated
     public ResponseEntity<InstitutionBillingResponse> getBillingInstitutionByExternalId(@ApiParam("${swagger.mscore.institutions.model.externalId}")
                                                                                         @PathVariable("externalId") String externalId,
                                                                                         @ApiParam("${swagger.mscore.institutions.model.productId}")
@@ -98,6 +99,7 @@ public class ExternalController {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "${swagger.mscore.external.institution.products}", notes = "${swagger.mscore.external.institution.products}")
     @GetMapping(value = "/{externalId}/products", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Deprecated
     public ResponseEntity<OnboardedProducts> retrieveInstitutionProductsByExternalId(@ApiParam("${swagger.mscore.institutions.model.externalId}")
                                                                                      @PathVariable("externalId") String externalId,
                                                                                      @RequestParam(value = "states", required = false) List<RelationshipState> states) {
@@ -118,6 +120,7 @@ public class ExternalController {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "${swagger.mscore.external.geotaxonomies}", notes = "${swagger.mscore.external.geotaxonomies}")
     @GetMapping(value = "/{externalId}/geotaxonomies", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Deprecated
     public ResponseEntity<List<GeographicTaxonomies>> retrieveInstitutionGeoTaxonomiesByExternalId(@ApiParam("${swagger.mscore.institutions.model.externalId}")
                                                                                                    @PathVariable("externalId") String externalId) {
         CustomExceptionMessage.setCustomMessage(RETRIEVE_GEO_TAXONOMIES_ERROR);
@@ -137,6 +140,7 @@ public class ExternalController {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "${swagger.mscore.institution}", notes = "${swagger.mscore.institution}")
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Deprecated
     public ResponseEntity<List<InstitutionResponse>> retrieveInstitutionByIds(@ApiParam("${swagger.mscore.institutions.model.internalIds}")
                                                                                   @RequestParam("ids") List<String> ids) {
         CustomExceptionMessage.setCustomMessage(GET_INSTITUTION_BY_ID_ERROR);

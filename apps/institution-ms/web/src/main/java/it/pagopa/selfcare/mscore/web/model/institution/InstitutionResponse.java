@@ -15,10 +15,12 @@ public class InstitutionResponse {
 
     @NotBlank
     private String id;
+    @DecryptIfUuid
     private String externalId;
     @NotBlank
     private String origin;
     @NotBlank
+    @DecryptIfUuid
     private String originId;
     private String description;
     private String institutionType;

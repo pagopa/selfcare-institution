@@ -38,6 +38,7 @@ public class ManagementController {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "${swagger.mscore.institution}", notes = "${swagger.mscore.institution}")
     @PostMapping(value = "/bulk/institutions", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Deprecated
     public ResponseEntity<BulkInstitutions> retrieveInstitutionByIds(@ApiParam("${swagger.mscore.institutions.model.internalIds}")
                                                                      @RequestBody @Valid BulkPartiesSeed bulkPartiesSeed) {
         CustomExceptionMessage.setCustomMessage(GET_INSTITUTION_BY_ID_ERROR);
