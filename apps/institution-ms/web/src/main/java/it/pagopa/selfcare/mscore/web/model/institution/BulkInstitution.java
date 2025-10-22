@@ -16,12 +16,14 @@ public class BulkInstitution {
     private String id;
 
     @NotNull
+    @DecryptIfUuid
     private String externalId;
 
     @NotNull
     private String origin;
 
     @NotNull
+    @DecryptIfUuid
     private String originId;
 
     @NotNull

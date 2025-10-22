@@ -150,6 +150,27 @@ Feature: Institution
       | institutions[0].onboarding[0].originId        | 123X                                 |
       | institutions[0].onboarding[0].institutionType | PT                                   |
 
+  Scenario: Successfully getInstitutions with origin,originId (as a fiscal code),productId
+    Given User login with username "j.doe" and password "test"
+    And The following query params:
+      | origin    | PDND_INFOCAMERE     |
+      | originId  | VRDMRA22T71F205A    |
+      | productId | prod-idpay-merchant |
+    When I send a GET request to "/institutions"
+    Then The status code is 200
+    And The response body contains the list "institutions" of size 1
+    And The response body contains the list "institutions[0].onboarding" of size 1
+    And The response body contains:
+      | institutions[0].id                            | 5d1a4e8e-0b3d-4e71-9a3f-91aab8c54c17 |
+      | institutions[0].taxCode                       | VRDMRA22T71F205A                     |
+      | institutions[0].origin                        | PDND_INFOCAMERE                      |
+      | institutions[0].originId                      | VRDMRA22T71F205A                     |
+      | institutions[0].institutionType               | PRV_PF                               |
+      | institutions[0].isTest                        | false                                |
+      | institutions[0].onboarding[0].productId       | prod-idpay-merchant                  |
+      | institutions[0].onboarding[0].origin          | PDND_INFOCAMERE                      |
+      | institutions[0].onboarding[0].originId        | VRDMRA22T71F205A                     |
+      | institutions[0].onboarding[0].institutionType | PRV_PF                               |
 
   Scenario: Validation error in getInstitutions without taxCode,origin,originId
     Given User login with username "j.doe" and password "test"
@@ -1755,8 +1776,8 @@ Feature: Institution
     Then The status code is 200
     And The response body contains the list "items" of size 1
     And The response body contains at path "items" the following list of objects in any order:
-      | id                                   | externalId                           | origin          | originId                             | institutionType | description  | digitalAddress  | zipCode | taxCode          | supportEmail |
-      | 5d1a4e8e-0b3d-4e71-9a3f-91aab8c54c17 | 6f8b2d3a-4c1e-44d8-bf92-1a7f8e2c3d5b | PDND_INFOCAMERE | 6f8b2d3a-4c1e-44d8-bf92-1a7f8e2c3d5b | PRV_PF          | Privato CF 3 | test@test.com   | 00000   | VRDMRA22T71F205A |              |
+      | id                                   | externalId       | origin          | originId         | institutionType | description  | digitalAddress  | zipCode | taxCode          | supportEmail |
+      | 5d1a4e8e-0b3d-4e71-9a3f-91aab8c54c17 | VRDMRA22T71F205A | PDND_INFOCAMERE | VRDMRA22T71F205A | PRV_PF          | Privato CF 3 | test@test.com   | 00000   | VRDMRA22T71F205A |              |
 
   Scenario: Get institutions with non existent productId
     Given User login with username "j.doe" and password "test"

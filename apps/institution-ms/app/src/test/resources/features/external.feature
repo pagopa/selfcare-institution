@@ -15,7 +15,7 @@ Feature: External
       | b4705659-3a01-430a-a19b-7bdb4e340223 | 94076720658#UF5D7W                   | IPA    | UF5D7W   | Uff_eFatturaPA                          | saic8bu00x@pec.istruzione.it | Via San Pietro, 10 | 84014   | 94076720658      | false    |              | false      | UF5D7W      | UO          |
       | c9a50656-f345-4c81-84be-5b2474470544 | 00310810825                          | IPA    | c_c067   | Comune di Castelbuono                   | comune.castelbuono@pec.it    | Via Sant' Anna, 25 | 90013   | 00310810825      | false    | a@l.it       | false      |             |             |
       | fc5466e5-df00-4800-9ad5-aa2e7d9344f9 | 94076720658                          | IPA    | isticom  | 3 Istituto Comprensivo Nocera Inferiore | saic8bu00x@pec.istruzione.it | Via San Pietro, 10 | 84014   | 94076720658      | false    |              | false      |             |             |
-      | c7a9a8e2-36e3-4ad5-9e63-6d482b74d1d7 | 97a511a7-2acc-47b9-afed-2f3c65753b4a | IPA    | isticom  | Privato CF 1                            | test@test.com                | Via Roma, 1        | 00000   | PRVTNT80A41H401T | false    |              | false      |             |             |
+      | c7a9a8e2-36e3-4ad5-9e63-6d482b74d1d7 | PRVTNT80A41H401T                     | IPA    | isticom  | Privato CF 1                            | test@test.com                | Via Roma, 1        | 00000   | PRVTNT80A41H401T | false    |              | false      |             |             |
 
   Scenario: Successfully retrieve institutions onboarding data by ids
     Given User login with username "j.doe" and password "test"

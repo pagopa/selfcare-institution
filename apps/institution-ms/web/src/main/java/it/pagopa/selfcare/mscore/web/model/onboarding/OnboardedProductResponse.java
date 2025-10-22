@@ -2,6 +2,7 @@ package it.pagopa.selfcare.mscore.web.model.onboarding;
 
 import it.pagopa.selfcare.mscore.constant.RelationshipState;
 import it.pagopa.selfcare.mscore.web.model.institution.BillingResponse;
+import it.pagopa.selfcare.mscore.web.util.DecryptIfUuid;
 import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,5 +23,6 @@ public class OnboardedProductResponse {
     private Boolean isAggregator;
     private InstitutionType institutionType;
     private String origin;
+    @DecryptIfUuid
     private String originId;
 }
