@@ -161,7 +161,7 @@ public class DelegationCdcService {
 
         if(DelegationType.PT.equals(insertedDelegation.getType()) && availableProducts.contains(insertedDelegation.getProductId())) {
             createAggregatesDelegationsUni = attemptToCreateAggregatesDelegations(insertedDelegation)
-                    .onFailure().retry().withBackOff(Duration.ofSeconds(retryMinBackOff), Duration.ofHours(retryMaxBackOff)).atMost(maxRetry)
+                    .onFailure().retry().withBackOff(Duration.ofSeconds(retryMinBackOff), Duration.ofSeconds(retryMaxBackOff)).atMost(maxRetry)
                     .onItem().invoke(result -> {
                         log.info("attemptToCreateAggregatesDelegations successfully performed for Delegation document having id: {}", delegationId);
                         constructMapAndTrackEvent(document.getDocumentKey().toJson(), "TRUE", DELEGATION_INSERT_SUCCESS);
