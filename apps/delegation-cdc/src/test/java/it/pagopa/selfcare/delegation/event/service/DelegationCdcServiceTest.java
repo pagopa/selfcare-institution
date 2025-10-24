@@ -18,25 +18,30 @@ import io.quarkus.test.mongodb.MongoTestResource;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import it.pagopa.selfcare.delegation.event.DelegationCdcService;
+import it.pagopa.selfcare.delegation.event.client.EventHubRestClient;
 import it.pagopa.selfcare.delegation.event.config.ConfigUtilsBean;
 import it.pagopa.selfcare.delegation.event.constant.DelegationType;
 import it.pagopa.selfcare.delegation.event.constant.RelationshipState;
-import it.pagopa.selfcare.delegation.event.entity.*;
-import it.pagopa.selfcare.delegation.event.entity.mapper.DelegationMapper;
+import it.pagopa.selfcare.delegation.event.entity.DelegationsEntity;
+import it.pagopa.selfcare.delegation.event.entity.Institution;
+import it.pagopa.selfcare.delegation.event.entity.OnboardingEntity;
+import it.pagopa.selfcare.delegation.event.mapper.DelegationMapper;
 import it.pagopa.selfcare.delegation.event.repository.DelegationRepository;
 import it.pagopa.selfcare.delegation.event.repository.InstitutionRepository;
 import jakarta.inject.Inject;
 import org.bson.BsonDocument;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static it.pagopa.selfcare.onboarding.common.ProductId.PROD_IO;
 import static it.pagopa.selfcare.onboarding.common.ProductId.PROD_PAGOPA;
@@ -82,6 +87,9 @@ class DelegationCdcServiceTest {
     @InjectMock
     TableClient tableClient;
 
+    @RestClient
+    @InjectMock
+    EventHubRestClient eventHubRestClient;
 
     @Test
     void propagateDocumentToConsumers() {
@@ -111,10 +119,6 @@ class DelegationCdcServiceTest {
         BsonDocument bsonDocument = mock(BsonDocument.class);
         BsonDocument bsonDocument1 = new BsonDocument();
 
-        Map<String, String> propertiesMap = new HashMap<>();
-        propertiesMap.put("documentKey", "toJson");
-        propertiesMap.put("success", "TRUE");
-
         //when
         when(document.getFullDocument()).thenReturn(delegationsEntity);
         when(document.getDocumentKey()).thenReturn(bsonDocument);
@@ -134,9 +138,141 @@ class DelegationCdcServiceTest {
         verify(delegationRepository).getInstitutionsAlreadyPresent(anyString(), anyString());
         verify(delegationRepository).getDelegationsEA(anyString(), anyString());
         verify(delegationRepository).insertDelegations(ArgumentMatchers.any());
+        verify(eventHubRestClient).sendMessage(any());
+        verify(tableClient, times(1)).upsertEntity(any());
+
         ArgumentCaptor<Map<String, Double>> metricsName = ArgumentCaptor.forClass(Map.class);
-        verify(telemetryClient, times(1)).trackEvent(eq("DELEGATION_CDC"), eq(propertiesMap), metricsName.capture());
-        assertEquals("DelegationInsert_success", metricsName.getValue().keySet().stream().findFirst().orElse(null));
+        verify(telemetryClient, times(2)).trackEvent(eq("DELEGATION_CDC"), any(), metricsName.capture());
+        final Set<String> allValues = metricsName.getAllValues().stream().flatMap(x -> x.keySet().stream()).collect(Collectors.toSet());
+        assertTrue(allValues.containsAll(List.of("DelegationInsert_success", "DelegationEvent_success")));
+    }
+
+    @Test
+    void propagateDocumentToConsumersWithEventsFailure() {
+        //given
+        ChangeStreamDocument<DelegationsEntity> document = mock(ChangeStreamDocument.class);
+        DelegationsEntity delegationsEntity = new DelegationsEntity();
+        delegationsEntity.setId("id");
+        delegationsEntity.setType(DelegationType.PT);
+        delegationsEntity.setProductId(PROD_PAGOPA.getValue());
+        delegationsEntity.setFrom("institutionId");
+        delegationsEntity.setTo("toInstitutionId");
+
+        Institution institution = new Institution();
+        OnboardingEntity onboardingEntity = new OnboardingEntity();
+        onboardingEntity.setStatus(RelationshipState.ACTIVE);
+        onboardingEntity.setCreatedAt("2024-07-09T12:40:21.414946089Z");
+        onboardingEntity.setProductId(PROD_PAGOPA.getValue());
+        onboardingEntity.setIsAggregator(Boolean.TRUE);
+        institution.setOnboarding(List.of(onboardingEntity));
+
+        DelegationsEntity delegationEA = new DelegationsEntity();
+        delegationEA.setId("idEA");
+        delegationEA.setFrom("institutionIdFromEA");
+        delegationEA.setTo("institutionIdToEA");
+        delegationEA.setProductId(PROD_PAGOPA.getValue());
+
+        BsonDocument bsonDocument = mock(BsonDocument.class);
+        BsonDocument bsonDocument1 = new BsonDocument();
+
+        //when
+        when(document.getFullDocument()).thenReturn(delegationsEntity);
+        when(document.getDocumentKey()).thenReturn(bsonDocument);
+        when(document.getResumeToken()).thenReturn(bsonDocument1);
+        when(bsonDocument.toJson()).thenReturn("toJson");
+        when(institutionRepository.findInstitutionById(anyString())).thenReturn(Uni.createFrom().item(institution));
+        when(delegationRepository.getInstitutionsAlreadyPresent(anyString(), anyString())).thenReturn(Multi.createFrom().empty());
+        when(delegationRepository.getDelegationsEA(anyString(), anyString())).thenReturn(Multi.createFrom().items(delegationEA));
+        when(delegationRepository.insertDelegations(ArgumentMatchers.any())).thenReturn(Uni.createFrom().nullItem());
+        when(eventHubRestClient.sendMessage(any())).thenReturn(Uni.createFrom().failure(new RuntimeException("EventHub failure")));
+
+        // then
+        final Executable executable = () -> delegationCdcService.consumerDelegationRepositoryEvent(document);
+        assertDoesNotThrow(executable);
+
+        // verify
+        verify(institutionRepository).findInstitutionById(anyString());
+        verify(delegationRepository).getInstitutionsAlreadyPresent(anyString(), anyString());
+        verify(delegationRepository).getDelegationsEA(anyString(), anyString());
+        verify(delegationRepository).insertDelegations(ArgumentMatchers.any());
+        verify(eventHubRestClient).sendMessage(any());
+        verify(tableClient, never()).upsertEntity(any());
+
+        ArgumentCaptor<Map<String, Double>> metricsName = ArgumentCaptor.forClass(Map.class);
+        verify(telemetryClient, times(2)).trackEvent(eq("DELEGATION_CDC"), any(), metricsName.capture());
+        final Set<String> allValues = metricsName.getAllValues().stream().flatMap(x -> x.keySet().stream()).collect(Collectors.toSet());
+        assertTrue(allValues.containsAll(List.of("DelegationInsert_success", "DelegationEvent_failure")));
+    }
+
+    @Test
+    void propagateDocumentToConsumersWithoutEvents() {
+        //given
+        ChangeStreamDocument<DelegationsEntity> document = mock(ChangeStreamDocument.class);
+        DelegationsEntity delegationsEntity = new DelegationsEntity();
+        delegationsEntity.setId("id");
+        delegationsEntity.setType(DelegationType.PT);
+        delegationsEntity.setProductId(PROD_PAGOPA.getValue());
+        delegationsEntity.setFrom("institutionId");
+        delegationsEntity.setTo("toInstitutionId");
+
+        Institution institution = new Institution();
+        OnboardingEntity onboardingEntity = new OnboardingEntity();
+        onboardingEntity.setStatus(RelationshipState.ACTIVE);
+        onboardingEntity.setCreatedAt("2024-07-09T12:40:21.414946089Z");
+        onboardingEntity.setProductId(PROD_PAGOPA.getValue());
+        onboardingEntity.setIsAggregator(Boolean.TRUE);
+        institution.setOnboarding(List.of(onboardingEntity));
+
+        DelegationsEntity delegationEA = new DelegationsEntity();
+        delegationEA.setId("idEA");
+        delegationEA.setFrom("institutionIdFromEA");
+        delegationEA.setTo("institutionIdToEA");
+        delegationEA.setProductId(PROD_PAGOPA.getValue());
+
+        BsonDocument bsonDocument = mock(BsonDocument.class);
+        BsonDocument bsonDocument1 = new BsonDocument();
+
+        //when
+        when(document.getFullDocument()).thenReturn(delegationsEntity);
+        when(document.getDocumentKey()).thenReturn(bsonDocument);
+        when(document.getResumeToken()).thenReturn(bsonDocument1);
+        when(bsonDocument.toJson()).thenReturn("toJson");
+        when(institutionRepository.findInstitutionById(anyString())).thenReturn(Uni.createFrom().item(institution));
+        when(delegationRepository.getInstitutionsAlreadyPresent(anyString(), anyString())).thenReturn(Multi.createFrom().empty());
+        when(delegationRepository.getDelegationsEA(anyString(), anyString())).thenReturn(Multi.createFrom().items(delegationEA));
+        when(delegationRepository.insertDelegations(ArgumentMatchers.any())).thenReturn(Uni.createFrom().nullItem());
+
+        TelemetryContext context = mock(TelemetryContext.class);
+        OperationContext operationContext = mock(OperationContext.class);
+        when(telemetryClient.getContext()).thenReturn(context);
+        when(context.getOperation()).thenReturn(operationContext);
+
+        ReactiveMongoClient mongoClientMock = mock(ReactiveMongoClient.class);
+        ReactiveMongoDatabase mongoDatabase = mock(ReactiveMongoDatabase.class);
+        ReactiveMongoCollection<DelegationsEntity> collectionMock = mock(ReactiveMongoCollection.class);
+        when(mongoClientMock.getDatabase(anyString())).thenReturn(mongoDatabase);
+        when(mongoDatabase.getCollection(anyString(), eq(DelegationsEntity.class))).thenReturn(collectionMock);
+
+        // then
+        final DelegationCdcService delegationCdcServiceImpl = new DelegationCdcService(
+                mongoClientMock, "testDatabase", telemetryClient, tableClient,
+                configUtilsBean, institutionRepository, delegationRepository, retryMinBackOff, retryMaxBackOff, maxRetry,
+                availableProducts, false);
+        final Executable executable = () -> delegationCdcServiceImpl.consumerDelegationRepositoryEvent(document);
+        assertDoesNotThrow(executable);
+
+        // verify
+        verify(institutionRepository).findInstitutionById(anyString());
+        verify(delegationRepository).getInstitutionsAlreadyPresent(anyString(), anyString());
+        verify(delegationRepository).getDelegationsEA(anyString(), anyString());
+        verify(delegationRepository).insertDelegations(ArgumentMatchers.any());
+        verify(eventHubRestClient, never()).sendMessage(any());
+        verify(tableClient, times(1)).upsertEntity(any());
+
+        ArgumentCaptor<Map<String, Double>> metricsName = ArgumentCaptor.forClass(Map.class);
+        verify(telemetryClient, times(1)).trackEvent(eq("DELEGATION_CDC"), any(), metricsName.capture());
+        final Set<String> allValues = metricsName.getAllValues().stream().flatMap(x -> x.keySet().stream()).collect(Collectors.toSet());
+        assertTrue(allValues.contains("DelegationInsert_success"));
     }
 
     @Test
@@ -159,6 +295,8 @@ class DelegationCdcServiceTest {
         verify(delegationRepository, never()).getInstitutionsAlreadyPresent(anyString(), anyString());
         verify(delegationRepository, never()).getDelegationsEA(anyString(), anyString());
         verify(delegationRepository, never()).insertDelegations(ArgumentMatchers.any());
+        verify(eventHubRestClient, never()).sendMessage(any());
+        verify(tableClient, never()).upsertEntity(any());
     }
 
 
@@ -191,7 +329,13 @@ class DelegationCdcServiceTest {
         verify(delegationRepository, never()).getInstitutionsAlreadyPresent(anyString(), anyString());
         verify(delegationRepository, never()).getDelegationsEA(anyString(), anyString());
         verify(delegationRepository, never()).insertDelegations(ArgumentMatchers.any());
-        verify(telemetryClient, never()).trackEvent(eq("DELEGATION_CDC"), any(), any());
+        verify(eventHubRestClient, times(1)).sendMessage(any());
+        verify(tableClient, times(1)).upsertEntity(any());
+
+        ArgumentCaptor<Map<String, Double>> metricsName = ArgumentCaptor.forClass(Map.class);
+        verify(telemetryClient, times(1)).trackEvent(eq("DELEGATION_CDC"), any(), metricsName.capture());
+        final Set<String> allValues = metricsName.getAllValues().stream().flatMap(x -> x.keySet().stream()).collect(Collectors.toSet());
+        assertTrue(allValues.contains("DelegationEvent_success"));
     }
 
     @Test
@@ -223,7 +367,13 @@ class DelegationCdcServiceTest {
         verify(delegationRepository, never()).getInstitutionsAlreadyPresent(anyString(), anyString());
         verify(delegationRepository, never()).getDelegationsEA(anyString(), anyString());
         verify(delegationRepository, never()).insertDelegations(ArgumentMatchers.any());
-        verify(telemetryClient, never()).trackEvent(eq("DELEGATION_CDC"), any(), any());
+        verify(eventHubRestClient, times(1)).sendMessage(any());
+        verify(tableClient, times(1)).upsertEntity(any());
+
+        ArgumentCaptor<Map<String, Double>> metricsName = ArgumentCaptor.forClass(Map.class);
+        verify(telemetryClient, times(1)).trackEvent(eq("DELEGATION_CDC"), any(), metricsName.capture());
+        final Set<String> allValues = metricsName.getAllValues().stream().flatMap(x -> x.keySet().stream()).collect(Collectors.toSet());
+        assertTrue(allValues.contains("DelegationEvent_success"));
     }
 
 
@@ -240,10 +390,6 @@ class DelegationCdcServiceTest {
 
         BsonDocument bsonDocument = mock(BsonDocument.class);
         BsonDocument bsonDocument1 = new BsonDocument();
-
-        Map<String, String> propertiesMap = new HashMap<>();
-        propertiesMap.put("documentKey", "toJson");
-        propertiesMap.put("success", "FALSE");
 
         //when
         when(document.getFullDocument()).thenReturn(delegationsEntity);
@@ -262,9 +408,13 @@ class DelegationCdcServiceTest {
         verify(delegationRepository, never()).getInstitutionsAlreadyPresent(anyString(), anyString());
         verify(delegationRepository, never()).getDelegationsEA(anyString(), anyString());
         verify(delegationRepository, never()).insertDelegations(ArgumentMatchers.any());
+        verify(eventHubRestClient, times(1)).sendMessage(any());
+        verify(tableClient, never()).upsertEntity(any());
+
         ArgumentCaptor<Map<String, Double>> metricsName = ArgumentCaptor.forClass(Map.class);
-        verify(telemetryClient).trackEvent(eq("DELEGATION_CDC"), eq(propertiesMap), metricsName.capture());
-        assertEquals("DelegationInsert_failure", metricsName.getValue().keySet().stream().findFirst().orElse(null));
+        verify(telemetryClient, times(2)).trackEvent(eq("DELEGATION_CDC"), any(), metricsName.capture());
+        final Set<String> allValues = metricsName.getAllValues().stream().flatMap(x -> x.keySet().stream()).collect(Collectors.toSet());
+        assertTrue(allValues.containsAll(List.of("DelegationEvent_success", "DelegationInsert_failure")));
     }
 
     @Test
@@ -294,10 +444,6 @@ class DelegationCdcServiceTest {
         BsonDocument bsonDocument = mock(BsonDocument.class);
         BsonDocument bsonDocument1 = new BsonDocument();
 
-        Map<String, String> propertiesMap = new HashMap<>();
-        propertiesMap.put("documentKey", "toJson");
-        propertiesMap.put("success", "TRUE");
-
         //when
         when(document.getFullDocument()).thenReturn(delegationsEntity);
         when(document.getDocumentKey()).thenReturn(bsonDocument);
@@ -314,9 +460,13 @@ class DelegationCdcServiceTest {
         verify(delegationRepository, never()).getInstitutionsAlreadyPresent(anyString(), anyString());
         verify(delegationRepository, never()).getDelegationsEA(anyString(), anyString());
         verify(delegationRepository, never()).insertDelegations(ArgumentMatchers.any());
+        verify(eventHubRestClient, times(1)).sendMessage(any());
+        verify(tableClient, times(1)).upsertEntity(any());
+
         ArgumentCaptor<Map<String, Double>> metricsName = ArgumentCaptor.forClass(Map.class);
-        verify(telemetryClient, times(1)).trackEvent(eq("DELEGATION_CDC"), eq(propertiesMap), metricsName.capture());
-        assertEquals("DelegationInsert_success", metricsName.getValue().keySet().stream().findFirst().orElse(null));
+        verify(telemetryClient, times(2)).trackEvent(eq("DELEGATION_CDC"), any(), metricsName.capture());
+        final Set<String> allValues = metricsName.getAllValues().stream().flatMap(x -> x.keySet().stream()).collect(Collectors.toSet());
+        assertTrue(allValues.containsAll(List.of("DelegationEvent_success", "DelegationInsert_success")));
     }
 
 
@@ -359,7 +509,13 @@ class DelegationCdcServiceTest {
         verify(delegationRepository).getInstitutionsAlreadyPresent(anyString(), anyString());
         verify(delegationRepository).getDelegationsEA(anyString(), anyString());
         verify(delegationRepository).insertDelegations(ArgumentMatchers.any());
-        verify(telemetryClient).trackEvent(eq("DELEGATION_CDC"), anyMap(), anyMap());
+        verify(eventHubRestClient, times(1)).sendMessage(any());
+        verify(tableClient, never()).upsertEntity(any());
+
+        ArgumentCaptor<Map<String, Double>> metricsName = ArgumentCaptor.forClass(Map.class);
+        verify(telemetryClient, times(2)).trackEvent(eq("DELEGATION_CDC"), anyMap(), metricsName.capture());
+        final Set<String> allValues = metricsName.getAllValues().stream().flatMap(x -> x.keySet().stream()).collect(Collectors.toSet());
+        assertTrue(allValues.containsAll(List.of("DelegationEvent_success", "DelegationInsert_failure")));
     }
 
 
@@ -386,7 +542,7 @@ class DelegationCdcServiceTest {
         Mockito.when(configUtilsBean.getProfiles()).thenReturn(List.of("uat"));
 
         // Crea l'istanza del servizio
-        new DelegationCdcService(mongoClientMock, "testDatabase", telemetryClient, tableClientMock, configUtilsBean, institutionRepository, delegationRepository, retryMinBackOff, retryMaxBackOff, maxRetry, availableProducts);
+        new DelegationCdcService(mongoClientMock, "testDatabase", telemetryClient, tableClientMock, configUtilsBean, institutionRepository, delegationRepository, retryMinBackOff, retryMaxBackOff, maxRetry, availableProducts, false);
 
         // Verifica che il metodo watch sia stato chiamato
         verify(collectionMock).watch(anyList(), eq(DelegationsEntity.class), any(ChangeStreamOptions.class));
@@ -415,7 +571,7 @@ class DelegationCdcServiceTest {
         Mockito.when(configUtilsBean.getProfiles()).thenReturn(List.of("uat"));
 
         // Crea l'istanza del servizio
-        new DelegationCdcService(mongoClientMock, "testDatabase", telemetryClient, tableClientMock, configUtilsBean, institutionRepository, delegationRepository, retryMinBackOff, retryMaxBackOff, maxRetry, availableProducts);
+        new DelegationCdcService(mongoClientMock, "testDatabase", telemetryClient, tableClientMock, configUtilsBean, institutionRepository, delegationRepository, retryMinBackOff, retryMaxBackOff, maxRetry, availableProducts, false);
 
         // Verifica che il metodo watch sia stato chiamato
         verify(collectionMock).watch(anyList(), eq(DelegationsEntity.class), any(ChangeStreamOptions.class));
@@ -444,7 +600,7 @@ class DelegationCdcServiceTest {
         Mockito.when(configUtilsBean.getProfiles()).thenReturn(List.of("uat"));
 
         // Crea l'istanza del servizio
-        new DelegationCdcService(mongoClientMock, "testDatabase", telemetryClient, tableClientMock, configUtilsBean, institutionRepository, delegationRepository, retryMinBackOff, retryMaxBackOff, maxRetry, availableProducts);
+        new DelegationCdcService(mongoClientMock, "testDatabase", telemetryClient, tableClientMock, configUtilsBean, institutionRepository, delegationRepository, retryMinBackOff, retryMaxBackOff, maxRetry, availableProducts, false);
 
         // Verifica che il metodo watch sia stato chiamato
         verify(collectionMock).watch(anyList(), eq(DelegationsEntity.class), any(ChangeStreamOptions.class));
@@ -471,7 +627,7 @@ class DelegationCdcServiceTest {
         when(context.getOperation()).thenReturn(operationContext);
 
         // Crea l'istanza del servizio
-        new DelegationCdcService(mongoClientMock, "testDatabase", telemetryClient, tableClientMock, configUtilsBean, institutionRepository, delegationRepository, retryMinBackOff, retryMaxBackOff, maxRetry, availableProducts);
+        new DelegationCdcService(mongoClientMock, "testDatabase", telemetryClient, tableClientMock, configUtilsBean, institutionRepository, delegationRepository, retryMinBackOff, retryMaxBackOff, maxRetry, availableProducts, false);
 
         // Verifica che il metodo watch sia stato chiamato
         verify(collectionMock).watch(anyList(), eq(DelegationsEntity.class), any(ChangeStreamOptions.class));

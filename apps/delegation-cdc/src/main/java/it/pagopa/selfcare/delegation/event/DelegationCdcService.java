@@ -15,11 +15,14 @@ import io.quarkus.runtime.Quarkus;
 import io.quarkus.runtime.Startup;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
+import it.pagopa.selfcare.delegation.event.client.EventHubRestClient;
 import it.pagopa.selfcare.delegation.event.config.ConfigUtilsBean;
 import it.pagopa.selfcare.delegation.event.constant.DelegationType;
 import it.pagopa.selfcare.delegation.event.constant.RelationshipState;
-import it.pagopa.selfcare.delegation.event.entity.*;
-import it.pagopa.selfcare.delegation.event.entity.mapper.DelegationMapper;
+import it.pagopa.selfcare.delegation.event.entity.DelegationsEntity;
+import it.pagopa.selfcare.delegation.event.entity.Institution;
+import it.pagopa.selfcare.delegation.event.entity.OnboardingEntity;
+import it.pagopa.selfcare.delegation.event.mapper.DelegationMapper;
 import it.pagopa.selfcare.delegation.event.repository.DelegationRepository;
 import it.pagopa.selfcare.delegation.event.repository.InstitutionRepository;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -28,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.bson.BsonDocument;
 import org.bson.conversions.Bson;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import java.time.Duration;
 import java.time.OffsetDateTime;
@@ -44,8 +48,10 @@ import static java.util.Arrays.asList;
 @ApplicationScoped
 public class DelegationCdcService {
     private static final String COLLECTION_NAME = "Delegations";
-    private static final String  DELEGATION_INSERT_FAILURE = "DelegationInsert_failure";
+    private static final String DELEGATION_INSERT_FAILURE = "DelegationInsert_failure";
     private static final String DELEGATION_INSERT_SUCCESS = "DelegationInsert_success";
+    private static final String DELEGATION_EVENT_FAILURE = "DelegationEvent_failure";
+    private static final String DELEGATION_EVENT_SUCCESS = "DelegationEvent_success";
     private static final String ERROR_DURING_SUBSCRIBE_COLLECTION_EXCEPTION_MESSAGE = "Error during subscribe collection, exception: {} , message: {}";
     private static final String EVENT_INSTITUTION_CDC_NAME = "DELEGATION_CDC";
     private static final String OPERATION_NAME = "DELEGATION-CDC-DelegationInsert";
@@ -60,10 +66,14 @@ public class DelegationCdcService {
     private final Integer retryMaxBackOff;
     private final Integer maxRetry;
     private final List<String> availableProducts;
+    private final boolean sendEventsEnabled;
 
     @Inject
     private DelegationMapper delegationMapper;
 
+    @RestClient
+    @Inject
+    private EventHubRestClient eventHubRestClient;
 
     public DelegationCdcService(ReactiveMongoClient mongoClient,
                                 @ConfigProperty(name = "quarkus.mongodb.database") String mongodbDatabase,
@@ -75,7 +85,8 @@ public class DelegationCdcService {
                                 @ConfigProperty(name = "delegation-cdc.retry.min-backoff") Integer retryMinBackOff,
                                 @ConfigProperty(name = "delegation-cdc.retry.max-backoff") Integer retryMaxBackOff,
                                 @ConfigProperty(name = "delegation-cdc.retry") Integer maxRetry,
-                                @ConfigProperty(name = "delegation-cdc.products.available") List<String> availableProducts) {
+                                @ConfigProperty(name = "delegation-cdc.products.available") List<String> availableProducts,
+                                @ConfigProperty(name = "delegation-cdc.send-events.watch.enabled") Boolean sendEventsEnabled) {
         this.mongoClient = mongoClient;
         this.mongodbDatabase = mongodbDatabase;
         this.telemetryClient = telemetryClient;
@@ -87,6 +98,7 @@ public class DelegationCdcService {
         this.retryMaxBackOff = retryMaxBackOff;
         this.maxRetry = maxRetry;
         this.availableProducts = availableProducts;
+        this.sendEventsEnabled = sendEventsEnabled;
         telemetryClient.getContext().getOperation().setName(OPERATION_NAME);
         initOrderStream();
     }
@@ -144,21 +156,53 @@ public class DelegationCdcService {
         String delegationId = insertedDelegation.getId();
         log.info("Starting consumerDelegationsRepositoryEvent from Delegation document having id: {}", delegationId);
 
+        Uni<Boolean> createAggregatesDelegationsUni = Uni.createFrom().item(true);
+        Uni<Boolean> sendEventsUni = Uni.createFrom().item(true);
+
         if(DelegationType.PT.equals(insertedDelegation.getType()) && availableProducts.contains(insertedDelegation.getProductId())) {
-            attemptToCreateAggregatesDelegations(insertedDelegation)
+            createAggregatesDelegationsUni = attemptToCreateAggregatesDelegations(insertedDelegation)
                     .onFailure().retry().withBackOff(Duration.ofSeconds(retryMinBackOff), Duration.ofHours(retryMaxBackOff)).atMost(maxRetry)
-                    .subscribe().with(
-                            result -> {
-                                log.info("Delegation cdc successfully performed for Delegation document having id: {}", insertedDelegation.getId());
-                                updateLastResumeToken(document.getResumeToken());
-                                constructMapAndTrackEvent(document.getDocumentKey().toJson(), "TRUE", DELEGATION_INSERT_SUCCESS);
-                            },
-                            failure -> {
-                                log.error("Error during Delegation collection updating, from Delegation document having id: {} , message: {}", insertedDelegation.getId(), failure.getMessage());
-                                constructMapAndTrackEvent(document.getDocumentKey().toJson(), "FALSE", DELEGATION_INSERT_FAILURE);
-                            });
+                    .onItem().invoke(result -> {
+                        log.info("attemptToCreateAggregatesDelegations successfully performed for Delegation document having id: {}", delegationId);
+                        constructMapAndTrackEvent(document.getDocumentKey().toJson(), "TRUE", DELEGATION_INSERT_SUCCESS);
+                    })
+                    .onItem().transformToUni(result -> Uni.createFrom().item(true))
+                    .onFailure().invoke(failure -> {
+                        log.error("Error during Delegation collection updating, from Delegation document having id: {} , message: {}", delegationId, failure.getMessage());
+                        constructMapAndTrackEvent(document.getDocumentKey().toJson(), "FALSE", DELEGATION_INSERT_FAILURE);
+                    })
+                    .onFailure().recoverWithUni(failure -> Uni.createFrom().item(false));
         }
 
+        if (sendEventsEnabled) {
+            sendEventsUni = eventHubRestClient.sendMessage(delegationMapper.toDelegationNotificationToSend(insertedDelegation))
+                    .onFailure().retry().withBackOff(Duration.ofSeconds(retryMinBackOff), Duration.ofSeconds(retryMaxBackOff)).atMost(maxRetry)
+                    .onItem().invoke(result -> {
+                        log.info("Notification for delegationId {} sent", delegationId);
+                        constructMapAndTrackEvent(document.getDocumentKey().toJson(), "TRUE", DELEGATION_EVENT_SUCCESS);
+                    })
+                    .onItem().transformToUni(result -> Uni.createFrom().item(true))
+                    .onFailure().invoke(failure -> {
+                        log.error("Error while sending notification for delegationId {}: {}", delegationId, failure.getMessage());
+                        constructMapAndTrackEvent(document.getDocumentKey().toJson(), "FALSE", DELEGATION_EVENT_FAILURE);
+                    })
+                    .onFailure().recoverWithUni(failure -> Uni.createFrom().item(false));
+        }
+
+        Uni.combine().all().unis(createAggregatesDelegationsUni, sendEventsUni)
+                .with(Boolean::logicalAnd)
+                .subscribe()
+                .with(
+                        result -> {
+                            if (result) {
+                                log.info("Updating last resume token after processing delegation document having id: {}", delegationId);
+                                updateLastResumeToken(document.getResumeToken());
+                            } else {
+                                log.error("Error while processing delegation document having id {}", delegationId);
+                            }
+                        },
+                        failure -> log.error("Error while processing delegation document having id {}: {}", delegationId, failure.getMessage())
+                );
     }
 
     private Uni<Void> attemptToCreateAggregatesDelegations(DelegationsEntity insertedDelegation) {
