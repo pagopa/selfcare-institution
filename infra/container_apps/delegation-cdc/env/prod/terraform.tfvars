@@ -27,12 +27,29 @@ app_settings = [
   {
     name  = "APPLICATIONINSIGHTS_ROLE_NAME"
     value = "delegation-cdc",
+  },
+  {
+    name  = "DELEGATION_CDC_SEND_EVENTS_WATCH_ENABLED"
+    value = "true"
+  },
+  {
+    name  = "EVENT_HUB_BASE_PATH"
+    value = "https://selc-p-eventhub-ns.servicebus.windows.net/"
+  },
+  {
+    name  = "EVENT_HUB_SC_DELEGATIONS_TOPIC"
+    value = "sc-delegations"
+  },
+  {
+    name  = "SHARED_ACCESS_KEY_NAME"
+    value = "selfcare-wo"
   }
 ]
 
 secrets_names = {
-  "APPLICATIONINSIGHTS_CONNECTION_STRING"   = "appinsights-connection-string"
-  "MONGODB-CONNECTION-STRING"               = "mongodb-connection-string"
-  "STORAGE_CONNECTION_STRING"               = "blob-storage-product-connection-string"
+  "APPLICATIONINSIGHTS_CONNECTION_STRING"       = "appinsights-connection-string"
+  "MONGODB-CONNECTION-STRING"                   = "mongodb-connection-string"
+  "STORAGE_CONNECTION_STRING"                   = "blob-storage-product-connection-string"
+  "EVENTHUB-SC-DELEGATIONS-SELFCARE-WO-KEY-LC"  = "eventhub-sc-delegations-selfcare-wo-key-lc"
 }
 
