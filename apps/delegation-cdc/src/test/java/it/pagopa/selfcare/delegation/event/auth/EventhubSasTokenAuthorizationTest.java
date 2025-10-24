@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.delegation.event.auth;
 
+import io.quarkus.test.junit.QuarkusTest;
 import jakarta.ws.rs.client.ClientRequestContext;
 import org.junit.jupiter.api.Test;
 
@@ -9,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@QuarkusTest
 public class EventhubSasTokenAuthorizationTest {
 
     @Test
