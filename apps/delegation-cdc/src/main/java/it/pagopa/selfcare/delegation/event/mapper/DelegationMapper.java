@@ -1,6 +1,8 @@
-package it.pagopa.selfcare.delegation.event.entity.mapper;
+package it.pagopa.selfcare.delegation.event.mapper;
 
+import it.pagopa.selfcare.delegation.event.constant.EventType;
 import it.pagopa.selfcare.delegation.event.entity.DelegationsEntity;
+import it.pagopa.selfcare.delegation.event.model.DelegationNotificationToSend;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -24,6 +26,15 @@ public interface DelegationMapper {
         @Mapping(target = "status", source = "delegationPT.status")
         @Mapping(target = "createdAt", source = "delegationPT.createdAt")
         @Mapping(target = "updatedAt", source = "delegationPT.updatedAt")
+        @Mapping(target = "closedAt", source = "delegationPT.closedAt")
+        @Mapping(target = "isTest", source = "delegationPT.isTest")
         DelegationsEntity toDelegationAggregatePT(DelegationsEntity delegationAggregate, DelegationsEntity delegationPT);
+
+        @Mapping(target = "eventType", expression = "java(toEventType(delegationEntity.getUpdatedAt(), delegationEntity.getClosedAt()))")
+        DelegationNotificationToSend toDelegationNotificationToSend(DelegationsEntity delegationEntity);
+
+        default EventType toEventType(String updatedAt, String closedAt) {
+            return updatedAt != null || closedAt != null ? EventType.UPDATE : EventType.ADD;
+        }
 
 }

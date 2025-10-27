@@ -1,22 +1,13 @@
-package it.pagopa.selfcare.delegation.event.entity;
+package it.pagopa.selfcare.delegation.event.model;
 
-import io.quarkus.mongodb.panache.common.MongoEntity;
-import io.quarkus.mongodb.panache.reactive.ReactivePanacheMongoEntity;
 import it.pagopa.selfcare.delegation.event.constant.DelegationState;
 import it.pagopa.selfcare.delegation.event.constant.DelegationType;
+import it.pagopa.selfcare.delegation.event.constant.EventType;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.FieldNameConstants;
-import org.bson.codecs.pojo.annotations.BsonProperty;
 
-
-@EqualsAndHashCode(callSuper = true)
 @Data
-@MongoEntity(collection = "Delegations")
-@FieldNameConstants(asEnum = true)
-public class DelegationsEntity extends ReactivePanacheMongoEntity {
+public class DelegationNotificationToSend {
 
-    @BsonProperty("_id")
     private String id;
     private String from;
     private String institutionFromName;
@@ -34,5 +25,6 @@ public class DelegationsEntity extends ReactivePanacheMongoEntity {
     private String updatedAt;
     private String closedAt;
     private Boolean isTest;
+    private EventType eventType;
 
 }
