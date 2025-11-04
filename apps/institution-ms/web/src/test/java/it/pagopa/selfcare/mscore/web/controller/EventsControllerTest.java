@@ -34,7 +34,7 @@ public class EventsControllerTest {
                 .setConversionService(getFormattingConversionService())
                 .build()
                 .perform(requestBuilder)
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
     }
 
     @Test

@@ -769,7 +769,8 @@
     "/events/delegations" : {
       "post" : {
         "tags" : [ "Events" ],
-        "summary" : "sendDelegationEvents",
+        "summary" : "Resend delegation events from a start date",
+        "description" : "Resend delegation events from a start date",
         "operationId" : "sendDelegationEventsUsingPOST",
         "parameters" : [ {
           "name" : "fromDate",
@@ -783,8 +784,8 @@
           }
         } ],
         "responses" : {
-          "200" : {
-            "description" : "OK"
+          "204" : {
+            "description" : "No Content"
           },
           "400" : {
             "description" : "Bad Request",
