@@ -133,19 +133,32 @@ app_settings = [
   {
     name  = "PEC_NOTIFICATION_DISABLED"
     value = "false"
+  },
+  {
+    name  = "EVENT_HUB_BASE_PATH"
+    value = "https://selc-d-eventhub-ns.servicebus.windows.net/"
+  },
+  {
+    name  = "EVENT_HUB_SC_DELEGATIONS_TOPIC"
+    value = "sc-delegations"
+  },
+  {
+    name  = "SHARED_ACCESS_KEY_NAME"
+    value = "selfcare-wo"
   }
 ]
 
 secrets_names = {
-  "APPLICATIONINSIGHTS_CONNECTION_STRING"    = "appinsights-connection-string"
-  "MONGODB_CONNECTION_URI"                   = "mongodb-connection-string"
-  "BLOB_STORAGE_CONN_STRING"                 = "documents-storage-connection-string"
-  "SMTP_USR"                                 = "smtp-usr"
-  "SMTP_PSW"                                 = "smtp-psw"
-  "ONBOARDING_INSTITUTION_ALTERNATIVE_EMAIL" = "party-test-institution-email"
-  "USER_REGISTRY_API_KEY"                    = "user-registry-api-key"
-  "JWT_TOKEN_PUBLIC_KEY"                     = "jwt-public-key"
-  "BLOB_STORAGE_PRODUCT_CONNECTION_STRING"   = "blob-storage-product-connection-string"
-  "AWS_SES_ACCESS_KEY_ID"                    = "aws-ses-access-key-id"
-  "AWS_SES_SECRET_ACCESS_KEY"                = "aws-ses-secret-access-key"
+  "APPLICATIONINSIGHTS_CONNECTION_STRING"       = "appinsights-connection-string"
+  "MONGODB_CONNECTION_URI"                      = "mongodb-connection-string"
+  "BLOB_STORAGE_CONN_STRING"                    = "documents-storage-connection-string"
+  "SMTP_USR"                                    = "smtp-usr"
+  "SMTP_PSW"                                    = "smtp-psw"
+  "ONBOARDING_INSTITUTION_ALTERNATIVE_EMAIL"    = "party-test-institution-email"
+  "USER_REGISTRY_API_KEY"                       = "user-registry-api-key"
+  "JWT_TOKEN_PUBLIC_KEY"                        = "jwt-public-key"
+  "BLOB_STORAGE_PRODUCT_CONNECTION_STRING"      = "blob-storage-product-connection-string"
+  "AWS_SES_ACCESS_KEY_ID"                       = "aws-ses-access-key-id"
+  "AWS_SES_SECRET_ACCESS_KEY"                   = "aws-ses-secret-access-key"
+  "EVENTHUB-SC-DELEGATIONS-SELFCARE-WO-KEY-LC"  = "eventhub-sc-delegations-selfcare-wo-key-lc"
 }

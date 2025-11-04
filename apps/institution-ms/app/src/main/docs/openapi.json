@@ -22,6 +22,9 @@
     "name" : "Delegation",
     "description" : "Delegation Controller"
   }, {
+    "name" : "Events",
+    "description" : "Events Controller"
+  }, {
     "name" : "External",
     "description" : "External Controller"
   }, {
@@ -749,6 +752,62 @@
           },
           "404" : {
             "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ "global" ]
+        } ]
+      }
+    },
+    "/events/delegations" : {
+      "post" : {
+        "tags" : [ "Events" ],
+        "summary" : "sendDelegationEvents",
+        "operationId" : "sendDelegationEventsUsingPOST",
+        "parameters" : [ {
+          "name" : "fromDate",
+          "in" : "query",
+          "description" : "The internal identifier of the institution",
+          "required" : true,
+          "style" : "form",
+          "schema" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409" : {
+            "description" : "Conflict",
             "content" : {
               "application/problem+json" : {
                 "schema" : {

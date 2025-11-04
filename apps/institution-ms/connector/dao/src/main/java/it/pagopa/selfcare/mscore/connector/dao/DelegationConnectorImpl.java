@@ -28,6 +28,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -116,6 +117,27 @@ public class DelegationConnectorImpl implements DelegationConnector {
                 .stream()
                 .map(delegationMapper::convertToDelegation)
                 .toList();
+    }
+
+    @Override
+    public DelegationWithCursorPagination findFromDate(OffsetDateTime fromDate, Long cursor, Integer size) {
+        final Query query = Query.query(new Criteria().orOperator(
+                Criteria.where(DelegationEntity.Fields.updatedAt.name()).gte(fromDate),
+                Criteria.where(DelegationEntity.Fields.createdAt.name()).gte(fromDate)
+        )).with(Sort.by(Sort.Direction.ASC, DelegationEntity.Fields.createdAt.name())).limit(Optional.ofNullable(size).orElse(100));
+
+        Optional.ofNullable(cursor).ifPresent(c ->
+            query.addCriteria(Criteria.where(DelegationEntity.Fields.createdAt.name())
+                .gt(OffsetDateTime.ofInstant(Instant.ofEpochMilli(c), ZoneId.systemDefault())))
+        );
+
+        final List<Delegation> delegations = repository.find(query, DelegationEntity.class)
+                .stream().map(delegationMapper::convertToDelegation)
+                .collect(Collectors.toCollection(ArrayList::new));
+        final Long lastElementCursor = !delegations.isEmpty() ?
+                delegationMapper.convertToTimestampId(delegations.get(delegations.size() - 1).getCreatedAt()) : null;
+
+        return new DelegationWithCursorPagination(delegations, lastElementCursor);
     }
 
     @Override

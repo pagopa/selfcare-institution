@@ -6,6 +6,7 @@ import it.pagopa.selfcare.mscore.constant.Order;
 import it.pagopa.selfcare.mscore.model.delegation.*;
 import it.pagopa.selfcare.mscore.model.institution.Institution;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 public interface DelegationConnector {
@@ -15,6 +16,8 @@ public interface DelegationConnector {
     boolean checkIfExistsWithStatus(Delegation delegation, DelegationState status);
 
     List<Delegation> find(String from, String to, String productId, String search, String taxCode, Order order, Integer page, Integer size);
+
+    DelegationWithCursorPagination findFromDate(OffsetDateTime fromDate, Long cursor, Integer size);
 
     DelegationWithPagination findAndCount(GetDelegationParameters delegationParameters);
 
