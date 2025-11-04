@@ -3,12 +3,17 @@ package it.pagopa.selfcare.mscore.web.util;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import feign.FeignException;
 import it.pagopa.selfcare.mscore.api.UserRegistryConnector;
 import it.pagopa.selfcare.mscore.exception.ResourceNotFoundException;
 import it.pagopa.selfcare.mscore.model.user.User;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.regex.Pattern;
 
 public class EncryptIfTaxCodeDeserializer extends JsonDeserializer<String> {
@@ -28,6 +33,27 @@ public class EncryptIfTaxCodeDeserializer extends JsonDeserializer<String> {
             return null;
         }
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String token = (String) authentication.getCredentials();
+
+        String aud = null;
+        try {
+            SignedJWT signedJWT = SignedJWT.parse(token);
+            JWTClaimsSet claims = signedJWT.getJWTClaimsSet();
+
+            if (claims.getAudience() != null && !claims.getAudience().isEmpty()) {
+                aud = claims.getAudience().get(0);
+            }
+        } catch (ParseException e) {
+            throw new RuntimeException("Error parsing JWT", e);
+        }
+
+        // if aud contains "pnpg" then return the entered value
+        if (aud != null && aud.toLowerCase().contains("pnpg")) {
+            return value;
+        }
+
+        // otherwise check the value on userRegistry
         UserRegistryConnector userRegistryConnector = SpringContext.getBean(UserRegistryConnector.class);
 
         if (!UUID_PATTERN.matcher(value).matches() && CF_PATTERN.matcher(value).find()) {
