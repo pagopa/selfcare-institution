@@ -774,7 +774,7 @@
         "parameters" : [ {
           "name" : "fromDate",
           "in" : "query",
-          "description" : "The internal identifier of the institution",
+          "description" : "Start date to filter events (ISO 8601 format)",
           "required" : true,
           "style" : "form",
           "schema" : {

@@ -23,7 +23,7 @@ public class EventsController {
     private final EventsService eventsService;
 
     @PostMapping(value = "/delegations")
-    public void sendDelegationEvents(@ApiParam("${swagger.mscore.institutions.model.institutionId}")
+    public void sendDelegationEvents(@ApiParam("${swagger.mscore.events.fromDate}")
                                      @RequestParam(name = "fromDate") OffsetDateTime fromDate) {
         eventsService.sendDelegationEvents(fromDate);
     }
