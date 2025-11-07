@@ -49,7 +49,7 @@ public class EncryptIfTaxCodeDeserializer extends JsonDeserializer<String> {
         }
 
         // if aud contains "pnpg" then return the entered value
-        if (aud != null && aud.toLowerCase().contains("pnpg")) {
+        if (aud != null && (aud.toLowerCase().contains("pnpg") || aud.toLowerCase().contains("imprese.notifichedigitali"))) {
             return value;
         }
 

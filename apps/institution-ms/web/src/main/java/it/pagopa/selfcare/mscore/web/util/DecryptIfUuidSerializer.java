@@ -47,7 +47,7 @@ public class DecryptIfUuidSerializer extends JsonSerializer<String> {
         }
 
         // if aud contains "pnpg" then return the entered value
-        if (aud != null && aud.toLowerCase().contains("pnpg")) {
+        if (aud != null && (aud.toLowerCase().contains("pnpg") || aud.toLowerCase().contains("imprese.notifichedigitali"))) {
             gen.writeString(value);
             return;
         }
