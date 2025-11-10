@@ -10,9 +10,12 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Configuration
@@ -36,5 +39,17 @@ public class WebConfig implements BeanPostProcessor, WebMvcConfigurer {
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(new EncryptedTaxCodeParamResolver(userRegistryConnector));
+    }
+
+    @Override
+    public void addFormatters(FormatterRegistry registry) {
+        registry.addConverter(new StringToOffsetDateTimeConverter());
+    }
+
+    public static class StringToOffsetDateTimeConverter implements Converter<String, OffsetDateTime> {
+        @Override
+        public OffsetDateTime convert(String source) {
+            return OffsetDateTime.parse(source);
+        }
     }
 }

@@ -25,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.test.context.ContextConfiguration;
@@ -465,6 +466,32 @@ class DelegationConnectorImplTest {
         assertEquals("test2@test.com", delegates.get(1).getInstitution().getDigitalAddress());
         assertEquals("Institution2", delegators.get(1).getInstitution().getDescription());
         assertEquals("Institution2", delegates.get(1).getInstitution().getDescription());
+    }
+
+    @Test
+    void findFromDateTestWithoutCursorWithSize() {
+        when(delegationRepository.find(any(), any())).thenReturn(List.of(new DelegationEntity()));
+        delegationConnectorImpl.findFromDate(OffsetDateTime.now(), null, 10);
+        final ArgumentCaptor<Query> argumentCaptor = ArgumentCaptor.forClass(Query.class);
+        verify(delegationRepository).find(argumentCaptor.capture(), any());
+        final Query query = argumentCaptor.getValue();
+        assertEquals(10, query.getLimit());
+        assertEquals(1, query.getQueryObject().size());
+        assertTrue(query.getQueryObject().containsKey("$or"));
+        assertFalse(query.getQueryObject().containsKey("createdAt"));
+    }
+
+    @Test
+    void findFromDateTestWithCursorWithoutSize() {
+        when(delegationRepository.find(any(), any())).thenReturn(List.of(new DelegationEntity()));
+        delegationConnectorImpl.findFromDate(OffsetDateTime.now(), 1L, null);
+        final ArgumentCaptor<Query> argumentCaptor = ArgumentCaptor.forClass(Query.class);
+        verify(delegationRepository).find(argumentCaptor.capture(), any());
+        final Query query = argumentCaptor.getValue();
+        assertEquals(100, query.getLimit());
+        assertEquals(2, query.getQueryObject().size());
+        assertTrue(query.getQueryObject().containsKey("$or"));
+        assertTrue(query.getQueryObject().containsKey("createdAt"));
     }
 
 }
