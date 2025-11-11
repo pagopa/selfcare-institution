@@ -311,10 +311,12 @@ class InstitutionControllerTest {
 
     @Test
     void retrieveInstitutionById_withProductFilter() throws Exception {
-        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
         Authentication authentication = Mockito.mock(Authentication.class);
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
         SecurityContextHolder.setContext(securityContext);
         when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getCredentials()).thenReturn("fake-jwt-without-pnpg");
+
         when(institutionService.retrieveInstitutionById("42")).thenReturn(createInstitution());
         when(institutionService.getLogo("42")).thenReturn("logoUrl");
         createInstitution().setId("id");
@@ -1177,6 +1179,7 @@ class InstitutionControllerTest {
         SecurityContextHolder.setContext(securityContext);
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn(SelfCareUser.builder("id").build());
+        when(authentication.getCredentials()).thenReturn("fake-jwt-without-pnpg");
 
         CreatePgInstitutionRequest request = new CreatePgInstitutionRequest();
         request.setTaxId("1234");
