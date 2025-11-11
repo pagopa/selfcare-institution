@@ -68,6 +68,10 @@ class DelegationControllerTest {
     final String FROM2 = "from2";
     final String TO1 = "to1";
 
+    final String fakeJwt = "eyJhbGciOiJIUzI1NiJ9."
+            + "eyJhdWQiOlsiYWx0cm8tYXVkaWVuY2UiXSwic3ViIjoidGVzdCJ9."
+            + "abc123fakeSignature";
+
     @BeforeEach
     void setup() {
         // mock application context
@@ -76,7 +80,7 @@ class DelegationControllerTest {
 
         // mock authentication
         Authentication authentication = mock(Authentication.class);
-        lenient().when(authentication.getCredentials()).thenReturn("fake-token");
+        lenient().when(authentication.getCredentials()).thenReturn(fakeJwt);
 
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(authentication);

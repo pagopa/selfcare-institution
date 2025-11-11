@@ -87,6 +87,10 @@ class InstitutionControllerTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
 
+    final String fakeJwt = "eyJhbGciOiJIUzI1NiJ9."
+            + "eyJhdWQiOlsicG5wZyJdLCJzdWIiOiJ0ZXN0In0."
+            + "abc123fakeSignature";
+
 
     private static Institution createInstitution() {
         Onboarding onboarding = createOnboarding();
@@ -133,7 +137,7 @@ class InstitutionControllerTest {
 
         // mock authentication
         Authentication authentication = mock(Authentication.class);
-        lenient().when(authentication.getCredentials()).thenReturn("fake-token");
+        lenient().when(authentication.getCredentials()).thenReturn(fakeJwt);
 
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(authentication);

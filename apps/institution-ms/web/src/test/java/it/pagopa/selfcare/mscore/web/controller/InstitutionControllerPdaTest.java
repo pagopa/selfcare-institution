@@ -50,6 +50,10 @@ public class InstitutionControllerPdaTest {
     @Spy
     private InstitutionResourceMapper institutionResourceMapper = new InstitutionResourceMapperImpl(onboardingResourceMapper);
 
+    final String fakeJwt = "eyJhbGciOiJIUzI1NiJ9."
+            + "eyJhdWQiOlsiYWx0cm8tYXVkaWVuY2UiXSwic3ViIjoidGVzdCJ9."
+            + "abc123fakeSignature";
+
     @BeforeEach
     void setup() {
         // mock application context
@@ -58,7 +62,7 @@ public class InstitutionControllerPdaTest {
 
         // mock authentication
         Authentication authentication = mock(Authentication.class);
-        lenient().when(authentication.getCredentials()).thenReturn("fake-token");
+        lenient().when(authentication.getCredentials()).thenReturn(fakeJwt);
 
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(authentication);
