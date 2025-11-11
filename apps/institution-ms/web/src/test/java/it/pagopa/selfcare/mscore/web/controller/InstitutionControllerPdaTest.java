@@ -29,8 +29,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.ArrayList;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 @ContextConfiguration(classes = {InstitutionController.class})
@@ -59,7 +58,7 @@ public class InstitutionControllerPdaTest {
 
         // mock authentication
         Authentication authentication = mock(Authentication.class);
-        when(authentication.getCredentials()).thenReturn("fake-token");
+        lenient().when(authentication.getCredentials()).thenReturn("fake-token");
 
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(authentication);

@@ -52,7 +52,7 @@ class ExternalControllerTest {
 
         // mock authentication
         Authentication authentication = mock(Authentication.class);
-        when(authentication.getCredentials()).thenReturn("fake-token");
+        lenient().when(authentication.getCredentials()).thenReturn("fake-token");
 
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(authentication);

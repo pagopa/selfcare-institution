@@ -131,11 +131,9 @@ class InstitutionControllerTest {
         ApplicationContext ctx = mock(ApplicationContext.class);
         SpringContext.setContext(ctx);
 
-        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
-
         // mock authentication
         Authentication authentication = mock(Authentication.class);
-        when(authentication.getCredentials()).thenReturn("fake-token");
+        lenient().when(authentication.getCredentials()).thenReturn("fake-token");
 
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(authentication);
