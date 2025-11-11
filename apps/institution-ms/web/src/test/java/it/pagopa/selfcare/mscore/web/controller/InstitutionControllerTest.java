@@ -127,8 +127,17 @@ class InstitutionControllerTest {
 
     @BeforeEach
     void setup() {
+        // mock application context
         ApplicationContext ctx = mock(ApplicationContext.class);
         SpringContext.setContext(ctx);
+
+        // mock authentication
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getCredentials()).thenReturn("fake-token");
+
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(authentication);
+        SecurityContextHolder.setContext(context);
     }
 
     @Test

@@ -26,6 +26,9 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -67,8 +70,17 @@ class DelegationControllerTest {
 
     @BeforeEach
     void setup() {
+        // mock application context
         ApplicationContext ctx = mock(ApplicationContext.class);
         SpringContext.setContext(ctx);
+
+        // mock authentication
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getCredentials()).thenReturn("fake-token");
+
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(authentication);
+        SecurityContextHolder.setContext(context);
     }
 
     /**
