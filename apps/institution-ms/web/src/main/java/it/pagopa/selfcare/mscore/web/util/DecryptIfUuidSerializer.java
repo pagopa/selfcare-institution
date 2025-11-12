@@ -61,10 +61,10 @@ public class DecryptIfUuidSerializer extends JsonSerializer<String> {
                 // If the user is not found in UserRegistry, return the original value
                 gen.writeString(user != null ? user.getFiscalCode() : value);
             } catch (ResourceNotFoundException | FeignException.NotFound e) {
+                // 404: user not found → return the original value
                 gen.writeString(value);
             }
         } else {
-            // 404: user not found → return the original value
             gen.writeString(value);
         }
     }
