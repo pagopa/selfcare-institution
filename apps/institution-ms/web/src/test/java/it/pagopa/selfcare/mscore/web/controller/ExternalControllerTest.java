@@ -13,6 +13,9 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -41,10 +44,23 @@ class ExternalControllerTest {
     @Spy
     private InstitutionResourceMapper institutionResourceMapper = new InstitutionResourceMapperImpl(onboardingResourceMapper);
 
+    final String fakeJwt = "eyJhbGciOiJIUzI1NiJ9."
+            + "eyJhdWQiOlsiYWx0cm8tYXVkaWVuY2UiXSwic3ViIjoidGVzdCJ9."
+            + "abc123fakeSignature";
+
     @BeforeEach
     void setup() {
+        // mock application context
         ApplicationContext ctx = mock(ApplicationContext.class);
         SpringContext.setContext(ctx);
+
+        // mock authentication
+        Authentication authentication = mock(Authentication.class);
+        lenient().when(authentication.getCredentials()).thenReturn(fakeJwt);
+
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(authentication);
+        SecurityContextHolder.setContext(context);
     }
 
 

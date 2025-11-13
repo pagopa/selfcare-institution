@@ -87,6 +87,10 @@ class InstitutionControllerTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
 
+    final String fakeJwt = "eyJhbGciOiJIUzI1NiJ9."
+            + "eyJhdWQiOlsicG5wZyJdLCJzdWIiOiJ0ZXN0In0."
+            + "abc123fakeSignature";
+
 
     private static Institution createInstitution() {
         Onboarding onboarding = createOnboarding();
@@ -127,9 +131,19 @@ class InstitutionControllerTest {
 
     @BeforeEach
     void setup() {
+        // mock application context
         ApplicationContext ctx = mock(ApplicationContext.class);
         SpringContext.setContext(ctx);
+
+        // mock authentication
+        Authentication authentication = mock(Authentication.class);
+        lenient().when(authentication.getCredentials()).thenReturn(fakeJwt);
+
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(authentication);
+        SecurityContextHolder.setContext(context);
     }
+
 
     @Test
     void shouldGetInstitutionsByTaxCode() throws Exception {
@@ -297,8 +311,12 @@ class InstitutionControllerTest {
 
     @Test
     void retrieveInstitutionById_withProductFilter() throws Exception {
+        Authentication authentication = Mockito.mock(Authentication.class);
         SecurityContext securityContext = Mockito.mock(SecurityContext.class);
         SecurityContextHolder.setContext(securityContext);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getCredentials()).thenReturn(fakeJwt);
+
         when(institutionService.retrieveInstitutionById("42")).thenReturn(createInstitution());
         when(institutionService.getLogo("42")).thenReturn("logoUrl");
         createInstitution().setId("id");
@@ -1159,7 +1177,9 @@ class InstitutionControllerTest {
         Authentication authentication = Mockito.mock(Authentication.class);
         SecurityContext securityContext = Mockito.mock(SecurityContext.class);
         SecurityContextHolder.setContext(securityContext);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn(SelfCareUser.builder("id").build());
+        when(authentication.getCredentials()).thenReturn(fakeJwt);
 
         CreatePgInstitutionRequest request = new CreatePgInstitutionRequest();
         request.setTaxId("1234");
