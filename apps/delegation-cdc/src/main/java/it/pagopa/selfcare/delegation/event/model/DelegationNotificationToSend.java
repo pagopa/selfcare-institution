@@ -9,6 +9,7 @@ import lombok.Data;
 public class DelegationNotificationToSend {
 
     private String id;
+    private String delegationId;
     private String from;
     private String institutionFromName;
     private String institutionToName;
