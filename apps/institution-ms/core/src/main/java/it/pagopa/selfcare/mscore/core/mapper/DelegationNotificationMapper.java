@@ -7,11 +7,14 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", imports = UUID.class)
 public interface DelegationNotificationMapper {
 
     @Mapping(target = "eventType", expression = "java(toEventType(delegation.getUpdatedAt(), delegation.getClosedAt()))")
+    @Mapping(target = "id", expression = "java(UUID.randomUUID().toString())")
+    @Mapping(target = "delegationId", source = "id")
     DelegationNotificationToSend toDelegationNotificationToSend(Delegation delegation);
 
     default String toOffsetDateTimeString(OffsetDateTime dateTime) {
