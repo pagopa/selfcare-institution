@@ -31,6 +31,8 @@ public interface DelegationMapper {
         DelegationsEntity toDelegationAggregatePT(DelegationsEntity delegationAggregate, DelegationsEntity delegationPT);
 
         @Mapping(target = "eventType", expression = "java(toEventType(delegationEntity.getUpdatedAt(), delegationEntity.getClosedAt()))")
+        @Mapping(target = "id", expression = "java(UUID.randomUUID().toString())")
+        @Mapping(target = "delegationId", source = "id")
         DelegationNotificationToSend toDelegationNotificationToSend(DelegationsEntity delegationEntity);
 
         default EventType toEventType(String updatedAt, String closedAt) {
