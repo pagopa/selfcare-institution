@@ -108,6 +108,8 @@ class DelegationServiceImplTest {
         assertEquals(institutionFrom.getTaxCode(), response.getFromTaxCode());
         assertEquals(institutionTo.getOnboarding().get(0).getInstitutionType(), response.getBrokerType());
         assertEquals(institutionFrom.getOnboarding().get(0).getInstitutionType(), response.getInstitutionType());
+        assertNull(response.getUpdatedAt());
+        assertNotNull(response.getCreatedAt());
     }
 
     @Test
@@ -140,6 +142,8 @@ class DelegationServiceImplTest {
         assertEquals(institutionTo.getOnboarding().get(0).getInstitutionType(), response.getBrokerType());
         assertEquals(institutionFrom.getOnboarding().get(0).getInstitutionType(), response.getInstitutionType());
         assertEquals("test parent", response.getInstitutionFromRootName());
+        assertNull(response.getUpdatedAt());
+        assertNotNull(response.getCreatedAt());
     }
 
     /**
@@ -173,6 +177,8 @@ class DelegationServiceImplTest {
         assertEquals(institutionFrom.getTaxCode(), response.getFromTaxCode());
         assertEquals(institutionTo.getOnboarding().get(0).getInstitutionType(), response.getBrokerType());
         assertEquals(institutionFrom.getOnboarding().get(0).getInstitutionType(), response.getInstitutionType());
+        assertNull(response.getUpdatedAt());
+        assertNotNull(response.getCreatedAt());
     }
 
     /**
@@ -344,6 +350,8 @@ class DelegationServiceImplTest {
         assertEquals(institutionFrom.getTaxCode(), response.getFromTaxCode());
         assertEquals(onboarding.getInstitutionType(), response.getInstitutionType());
         assertEquals(onboarding.getInstitutionType(), response.getBrokerType());
+        assertNull(response.getUpdatedAt());
+        assertNotNull(response.getCreatedAt());
     }
 
     @Test
