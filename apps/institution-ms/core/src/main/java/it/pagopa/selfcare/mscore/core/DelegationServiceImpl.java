@@ -75,7 +75,6 @@ public class DelegationServiceImpl implements DelegationService {
                 savedDelegation = delegationConnector.findAndActivate(delegation.getFrom(), delegation.getTo(), delegation.getProductId(), delegation.getIsTest());
             } else {
                 delegation.setCreatedAt(OffsetDateTime.now());
-                delegation.setUpdatedAt(OffsetDateTime.now());
                 delegation.setStatus(DelegationState.ACTIVE);
                 savedDelegation = delegationConnector.save(delegation);
             }

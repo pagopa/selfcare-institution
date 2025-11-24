@@ -35,7 +35,7 @@ Feature: Delegation
       | brokerType          | PT                    |
     And The response body contains field "id"
     And The response body contains field "createdAt"
-    And The response body contains field "updatedAt"
+    And The response body doesn't contain field "updatedAt"
     And The response body contains field "isTest"
     And The delegation flag for institution "123" is false on db
     And The delegation flag for institution "456" is true on db
@@ -291,7 +291,7 @@ Feature: Delegation
       | status          | ACTIVE           |
     And The response body contains field "id"
     And The response body contains field "createdAt"
-    And The response body contains field "updatedAt"
+    And The response body doesn't contain field "updatedAt"
     And The response body contains field "isTest"
     And The delegation flag for institution "123" is false on db
     And The delegation flag for institution "456" is true on db
@@ -327,7 +327,7 @@ Feature: Delegation
       | status          | ACTIVE           |
     And The response body contains field "id"
     And The response body contains field "createdAt"
-    And The response body contains field "updatedAt"
+    And The response body doesn't contain field "updatedAt"
     And The response body contains field "isTest"
     And The delegation flag for institution "123" is false on db
     And The delegation flag for institution "456" is true on db
