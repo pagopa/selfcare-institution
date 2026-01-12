@@ -15,6 +15,8 @@ public interface DelegationNotificationMapper {
     @Mapping(target = "eventType", expression = "java(toEventType(delegation.getUpdatedAt(), delegation.getClosedAt()))")
     @Mapping(target = "id", expression = "java(UUID.randomUUID().toString())")
     @Mapping(target = "delegationId", source = "id")
+    @Mapping(target = "fromType", source = "institutionType")
+    @Mapping(target = "toType", source = "brokerType")
     DelegationNotificationToSend toDelegationNotificationToSend(Delegation delegation);
 
     default String toOffsetDateTimeString(OffsetDateTime dateTime) {
