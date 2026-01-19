@@ -50,14 +50,14 @@ public class EventsServiceImplTest {
                 createDelegation(OffsetDateTime.now(), OffsetDateTime.now(), null)
         ));
         delegationsPage0.setPageInfo(PageInfo.builder().totalPages(2).pageNo(0).totalElements(3).pageSize(2).build());
-        when(delegationConnector.findFromDate(any(), eq(0), any())).thenReturn(delegationsPage0);
+        when(delegationConnector.findFromDate(any(), eq(0L), any())).thenReturn(delegationsPage0);
 
         final DelegationWithPagination delegationsPage1 = new DelegationWithPagination();
         delegationsPage1.setDelegations(List.of(
                 createDelegation(OffsetDateTime.now(), OffsetDateTime.now(), OffsetDateTime.now())
         ));
         delegationsPage1.setPageInfo(PageInfo.builder().totalPages(2).pageNo(1).totalElements(3).pageSize(2).build());
-        when(delegationConnector.findFromDate(any(), eq(1), any())).thenReturn(delegationsPage1);
+        when(delegationConnector.findFromDate(any(), eq(1L), any())).thenReturn(delegationsPage1);
 
         eventsServiceImpl.sendDelegationEvents(OffsetDateTime.now());
 
@@ -68,8 +68,8 @@ public class EventsServiceImplTest {
         assertEquals(1, sentNotifications.stream().filter(n -> EventType.ADD.equals(n.getEventType())).count());
         assertEquals(2, sentNotifications.stream().filter(n -> EventType.UPDATE.equals(n.getEventType())).count());
 
-        verify(delegationConnector, times(1)).findFromDate(any(), eq(0), any());
-        verify(delegationConnector, times(1)).findFromDate(any(), eq(1), any());
+        verify(delegationConnector, times(1)).findFromDate(any(), eq(0L), any());
+        verify(delegationConnector, times(1)).findFromDate(any(), eq(1L), any());
     }
 
     private Delegation createDelegation(OffsetDateTime createdAt, OffsetDateTime updatedAt, OffsetDateTime closedAt) {

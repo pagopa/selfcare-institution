@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class EventsServiceImpl implements EventsService {
 
-    private static final int DELEGATION_PAGE_SIZE = 100;
+    private static final long DELEGATION_PAGE_SIZE = 100L;
 
     private final DelegationConnector delegationConnector;
     private final EventHubConnector eventHubConnector;
@@ -25,9 +25,9 @@ public class EventsServiceImpl implements EventsService {
 
     @Override
     public void sendDelegationEvents(OffsetDateTime fromDate) {
-        long successCount = 0;
-        long errorCount = 0;
-        int page = 0;
+        long successCount = 0L;
+        long errorCount = 0L;
+        long page = 0L;
         log.info("Starting to send delegation events from date: {}", fromDate);
         DelegationWithPagination delegationsPage;
         do {

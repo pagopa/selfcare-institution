@@ -17,7 +17,7 @@ public interface DelegationConnector {
 
     List<Delegation> find(String from, String to, String productId, String search, String taxCode, Order order, Integer page, Integer size);
 
-    DelegationWithPagination findFromDate(OffsetDateTime fromDate, Integer page, Integer size);
+    DelegationWithPagination findFromDate(OffsetDateTime fromDate, Long page, Long size);
 
     DelegationWithPagination findAndCount(GetDelegationParameters delegationParameters);
 

@@ -120,7 +120,7 @@ public class DelegationConnectorImpl implements DelegationConnector {
     }
 
     @Override
-    public DelegationWithPagination findFromDate(OffsetDateTime fromDate, Integer page, Integer size) {
+    public DelegationWithPagination findFromDate(OffsetDateTime fromDate, Long page, Long size) {
         final long effectivePage = page != null && page > 0 ? page : 0;
         final long effectiveSize = size != null && size > 0 ? size : 100;
 

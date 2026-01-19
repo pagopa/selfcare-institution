@@ -482,7 +482,7 @@ class DelegationConnectorImplTest {
         when(mongoTemplate.aggregate(any(Aggregation.class), eq("Delegations"), eq(DelegationPageEntity.class)))
                 .thenReturn(new AggregationResults<>(List.of(delegationPageEntity), new Document()));
 
-        final DelegationWithPagination result0 = delegationConnectorImpl.findFromDate(OffsetDateTime.now(), 0, 10);
+        final DelegationWithPagination result0 = delegationConnectorImpl.findFromDate(OffsetDateTime.now(), 0L, 10L);
         assertEquals(3, result0.getDelegations().size());
         assertEquals(0, result0.getPageInfo().getPageNo());
         assertEquals(1, result0.getPageInfo().getTotalPages());
@@ -496,7 +496,7 @@ class DelegationConnectorImplTest {
         assertEquals(3, result1.getPageInfo().getTotalElements());
         assertEquals(100, result1.getPageInfo().getPageSize());
 
-        final DelegationWithPagination result2 = delegationConnectorImpl.findFromDate(OffsetDateTime.now(), -1, -1);
+        final DelegationWithPagination result2 = delegationConnectorImpl.findFromDate(OffsetDateTime.now(), -1L, -1L);
         assertEquals(3, result2.getDelegations().size());
         assertEquals(0, result2.getPageInfo().getPageNo());
         assertEquals(1, result2.getPageInfo().getTotalPages());
