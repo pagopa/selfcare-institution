@@ -25,8 +25,8 @@ public class EventsServiceImpl implements EventsService {
 
     @Override
     public void sendDelegationEvents(OffsetDateTime fromDate) {
-        int successCount = 0;
-        int errorCount = 0;
+        long successCount = 0;
+        long errorCount = 0;
         int page = 0;
         log.info("Starting to send delegation events from date: {}", fromDate);
         DelegationWithPagination delegationsPage;
