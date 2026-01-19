@@ -39,10 +39,10 @@ public class EventHubConnectorImpl implements EventHubConnector {
     public boolean sendEvent(DelegationNotificationToSend notification) {
         try {
             eventHubRestClient.sendMessage(notification, Map.of("Authorization", getSASToken(resourceUri, keyName, key)));
-            log.info("Event notification of delegation with id {} sent", notification.getId());
+            log.info("Event notification of delegation with id {} sent", notification.getDelegationId());
             return true;
         } catch (Exception ex) {
-            log.error("Error sending event notification of delegation with id {}", notification.getId(), ex);
+            log.error("Error sending event notification of delegation with id {}", notification.getDelegationId(), ex);
             return false;
         }
     }

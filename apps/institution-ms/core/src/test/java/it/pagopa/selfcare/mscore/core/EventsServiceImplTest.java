@@ -9,7 +9,8 @@ import it.pagopa.selfcare.mscore.core.mapper.DelegationNotificationMapper;
 import it.pagopa.selfcare.mscore.core.mapper.DelegationNotificationMapperImpl;
 import it.pagopa.selfcare.mscore.model.DelegationNotificationToSend;
 import it.pagopa.selfcare.mscore.model.delegation.Delegation;
-import it.pagopa.selfcare.mscore.model.delegation.DelegationWithCursorPagination;
+import it.pagopa.selfcare.mscore.model.delegation.DelegationWithPagination;
+import it.pagopa.selfcare.mscore.model.delegation.PageInfo;
 import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,7 +21,6 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -44,25 +44,20 @@ public class EventsServiceImplTest {
 
     @Test
     void sendDelegationEventsTest() {
-        final DelegationWithCursorPagination delegationsPage0 = new DelegationWithCursorPagination();
+        final DelegationWithPagination delegationsPage0 = new DelegationWithPagination();
         delegationsPage0.setDelegations(List.of(
                 createDelegation(OffsetDateTime.now(), null, null),
                 createDelegation(OffsetDateTime.now(), OffsetDateTime.now(), null)
         ));
-        delegationsPage0.setCursor(0L);
-        when(delegationConnector.findFromDate(any(), isNull(), any())).thenReturn(delegationsPage0);
+        delegationsPage0.setPageInfo(PageInfo.builder().totalPages(2).pageNo(0).totalElements(3).pageSize(2).build());
+        when(delegationConnector.findFromDate(any(), eq(0), any())).thenReturn(delegationsPage0);
 
-        final DelegationWithCursorPagination delegationsPage1 = new DelegationWithCursorPagination();
+        final DelegationWithPagination delegationsPage1 = new DelegationWithPagination();
         delegationsPage1.setDelegations(List.of(
                 createDelegation(OffsetDateTime.now(), OffsetDateTime.now(), OffsetDateTime.now())
         ));
-        delegationsPage1.setCursor(1L);
-        when(delegationConnector.findFromDate(any(), eq(0L), any())).thenReturn(delegationsPage1);
-
-        final DelegationWithCursorPagination delegationsPage2 = new DelegationWithCursorPagination();
-        delegationsPage2.setDelegations(new ArrayList<>());
-        delegationsPage2.setCursor(null);
-        when(delegationConnector.findFromDate(any(), eq(1L), any())).thenReturn(delegationsPage2);
+        delegationsPage1.setPageInfo(PageInfo.builder().totalPages(2).pageNo(1).totalElements(3).pageSize(2).build());
+        when(delegationConnector.findFromDate(any(), eq(1), any())).thenReturn(delegationsPage1);
 
         eventsServiceImpl.sendDelegationEvents(OffsetDateTime.now());
 
@@ -73,10 +68,8 @@ public class EventsServiceImplTest {
         assertEquals(1, sentNotifications.stream().filter(n -> EventType.ADD.equals(n.getEventType())).count());
         assertEquals(2, sentNotifications.stream().filter(n -> EventType.UPDATE.equals(n.getEventType())).count());
 
-        verify(delegationConnector, times(1)).findFromDate(any(), isNull(), any());
-        verify(delegationConnector, times(1)).findFromDate(any(), eq(0L), any());
-        verify(delegationConnector, times(1)).findFromDate(any(), eq(1L), any());
-        verify(delegationConnector, times(3)).findFromDate(any(), any(), any());
+        verify(delegationConnector, times(1)).findFromDate(any(), eq(0), any());
+        verify(delegationConnector, times(1)).findFromDate(any(), eq(1), any());
     }
 
     private Delegation createDelegation(OffsetDateTime createdAt, OffsetDateTime updatedAt, OffsetDateTime closedAt) {

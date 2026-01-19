@@ -2,6 +2,7 @@ package it.pagopa.selfcare.mscore.connector.dao;
 
 import it.pagopa.selfcare.mscore.connector.dao.model.DelegationEntity;
 import it.pagopa.selfcare.mscore.connector.dao.model.DelegationInstitutionEntity;
+import it.pagopa.selfcare.mscore.connector.dao.model.DelegationPageEntity;
 import it.pagopa.selfcare.mscore.connector.dao.model.InstitutionEntity;
 import it.pagopa.selfcare.mscore.connector.dao.model.mapper.DelegationEntityMapper;
 import it.pagopa.selfcare.mscore.connector.dao.model.mapper.DelegationEntityMapperImpl;
@@ -25,7 +26,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.test.context.ContextConfiguration;
@@ -38,7 +38,6 @@ import java.util.Optional;
 
 import static it.pagopa.selfcare.mscore.constant.GenericError.CREATE_DELEGATION_ERROR;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -469,29 +468,40 @@ class DelegationConnectorImplTest {
     }
 
     @Test
-    void findFromDateTestWithoutCursorWithSize() {
-        when(delegationRepository.find(any(), any())).thenReturn(List.of(new DelegationEntity()));
-        delegationConnectorImpl.findFromDate(OffsetDateTime.now(), null, 10);
-        final ArgumentCaptor<Query> argumentCaptor = ArgumentCaptor.forClass(Query.class);
-        verify(delegationRepository).find(argumentCaptor.capture(), any());
-        final Query query = argumentCaptor.getValue();
-        assertEquals(10, query.getLimit());
-        assertEquals(1, query.getQueryObject().size());
-        assertTrue(query.getQueryObject().containsKey("$or"));
-        assertFalse(query.getQueryObject().containsKey("createdAt"));
-    }
+    void findFromDateTest() {
+        final DelegationPageEntity delegationPageEntity = new DelegationPageEntity();
+        delegationPageEntity.setDelegations(List.of(
+                new DelegationEntity(),
+                new DelegationEntity(),
+                new DelegationEntity()
+        ));
+        final DelegationPageEntity.PageInfo pageInfo = new DelegationPageEntity.PageInfo();
+        pageInfo.setTotalElements(3L);
+        delegationPageEntity.setPageInfo(List.of(pageInfo));
 
-    @Test
-    void findFromDateTestWithCursorWithoutSize() {
-        when(delegationRepository.find(any(), any())).thenReturn(List.of(new DelegationEntity()));
-        delegationConnectorImpl.findFromDate(OffsetDateTime.now(), 1L, null);
-        final ArgumentCaptor<Query> argumentCaptor = ArgumentCaptor.forClass(Query.class);
-        verify(delegationRepository).find(argumentCaptor.capture(), any());
-        final Query query = argumentCaptor.getValue();
-        assertEquals(100, query.getLimit());
-        assertEquals(2, query.getQueryObject().size());
-        assertTrue(query.getQueryObject().containsKey("$or"));
-        assertTrue(query.getQueryObject().containsKey("createdAt"));
+        when(mongoTemplate.aggregate(any(Aggregation.class), eq("Delegations"), eq(DelegationPageEntity.class)))
+                .thenReturn(new AggregationResults<>(List.of(delegationPageEntity), new Document()));
+
+        final DelegationWithPagination result0 = delegationConnectorImpl.findFromDate(OffsetDateTime.now(), 0, 10);
+        assertEquals(3, result0.getDelegations().size());
+        assertEquals(0, result0.getPageInfo().getPageNo());
+        assertEquals(1, result0.getPageInfo().getTotalPages());
+        assertEquals(3, result0.getPageInfo().getTotalElements());
+        assertEquals(10, result0.getPageInfo().getPageSize());
+
+        final DelegationWithPagination result1 = delegationConnectorImpl.findFromDate(OffsetDateTime.now(), null, null);
+        assertEquals(3, result1.getDelegations().size());
+        assertEquals(0, result1.getPageInfo().getPageNo());
+        assertEquals(1, result1.getPageInfo().getTotalPages());
+        assertEquals(3, result1.getPageInfo().getTotalElements());
+        assertEquals(100, result1.getPageInfo().getPageSize());
+
+        final DelegationWithPagination result2 = delegationConnectorImpl.findFromDate(OffsetDateTime.now(), -1, -1);
+        assertEquals(3, result2.getDelegations().size());
+        assertEquals(0, result2.getPageInfo().getPageNo());
+        assertEquals(1, result2.getPageInfo().getTotalPages());
+        assertEquals(3, result2.getPageInfo().getTotalElements());
+        assertEquals(100, result2.getPageInfo().getPageSize());
     }
 
 }

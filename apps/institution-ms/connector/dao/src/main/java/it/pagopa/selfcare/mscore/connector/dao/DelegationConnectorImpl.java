@@ -3,6 +3,7 @@ package it.pagopa.selfcare.mscore.connector.dao;
 import it.pagopa.selfcare.mscore.api.DelegationConnector;
 import it.pagopa.selfcare.mscore.connector.dao.model.DelegationEntity;
 import it.pagopa.selfcare.mscore.connector.dao.model.DelegationInstitutionEntity;
+import it.pagopa.selfcare.mscore.connector.dao.model.DelegationPageEntity;
 import it.pagopa.selfcare.mscore.connector.dao.model.mapper.DelegationEntityMapper;
 import it.pagopa.selfcare.mscore.constant.DelegationState;
 import it.pagopa.selfcare.mscore.constant.DelegationType;
@@ -28,7 +29,6 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -120,24 +120,26 @@ public class DelegationConnectorImpl implements DelegationConnector {
     }
 
     @Override
-    public DelegationWithCursorPagination findFromDate(OffsetDateTime fromDate, Long cursor, Integer size) {
-        final Query query = Query.query(new Criteria().orOperator(
-                Criteria.where(DelegationEntity.Fields.updatedAt.name()).gte(fromDate),
-                Criteria.where(DelegationEntity.Fields.createdAt.name()).gte(fromDate)
-        )).with(Sort.by(Sort.Direction.ASC, DelegationEntity.Fields.createdAt.name())).limit(Optional.ofNullable(size).orElse(100));
+    public DelegationWithPagination findFromDate(OffsetDateTime fromDate, Integer page, Integer size) {
+        final long effectivePage = page != null && page > 0 ? page : 0;
+        final long effectiveSize = size != null && size > 0 ? size : 100;
 
-        Optional.ofNullable(cursor).ifPresent(c ->
-            query.addCriteria(Criteria.where(DelegationEntity.Fields.createdAt.name())
-                .gt(OffsetDateTime.ofInstant(Instant.ofEpochMilli(c), ZoneId.systemDefault())))
-        );
+        final MatchOperation matchOperation = Aggregation.match(Criteria.where(DelegationEntity.Fields.createdAt.name()).gte(fromDate));
 
-        final List<Delegation> delegations = repository.find(query, DelegationEntity.class)
-                .stream().map(delegationMapper::convertToDelegation)
-                .collect(Collectors.toCollection(ArrayList::new));
-        final Long lastElementCursor = !delegations.isEmpty() ?
-                delegationMapper.convertToTimestampId(delegations.get(delegations.size() - 1).getCreatedAt()) : null;
+        final SortOperation sortOperation = Aggregation.sort(Sort.Direction.ASC, "createdAt");
 
-        return new DelegationWithCursorPagination(delegations, lastElementCursor);
+        final FacetOperation facetOperation = Aggregation.facet(Aggregation.count().as("totalElements")).as("pageInfo")
+                .and(Aggregation.skip(effectivePage * effectiveSize), Aggregation.limit(effectiveSize)).as("delegations");
+
+        final Aggregation aggregation = Aggregation.newAggregation(matchOperation, sortOperation, facetOperation);
+
+        final DelegationPageEntity delegationPageEntity = mongoTemplate.aggregate(aggregation, COLLECTION_DELEGATIONS, DelegationPageEntity.class)
+                .getMappedResults().stream().findFirst().orElseThrow();
+
+        final List<Delegation> delegations = delegationPageEntity.getDelegations().stream().map(delegationMapper::convertToDelegation).toList();
+        final long totalElements = delegationPageEntity.getPageInfo().stream().findFirst().map(DelegationPageEntity.PageInfo::getTotalElements).orElse(0L);
+        final PageInfo pageInfo = new PageInfo(effectiveSize, effectivePage, totalElements, (long) Math.ceil((double) totalElements / effectiveSize));
+        return new DelegationWithPagination(delegations, pageInfo);
     }
 
     @Override
