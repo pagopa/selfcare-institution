@@ -248,6 +248,9 @@ Feature: Institution
       | attributes[0].code           | L6                                    |
       | attributes[0].description    | Comuni e loro Consorzi e Associazioni |
     And The response body contains field "id"
+    And The response body doesn't contain field "rea"
+    And The response body doesn't contain field "shareCapital"
+    And The response body doesn't contain field "businessRegisterPlace"
     # UPDATE
     Given User login with username "j.doe" and password "test"
     And The following request body:
@@ -284,6 +287,117 @@ Feature: Institution
       | supportEmail                 | updatedsupportmail@test.com           |
       | supportPhone                 | 1111111111                            |
       | description                  | Comune di Ferrara                     |
+      | geographicTaxonomies[0].code | 1                                     |
+      | geographicTaxonomies[0].desc | first geo                             |
+      | geographicTaxonomies[1].code | 2                                     |
+      | geographicTaxonomies[1].desc | second geo                            |
+      | attributes[0].origin         | IPA                                   |
+      | attributes[0].code           | L6                                    |
+      | attributes[0].description    | Comuni e loro Consorzi e Associazioni |
+    And The response body contains field "id"
+    And The response body doesn't contain field "rea"
+    And The response body doesn't contain field "shareCapital"
+    And The response body doesn't contain field "businessRegisterPlace"
+
+  @RemoveInstitutionIdAfterScenario
+  @only
+  Scenario: Successfully create and update simple institution from IPA with rea, shareCapital and businessRegisterPlace
+    # CREATE
+    Given User login with username "j.doe" and password "test"
+    And The following request body:
+      """
+      {
+        "taxCode": "00297110389",
+        "description": "Test description",
+        "geographicTaxonomies": [
+          {
+            "code": "1",
+            "desc": "first geo"
+          },
+          {
+            "code": "2",
+            "desc": "second geo"
+          }
+        ],
+        "institutionType": "PA",
+        "supportEmail": "supportmail@test.com",
+        "supportPhone": "0000000000",
+        "rea": "RM-12345",
+        "shareCapital": "9999",
+        "businessRegisterPlace": "business register place"
+      }
+      """
+    When I send a POST request to "/institutions/from-ipa"
+    Then The status code is 201
+    And The response body contains the list "geographicTaxonomies" of size 2
+    And The response body contains the list "attributes" of size 1
+    And The response body contains:
+      | externalId                   | 00297110389                           |
+      | taxCode                      | 00297110389                           |
+      | origin                       | IPA                                   |
+      | originId                     | c_d548                                |
+      | istatCode                    | 038008                                |
+      | digitalAddress               | comune.ferrara@cert.comune.fe.it      |
+      | zipCode                      | 44121                                 |
+      | city                         | FERRARA                               |
+      | county                       | FE                                    |
+      | country                      | IT                                    |
+      | supportEmail                 | supportmail@test.com                  |
+      | supportPhone                 | 0000000000                            |
+      | description                  | Comune di Ferrara                     |
+      | rea                          | RM-12345                              |
+      | shareCapital                 | 9999                                  |
+      | businessRegisterPlace        | business register place               |
+      | geographicTaxonomies[0].code | 1                                     |
+      | geographicTaxonomies[0].desc | first geo                             |
+      | geographicTaxonomies[1].code | 2                                     |
+      | geographicTaxonomies[1].desc | second geo                            |
+      | attributes[0].origin         | IPA                                   |
+      | attributes[0].code           | L6                                    |
+      | attributes[0].description    | Comuni e loro Consorzi e Associazioni |
+    And The response body contains field "id"
+    # UPDATE
+    Given User login with username "j.doe" and password "test"
+    And The following request body:
+      """
+      {
+        "taxCode": "00297110389",
+        "description": "Test description",
+        "geographicTaxonomies": [
+          {
+            "code": "2",
+            "desc": "second geo"
+          }
+        ],
+        "institutionType": "PA",
+        "supportEmail": "updatedsupportmail@test.com",
+        "supportPhone": "1111111111",
+        "rea": "RM-12346",
+        "shareCapital": "1000",
+        "businessRegisterPlace": "business register place 1"
+      }
+      """
+    When I send a POST request to "/institutions/from-ipa"
+    Then The status code is 201
+    And The response body contains the list "geographicTaxonomies" of size 2
+    And The response body contains the list "attributes" of size 1
+    And The response body contains:
+      | externalId                   | 00297110389                           |
+      | taxCode                      | 00297110389                           |
+      | origin                       | IPA                                   |
+      | originId                     | c_d548                                |
+      | istatCode                    | 038008                                |
+      | digitalAddress               | comune.ferrara@cert.comune.fe.it      |
+      | zipCode                      | 44121                                 |
+      | city                         | FERRARA                               |
+      | county                       | FE                                    |
+      | country                      | IT                                    |
+      | supportEmail                 | updatedsupportmail@test.com           |
+      | supportPhone                 | 1111111111                            |
+      | description                  | Comune di Ferrara                     |
+      | rea                          | RM-12346                              |
+      | shareCapital                 | 1000                                  |
+      | businessRegisterPlace        | business register place 1             |
       | geographicTaxonomies[0].code | 1                                     |
       | geographicTaxonomies[0].desc | first geo                             |
       | geographicTaxonomies[1].code | 2                                     |
@@ -349,6 +463,9 @@ Feature: Institution
       | rootParent.description       | Comune di Ferrara                     |
     And The response body contains field "id"
     And The response body contains field "rootParent.id"
+    And The response body doesn't contain field "rea"
+    And The response body doesn't contain field "shareCapital"
+    And The response body doesn't contain field "businessRegisterPlace"
     # UPDATE
     Given User login with username "j.doe" and password "test"
     And The following request body:
@@ -398,6 +515,9 @@ Feature: Institution
       | rootParent.description       | Comune di Ferrara                     |
     And The response body contains field "id"
     And The response body contains field "rootParent.id"
+    And The response body doesn't contain field "rea"
+    And The response body doesn't contain field "shareCapital"
+    And The response body doesn't contain field "businessRegisterPlace"
 
   @RemoveSubunitAndParentInstitutionAfterScenario
   Scenario: Successfully create and update UO institution from IPA
@@ -454,6 +574,9 @@ Feature: Institution
       | rootParent.description       | Comune di Ferrara                          |
     And The response body contains field "id"
     And The response body contains field "rootParent.id"
+    And The response body doesn't contain field "rea"
+    And The response body doesn't contain field "shareCapital"
+    And The response body doesn't contain field "businessRegisterPlace"
     # UPDATE
     Given User login with username "j.doe" and password "test"
     And The following request body:
@@ -504,6 +627,9 @@ Feature: Institution
       | rootParent.description       | Comune di Ferrara                          |
     And The response body contains field "id"
     And The response body contains field "rootParent.id"
+    And The response body doesn't contain field "rea"
+    And The response body doesn't contain field "shareCapital"
+    And The response body doesn't contain field "businessRegisterPlace"
 
   Scenario: Bad request with null taxCode creating institution from IPA
     Given User login with username "j.doe" and password "test"

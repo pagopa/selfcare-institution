@@ -359,13 +359,13 @@ class InstitutionServiceImplTest {
     }
 
     /**
-     * Method under test: {@link InstitutionServiceImpl#createInstitutionFromIpa(String, InstitutionPaSubunitType, String, List, String, String)}
+     * Method under test: {@link InstitutionServiceImpl#createInstitutionFromIpa(String, InstitutionPaSubunitType, String, List, String, String, InstitutionAdditionalInfoForIpa)}
      */
     @Test
     void testCreateInstitutionFromIpa() {
         when(createInstitutionStrategyFactory.createInstitutionStrategyIpa()).thenReturn(createInstitutionStrategy);
         when(createInstitutionStrategy.createInstitution(any())).thenReturn(new Institution());
-        Institution institution = institutionServiceImpl.createInstitutionFromIpa("id", InstitutionPaSubunitType.AOO,"id", List.of(), "email", "phone");
+        Institution institution = institutionServiceImpl.createInstitutionFromIpa("id", InstitutionPaSubunitType.AOO,"id", List.of(), "email", "phone", new InstitutionAdditionalInfoForIpa());
         assertNotNull(institution);
     }
 

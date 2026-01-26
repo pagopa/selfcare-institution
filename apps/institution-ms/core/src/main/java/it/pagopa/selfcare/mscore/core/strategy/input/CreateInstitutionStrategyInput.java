@@ -21,4 +21,7 @@ public class CreateInstitutionStrategyInput {
     private String supportPhone;
     private String istatCode;
     private String legalForm;
+    private String rea;
+    private String shareCapital;
+    private String businessRegisterPlace;
 }

@@ -18,4 +18,7 @@ public class InstitutionFromIpaPost {
     private InstitutionType institutionType;
     private String supportEmail;
     private String supportPhone;
+    private String rea;
+    private String shareCapital;
+    private String businessRegisterPlace;
 }

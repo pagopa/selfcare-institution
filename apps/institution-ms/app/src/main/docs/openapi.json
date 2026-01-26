@@ -3396,6 +3396,9 @@
         "title" : "InstitutionFromIpaPost",
         "type" : "object",
         "properties" : {
+          "businessRegisterPlace" : {
+            "type" : "string"
+          },
           "geographicTaxonomies" : {
             "type" : "array",
             "items" : {
@@ -3405,6 +3408,12 @@
           "institutionType" : {
             "type" : "string",
             "enum" : [ "AS", "CON", "GPU", "GSP", "PA", "PG", "PRV", "PRV_PF", "PSP", "PT", "REC", "SA", "SCEC", "SCP" ]
+          },
+          "rea" : {
+            "type" : "string"
+          },
+          "shareCapital" : {
+            "type" : "string"
           },
           "subunitCode" : {
             "type" : "string"

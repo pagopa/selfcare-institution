@@ -60,6 +60,20 @@ public class CreateInstitutionStrategyCommon {
         }
     }
 
+    protected static void setAdditionalDataForIpa(CreateInstitutionStrategyInput strategyInput, Institution toSavedOrUpdate) {
+        if (strategyInput.getRea() != null) {
+            toSavedOrUpdate.setRea(strategyInput.getRea());
+        }
+
+        if (strategyInput.getShareCapital() != null) {
+            toSavedOrUpdate.setShareCapital(strategyInput.getShareCapital());
+        }
+
+        if (strategyInput.getBusinessRegisterPlace() != null) {
+            toSavedOrUpdate.setBusinessRegisterPlace(strategyInput.getBusinessRegisterPlace());
+        }
+    }
+
 
 
 
