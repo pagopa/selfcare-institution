@@ -135,9 +135,15 @@ public class InstitutionController {
                 .map(geoTaxonomies -> geoTaxonomies.stream().map(institutionResourceMapper::toInstitutionGeographicTaxonomies).toList())
                 .orElse(List.of());
 
+        InstitutionAdditionalInfoForIpa additionalInfoForIpa = InstitutionAdditionalInfoForIpa.builder()
+                .rea(institutionFromIpaPost.getRea())
+                .shareCapital(institutionFromIpaPost.getShareCapital())
+                .businessRegisterPlace(institutionFromIpaPost.getBusinessRegisterPlace())
+                .build();
+
         Institution saved = institutionService.createInstitutionFromIpa(institutionFromIpaPost.getTaxCode(),
                 institutionFromIpaPost.getSubunitType(), institutionFromIpaPost.getSubunitCode(), geographicTaxonomies,
-                institutionFromIpaPost.getSupportEmail(), institutionFromIpaPost.getSupportPhone());
+                institutionFromIpaPost.getSupportEmail(), institutionFromIpaPost.getSupportPhone(), additionalInfoForIpa);
         return ResponseEntity.status(HttpStatus.CREATED).body(institutionResourceMapper.toInstitutionResponse(saved));
     }
 

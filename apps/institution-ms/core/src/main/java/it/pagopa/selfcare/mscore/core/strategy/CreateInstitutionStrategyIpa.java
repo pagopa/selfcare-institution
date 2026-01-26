@@ -61,11 +61,12 @@ public class CreateInstitutionStrategyIpa extends CreateInstitutionStrategyCommo
             }
             toSavedOrUpdate.setGeographicTaxonomies(strategyInput.getGeographicTaxonomies());
             setContacts(strategyInput, toSavedOrUpdate);
-
+            setAdditionalDataForIpa(strategyInput, toSavedOrUpdate);
         } else {
             //Institution exists but other fields could be updated
             toSavedOrUpdate = institutions.get(0);
             setUpdatedFields(strategyInput, institutions.get(0));
+            setAdditionalDataForIpa(strategyInput, toSavedOrUpdate);
         }
 
         try {
