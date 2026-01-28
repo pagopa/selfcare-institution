@@ -11,7 +11,7 @@ services:
       - develop-network
 
   azurite:
-    image: mcr.microsoft.com/azure-storage/azurite
+    image: mcr.microsoft.com/azure-storage/azurite@sha256:647c63a91102a9d8e8000aab803436e1fc85fbb285e7ce830a82ee5d6661cf37
     ports:
       - "10000:10000"
     command: "azurite --blobHost 0.0.0.0 --inMemoryPersistence"
@@ -48,7 +48,7 @@ services:
       - develop-network
 
   userms:
-    image: ghcr.io/pagopa/selfcare-user-ms:latest
+    image: ghcr.io/pagopa/selfcare-user-ms:latest@sha256:077d1992617808750878739a46cd90bff13a0058e88758a7aeafe4f4dc28892b
     ports:
       - '8080:8080'
     env_file:
