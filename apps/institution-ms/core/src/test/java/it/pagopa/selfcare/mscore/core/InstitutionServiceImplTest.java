@@ -936,6 +936,9 @@ class InstitutionServiceImplTest {
         updatedInstitution.setAddress("newAddress");
         updatedInstitution.setZipCode("newZipCode");
         updatedInstitution.setOnboarding(List.of(onboarding));
+        updatedInstitution.setRea("AA-00000");
+        updatedInstitution.setShareCapital("9999");
+        updatedInstitution.setBusinessRegisterPlace("registerPlace");
 
         InstitutionUpdate institutionUpdate = new InstitutionUpdate();
         institutionUpdate.setDescription("newDesc");
@@ -944,6 +947,9 @@ class InstitutionServiceImplTest {
         institutionUpdate.setAddress("newAddress");
         institutionUpdate.setZipCode("newZipCode");
         institutionUpdate.setOnboardings(List.of(onboarding));
+        institutionUpdate.setRea("AA-00000");
+        institutionUpdate.setShareCapital("9999");
+        institutionUpdate.setBusinessRegisterPlace("registerPlace");
 
         //when
         when(institutionConnector.findById(institutionId)).thenReturn(new Institution());

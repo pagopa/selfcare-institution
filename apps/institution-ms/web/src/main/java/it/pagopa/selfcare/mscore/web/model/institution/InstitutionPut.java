@@ -16,7 +16,9 @@ public class InstitutionPut {
     private String parentDescription;
     private String address;
     private String zipCode;
-
+    private String rea;
+    private String shareCapital;
+    private String businessRegisterPlace;
     @Valid
     private List<OnboardingPut> onboardings;
 }

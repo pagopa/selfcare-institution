@@ -1288,7 +1288,10 @@ Feature: Institution
              "vatNumber":"Updated vatNumber",
              "productId" : "prod-io"
            }
-        ]
+        ],
+        "rea": "AA-00000",
+        "shareCapital": "9999",
+        "businessRegisterPlace": "registerPlace"
       }
       """
     When I send a PUT request to "/institutions/{id}"
@@ -1303,6 +1306,9 @@ Feature: Institution
       | address                             | Updated address                  |
       | zipCode                             | Updated zipCode                  |
       | onboarding[0].billing.vatNumber     | Updated vatNumber                |
+      | rea                                 | AA-00000                         |
+      | shareCapital                        | 9999                             |
+      | businessRegisterPlace               | registerPlace                    |
 
   @RemoveMockInstitutionAfterScenario
   Scenario: Successfully update institution description and delegation updatedAt
