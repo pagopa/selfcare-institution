@@ -179,6 +179,9 @@ public class TestUtils {
         institutionPut.setOnboardings(List.of(onboardingPut));
         institutionPut.setAddress("address");
         institutionPut.setZipCode("zipCode");
+        institutionPut.setRea("AA-00000");
+        institutionPut.setShareCapital("9999");
+        institutionPut.setBusinessRegisterPlace("registerPlace");
         return institutionPut;
     }
 
