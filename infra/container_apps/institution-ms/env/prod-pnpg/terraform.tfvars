@@ -16,14 +16,11 @@ container_app = {
     {
       custom = {
         metadata = {
-          "desiredReplicas" = "3"
-          "start"           = "0 8 * * MON-FRI"
-          "end"             = "0 19 * * MON-FRI"
-          "timezone"        = "Europe/Rome"
+          concurrentRequests = "30"
         }
-        type = "cron"
+        type = "http"
       }
-      name = "cron-scale-rule"
+      name = "http-scale-rule"
     }
   ]
   cpu    = 1.25

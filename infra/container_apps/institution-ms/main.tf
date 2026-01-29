@@ -16,7 +16,7 @@ provider "azurerm" {
 }
 
 module "container_app_core" {
-  source = "github.com/pagopa/selfcare-commons//infra/terraform-modules/container_app_microservice?ref=v1.1.0"
+  source = "github.com/pagopa/selfcare-commons//infra/terraform-modules/container_app_microservice?ref=v1.1.2"
 
   is_pnpg = var.is_pnpg
 
