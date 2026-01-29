@@ -34,6 +34,44 @@ module "container_app_core" {
   user_assigned_identity_id           = data.azurerm_user_assigned_identity.cae_identity.id
   user_assigned_identity_principal_id = data.azurerm_user_assigned_identity.cae_identity.principal_id
 
+  dapr_settings = []
+
+  probes = [
+    {
+      httpGet = {
+        path   = "q/health/live"
+        port   = 8080
+        scheme = "HTTP"
+      }
+      timeoutSeconds      = 5
+      type                = "Liveness"
+      failureThreshold    = 3
+      initialDelaySeconds = 1
+    },
+    {
+      httpGet = {
+        path   = "q/health/ready"
+        port   = 8080
+        scheme = "HTTP"
+      }
+      timeoutSeconds      = 5
+      type                = "Readiness"
+      failureThreshold    = 30
+      initialDelaySeconds = 3
+    },
+    {
+      httpGet = {
+        path   = "q/health/started"
+        port   = 8080
+        scheme = "HTTP"
+      }
+      timeoutSeconds      = 15
+      failureThreshold    = 15
+      type                = "Startup"
+      initialDelaySeconds = 15
+    }
+  ]
+
   tags = var.tags
 }
 
