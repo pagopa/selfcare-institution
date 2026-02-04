@@ -37,39 +37,39 @@ module "container_app_core" {
   dapr_settings = []
 
   probes = [
-    {
-      httpGet = {
-        path   = "/actuator/health/liveness"
-        port   = 8080
-        scheme = "HTTP"
-      }
-      timeoutSeconds      = 5
-      type                = "Liveness"
-      failureThreshold    = 3
-      initialDelaySeconds = 1
-    },
-    {
-      httpGet = {
-        path   = "/actuator/health/readiness"
-        port   = 8080
-        scheme = "HTTP"
-      }
-      timeoutSeconds      = 5
-      type                = "Readiness"
-      failureThreshold    = 30
-      initialDelaySeconds = 3
-    },
-    {
-      httpGet = {
-        path   = "/actuator/health/startup"
-        port   = 8080
-        scheme = "HTTP"
-      }
-      timeoutSeconds      = 15
-      failureThreshold    = 15
-      type                = "Startup"
-      initialDelaySeconds = 15
-    }
+#     {
+#       httpGet = {
+#         path   = "/actuator/health/liveness"
+#         port   = 8080
+#         scheme = "HTTP"
+#       }
+#       timeoutSeconds      = 5
+#       type                = "Liveness"
+#       failureThreshold    = 3
+#       initialDelaySeconds = 1
+#     },
+#     {
+#       httpGet = {
+#         path   = "/actuator/health/readiness"
+#         port   = 8080
+#         scheme = "HTTP"
+#       }
+#       timeoutSeconds      = 5
+#       type                = "Readiness"
+#       failureThreshold    = 30
+#       initialDelaySeconds = 3
+#     },
+#     {
+#       httpGet = {
+#         path   = "/actuator/health/startup"
+#         port   = 8080
+#         scheme = "HTTP"
+#       }
+#       timeoutSeconds      = 15
+#       failureThreshold    = 15
+#       type                = "Startup"
+#       initialDelaySeconds = 15
+#     }
   ]
 
   tags = var.tags

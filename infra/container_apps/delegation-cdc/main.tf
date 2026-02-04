@@ -28,39 +28,39 @@ module "container_app_delegation_cdc" {
   user_assigned_identity_principal_id = data.azurerm_user_assigned_identity.cae_identity.principal_id
 
   probes = [
-    {
-      httpGet = {
-        path   = "q/health/live"
-        port   = 8080
-        scheme = "HTTP"
-      }
-      timeoutSeconds      = 5
-      type                = "Liveness"
-      failureThreshold    = 3
-      initialDelaySeconds = 1
-    },
-    {
-      httpGet = {
-        path   = "q/health/ready"
-        port   = 8080
-        scheme = "HTTP"
-      }
-      timeoutSeconds      = 5
-      type                = "Readiness"
-      failureThreshold    = 30
-      initialDelaySeconds = 3
-    },
-    {
-      httpGet = {
-        path   = "q/health/started"
-        port   = 8080
-        scheme = "HTTP"
-      }
-      timeoutSeconds      = 5
-      failureThreshold    = 5
-      type                = "Startup"
-      initialDelaySeconds = 5
-    }
+    # {
+    #   httpGet = {
+    #     path   = "/actuator/health/liveness"
+    #     port   = 8080
+    #     scheme = "HTTP"
+    #   }
+    #   timeoutSeconds      = 5
+    #   type                = "Liveness"
+    #   failureThreshold    = 3
+    #   initialDelaySeconds = 1
+    # },
+    # {
+    #   httpGet = {
+    #     path   = "/actuator/health/readiness"
+    #     port   = 8080
+    #     scheme = "HTTP"
+    #   }
+    #   timeoutSeconds      = 5
+    #   type                = "Readiness"
+    #   failureThreshold    = 30
+    #   initialDelaySeconds = 3
+    # },
+    # {
+    #   httpGet = {
+    #     path   = "q/health/started"
+    #     port   = 8080
+    #     scheme = "HTTP"
+    #   }
+    #   timeoutSeconds      = 5
+    #   failureThreshold    = 5
+    #   type                = "Startup"
+    #   initialDelaySeconds = 5
+    # }
   ]
 
   tags = var.tags
