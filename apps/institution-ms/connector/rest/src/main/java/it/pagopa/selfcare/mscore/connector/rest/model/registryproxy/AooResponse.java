@@ -1,11 +1,7 @@
 package it.pagopa.selfcare.mscore.connector.rest.model.registryproxy;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import it.pagopa.selfcare.mscore.constant.Origin;
 import lombok.Data;
-
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 @Data
 public class AooResponse {

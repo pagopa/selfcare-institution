@@ -6,7 +6,7 @@ import it.pagopa.selfcare.mscore.web.util.DecryptIfUuid;
 import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)

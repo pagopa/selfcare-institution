@@ -3,7 +3,7 @@ package it.pagopa.selfcare.mscore.web.model.onboarding;
 import it.pagopa.selfcare.mscore.web.model.user.Person;
 import lombok.Data;
 
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotEmpty;
 import java.util.List;
 
 @Data

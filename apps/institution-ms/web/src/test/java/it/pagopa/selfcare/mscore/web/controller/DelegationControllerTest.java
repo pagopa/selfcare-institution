@@ -15,6 +15,7 @@ import it.pagopa.selfcare.mscore.web.model.delegation.DelegationResponse;
 import it.pagopa.selfcare.mscore.web.model.mapper.*;
 import it.pagopa.selfcare.mscore.web.util.SpringContext;
 import it.pagopa.selfcare.onboarding.common.InstitutionType;
+import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,7 +36,6 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.util.NestedServletException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -193,7 +193,7 @@ class DelegationControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/delegations?&productId={productId}", "productId");
 
-        assertThrows(NestedServletException.class, () ->
+        assertThrows(ServletException.class, () ->
                 MockMvcBuilders.standaloneSetup(delegationController)
                         .build()
                         .perform(requestBuilder));

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import it.pagopa.selfcare.mscore.web.util.DecryptIfUuid;
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
 

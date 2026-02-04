@@ -6,7 +6,7 @@ import it.pagopa.selfcare.mscore.constant.DelegationType;
 import it.pagopa.selfcare.mscore.web.util.DecryptIfUuid;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import java.time.OffsetDateTime;
 
 @Data

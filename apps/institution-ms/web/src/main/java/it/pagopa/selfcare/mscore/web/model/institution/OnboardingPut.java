@@ -3,7 +3,7 @@ package it.pagopa.selfcare.mscore.web.model.institution;
 import lombok.Data;
 import lombok.ToString;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 @Data
 @ToString
