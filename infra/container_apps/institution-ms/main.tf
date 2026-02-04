@@ -39,7 +39,7 @@ module "container_app_core" {
   probes = [
     {
       httpGet = {
-        path   = "q/health/live"
+        path   = "/actuator/health/liveness"
         port   = 8080
         scheme = "HTTP"
       }
@@ -50,7 +50,7 @@ module "container_app_core" {
     },
     {
       httpGet = {
-        path   = "q/health/ready"
+        path   = "/actuator/health/readiness"
         port   = 8080
         scheme = "HTTP"
       }
@@ -61,7 +61,7 @@ module "container_app_core" {
     },
     {
       httpGet = {
-        path   = "q/health/started"
+        path   = "/actuator/health/startup"
         port   = 8080
         scheme = "HTTP"
       }
