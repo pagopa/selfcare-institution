@@ -1,30 +1,28 @@
 package it.pagopa.selfcare.mscore.web.config;
 
-import com.fasterxml.classmate.TypeResolver;
+import io.swagger.v3.core.converter.ModelConverters;
+import io.swagger.v3.oas.models.*;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.media.*;
+import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.models.responses.ApiResponse;
+import io.swagger.v3.oas.models.responses.ApiResponses;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
+import io.swagger.v3.oas.models.servers.ServerVariable;
+import io.swagger.v3.oas.models.servers.ServerVariables;
+import io.swagger.v3.oas.models.tags.Tag;
 import it.pagopa.selfcare.commons.web.model.Problem;
-import it.pagopa.selfcare.commons.web.swagger.EmailAnnotationSwaggerPluginConfig;
-import it.pagopa.selfcare.commons.web.swagger.ServerSwaggerConfig;
+import it.pagopa.selfcare.mscore.web.util.EncryptedTaxCodeParam;
+import org.springdoc.core.customizers.OpenApiCustomizer;
+import org.springdoc.core.customizers.ParameterCustomizer;
+import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.security.core.Authentication;
-import springfox.documentation.builders.ApiInfoBuilder;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.builders.ResponseBuilder;
-import springfox.documentation.service.*;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spi.service.contexts.SecurityContext;
-import springfox.documentation.spring.web.plugins.Docket;
 
-import java.time.LocalTime;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * The Class SwaggerConfig.
@@ -33,53 +31,6 @@ import java.util.List;
 public class SwaggerConfig {
 
     private static final String AUTH_SCHEMA_NAME = "bearerAuth";
-
-    private static final Response BAD_REQUEST_RESPONSE = new ResponseBuilder()
-            .code(String.valueOf(HttpStatus.BAD_REQUEST.value()))
-            .description(HttpStatus.BAD_REQUEST.getReasonPhrase())
-            .representation(MediaType.APPLICATION_PROBLEM_JSON).apply(repBuilder ->
-                    repBuilder.model(modelSpecBuilder ->
-                            modelSpecBuilder.referenceModel(refModelSpecBuilder ->
-                                    refModelSpecBuilder.key(modelKeyBuilder ->
-                                            modelKeyBuilder.qualifiedModelName(qualifiedModelNameBuilder ->
-                                                    qualifiedModelNameBuilder.namespace(Problem.class.getPackageName())
-                                                            .name(Problem.class.getSimpleName()))))))
-            .build();
-    private static final Response NOT_FOUND_RESPONSE = new ResponseBuilder()
-            .code(String.valueOf(HttpStatus.NOT_FOUND.value()))
-            .description(HttpStatus.NOT_FOUND.getReasonPhrase())
-            .representation(MediaType.APPLICATION_PROBLEM_JSON).apply(repBuilder ->
-                    repBuilder.model(modelSpecBuilder ->
-                            modelSpecBuilder.referenceModel(refModelSpecBuilder ->
-                                    refModelSpecBuilder.key(modelKeyBuilder ->
-                                            modelKeyBuilder.qualifiedModelName(qualifiedModelNameBuilder ->
-                                                    qualifiedModelNameBuilder.namespace(Problem.class.getPackageName())
-                                                            .name(Problem.class.getSimpleName()))))))
-            .build();
-
-    private static final Response CONFLICT_RESPONSE = new ResponseBuilder()
-            .code(String.valueOf(HttpStatus.CONFLICT.value()))
-            .description(HttpStatus.CONFLICT.getReasonPhrase())
-            .representation(MediaType.APPLICATION_PROBLEM_JSON).apply(repBuilder ->
-                    repBuilder.model(modelSpecBuilder ->
-                            modelSpecBuilder.referenceModel(refModelSpecBuilder ->
-                                    refModelSpecBuilder.key(modelKeyBuilder ->
-                                            modelKeyBuilder.qualifiedModelName(qualifiedModelNameBuilder ->
-                                                    qualifiedModelNameBuilder.namespace(Problem.class.getPackageName())
-                                                            .name(Problem.class.getSimpleName()))))))
-            .build();
-
-    private static final Response FORBIDDEN_RESPONSE = new ResponseBuilder()
-            .code(String.valueOf(HttpStatus.FORBIDDEN.value()))
-            .description(HttpStatus.FORBIDDEN.getReasonPhrase())
-            .representation(MediaType.APPLICATION_PROBLEM_JSON).apply(repBuilder ->
-                    repBuilder.model(modelSpecBuilder ->
-                            modelSpecBuilder.referenceModel(refModelSpecBuilder ->
-                                    refModelSpecBuilder.key(modelKeyBuilder ->
-                                            modelKeyBuilder.qualifiedModelName(qualifiedModelNameBuilder ->
-                                                    qualifiedModelNameBuilder.namespace(Problem.class.getPackageName())
-                                                            .name(Problem.class.getSimpleName()))))))
-            .build();
 
     @Configuration
     @Profile("swaggerIT")
@@ -103,56 +54,190 @@ public class SwaggerConfig {
 
 
     @Bean
-    public Docket swaggerSpringPlugin(@Autowired TypeResolver typeResolver) {
-        return (new Docket(DocumentationType.OAS_30))
-                .apiInfo(new ApiInfoBuilder()
-                        .title(environment.getProperty("swagger.title", environment.getProperty("spring.application.name")))
-                        .description(environment.getProperty("swagger.description", "Api and Models"))
+    @Primary
+    public OpenAPI swaggerSpringPlugin() {
+        return (new OpenAPI(SpecVersion.V30))
+                .info(new Info()
+                        .title("institution-ms")
                         .version(environment.getProperty("swagger.version", environment.getProperty("spring.application.version")))
-                        .build())
-                .select().apis(RequestHandlerSelectors.basePackage("it.pagopa.selfcare.mscore.web.controller")).build()
-                .tags(new Tag("External", environment.getProperty("swagger.name.api.external.description")))
-                .tags(new Tag("Institution", environment.getProperty("swagger.name.api.institution.description")))
-                .tags(new Tag("Onboarding", environment.getProperty("swagger.name.api.onboarding.description")))
-                .tags(new Tag("Management", environment.getProperty("swagger.name.api.management.description")))
-                .tags(new Tag("Delegation", environment.getProperty("swagger.name.api.delegation.description")))
-                .directModelSubstitute(LocalTime.class, String.class)
-                .ignoredParameterTypes(Authentication.class)
-                .forCodeGeneration(true)
-                .useDefaultResponseMessages(false)
-                .globalResponses(HttpMethod.GET, List.of(BAD_REQUEST_RESPONSE, NOT_FOUND_RESPONSE))
-                .globalResponses(HttpMethod.DELETE, List.of(BAD_REQUEST_RESPONSE, NOT_FOUND_RESPONSE, CONFLICT_RESPONSE))
-                .globalResponses(HttpMethod.POST, List.of(BAD_REQUEST_RESPONSE, NOT_FOUND_RESPONSE, CONFLICT_RESPONSE))
-                .globalResponses(HttpMethod.PUT, List.of(BAD_REQUEST_RESPONSE, NOT_FOUND_RESPONSE, FORBIDDEN_RESPONSE))
-                .globalResponses(HttpMethod.HEAD, List.of(BAD_REQUEST_RESPONSE, NOT_FOUND_RESPONSE))
-                .additionalModels(typeResolver.resolve(Problem.class))
-                .securityContexts(Collections.singletonList(SecurityContext.builder()
-                        .securityReferences(defaultAuth())
-                        .build()))
-                .securitySchemes(Collections.singletonList(HttpAuthenticationScheme.JWT_BEARER_BUILDER
-                        .name(AUTH_SCHEMA_NAME)
-                        .description(environment.getProperty("swagger.security.schema.bearer.description"))
-                        .build()));
+                )
+                .servers(List.of(
+                        new Server().url("{url}:{port}{basePath}").variables(new ServerVariables()
+                                .addServerVariable("url", new ServerVariable()._default("http://localhost"))
+                                .addServerVariable("port", new ServerVariable()._default("80"))
+                                .addServerVariable("basePath", new ServerVariable()._default(""))
+                        )
+                ))
+                .tags(List.of(
+                        new Tag().name("Delegation").description(environment.getProperty("swagger.name.api.delegation.description")),
+                        new Tag().name("Events").description(environment.getProperty("swagger.name.api.events.description")),
+                        new Tag().name("External").description(environment.getProperty("swagger.name.api.external.description")),
+                        new Tag().name("Institution").description(environment.getProperty("swagger.name.api.institution.description")),
+                        new Tag().name("Management").description(environment.getProperty("swagger.name.api.management.description")),
+                        new Tag().name("Onboarding").description(environment.getProperty("swagger.name.api.onboarding.description"))
+                ))
+                .components(new Components()
+                        .addSecuritySchemes(
+                                AUTH_SCHEMA_NAME,
+                                new SecurityScheme()
+                                        .name(AUTH_SCHEMA_NAME)
+                                        .type(SecurityScheme.Type.HTTP)
+                                        .scheme("bearer")
+                                        .bearerFormat("JWT")
+                                        .description(environment.getProperty("swagger.security.schema.bearer.description"))
+                        )
+                );
     }
-
-
-    private List<SecurityReference> defaultAuth() {
-        AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
-        AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
-        authorizationScopes[0] = authorizationScope;
-        return Collections.singletonList(new SecurityReference(AUTH_SCHEMA_NAME, authorizationScopes));
-    }
-
 
     @Bean
-    public EmailAnnotationSwaggerPluginConfig emailAnnotationPlugin() {
-        return new EmailAnnotationSwaggerPluginConfig();
+    public GroupedOpenApi institutionApi() {
+        return GroupedOpenApi.builder()
+                .group("institution")
+                .packagesToScan("it.pagopa.selfcare.mscore.web.controller")
+                .build();
     }
 
+    @Bean
+    public OpenApiCustomizer openApiCustomizer() {
+        final Map<String, Schema> problemComponent = ModelConverters.getInstance().read(Problem.class);
+        final Map<String, Schema> invalidParamComponent = ModelConverters.getInstance().read(Problem.InvalidParam.class);
+        final Schema<?> problemSchema = new Schema<>().$ref("#/components/schemas/Problem").jsonSchemaImpl(Problem.class);
+        final Content problemContent = new Content().addMediaType("application/problem+json", new MediaType().schema(problemSchema));
+        return openApi -> {
+            // Customize Paths
+            openApi.getPaths().values().forEach(pathItem ->
+                    pathItem.readOperationsMap().forEach((httpMethod, operation) -> {
+                        final ApiResponses responses = operation.getResponses();
+
+                        // Remove 500 and 401 responses to align with spring boot 2 generated openapi
+                        responses.remove("401");
+                        responses.remove("500");
+
+                        // Add 409 for POST and DELETE to align with spring boot 2 generated openapi
+                        if (httpMethod.name().equalsIgnoreCase("POST") || httpMethod.name().equalsIgnoreCase("DELETE")) {
+                            responses.addApiResponse("409", new ApiResponse().description("Conflict"));
+                        }
+
+                        // Add 403 for PUT to align with spring boot 2 generated openapi
+                        if (httpMethod.name().equalsIgnoreCase("PUT")) {
+                            responses.addApiResponse("403", new ApiResponse().description("Forbidden"));
+                        }
+
+                        // Include HTTP method in operationId (if it doesn't start with # and not already present)
+                        Optional.ofNullable(operation.getOperationId()).ifPresent(opid -> {
+                            if (opid.startsWith("#")) {
+                                operation.setOperationId(opid.replace("#", ""));
+                            } else if (!opid.endsWith("Using" + httpMethod.name())) {
+                                operation.setOperationId(opid + "Using" + httpMethod.name());
+                            }
+                        });
+
+                        // Set parameter descriptions to parameter names if missing and configure array query parameters and style
+                        Optional.ofNullable(operation.getParameters()).ifPresent(params -> {
+                            params.forEach(p -> {
+                                if (p.getDescription() == null) {
+                                    p.setDescription(p.getName());
+                                }
+
+                                // Default springdoc style: param=element1&parma=element2
+                                // Using springfox style: param=element1,element2
+                                if (p.getIn() != null && p.getIn().equals("query")) {
+                                    if (p.getSchema() instanceof ArraySchema && p.getSchema().getItems() != null) {
+                                        if ("array".equals(p.getSchema().getType()) && "string".equals(p.getSchema().getItems().getType())) {
+                                            p.setStyle(Parameter.StyleEnum.FORM);
+                                            p.setExplode(true);
+                                            p.setSchema(new StringSchema());
+                                        }
+                                    } else {
+                                        p.setStyle(Parameter.StyleEnum.FORM);
+                                    }
+                                }
+
+                                if (p.getIn() != null && p.getIn().equals("path")) {
+                                    p.setStyle(Parameter.StyleEnum.SIMPLE);
+                                }
+
+                            });
+                        });
+
+                        // Standard error responses
+                        Optional.ofNullable(responses.get("400"))
+                                .ifPresent(r -> r.description("Bad Request").content(problemContent));
+                        Optional.ofNullable(responses.get("401"))
+                                .ifPresent(r -> r.description("Unauthorized").content(problemContent));
+                        Optional.ofNullable(responses.get("403"))
+                                .ifPresent(r -> r.description("Forbidden").content(problemContent));
+                        Optional.ofNullable(responses.get("404"))
+                                .ifPresent(r -> r.description("Not Found").content(problemContent));
+                        Optional.ofNullable(responses.get("409"))
+                                .ifPresent(r -> r.description("Conflict").content(problemContent));
+                        Optional.ofNullable(responses.get("500"))
+                                .ifPresent(r -> r.description("Internal Server Error").content(problemContent));
+
+                        // Sort tags
+                        //Optional.ofNullable(operation.getTags())
+                        //        .ifPresent(Collections::sort);
+
+                        // Remove required flag from request body to align with spring boot 2 generated openapi
+                        Optional.ofNullable(operation.getRequestBody())
+                                .ifPresent(rb -> rb.setRequired(null));
+
+                        // Security requirement
+                        operation.addSecurityItem(new SecurityRequirement().addList("bearerAuth", List.of("global")));
+                    })
+            );
+
+            // Add Problem to components
+            openApi.getComponents().addSchemas("Problem", problemComponent.get("Problem"));
+            openApi.getComponents().addSchemas("InvalidParam", invalidParamComponent.get("InvalidParam"));
+
+            // Sort paths alphabetically
+            //Map<String, PathItem> sortedPaths = new TreeMap<>(openApi.getPaths());
+            //openApi.setPaths(new Paths());
+            //openApi.getPaths().putAll(sortedPaths);
+
+            // Sort components alphabetically
+            //openApi.getComponents().setSchemas(new TreeMap<>(openApi.getComponents().getSchemas()));
+
+            // Customize Components
+            openApi.getComponents().getSchemas().values().forEach(c -> {
+                // Set title
+                c.setTitle(c.getName());
+                // Resolve description placeholders in schemas
+                resolveSchemaDescriptionPlaceholder(c);
+                if (c.getProperties() != null) {
+                    final Map<String, Schema<?>> properties = c.getProperties();
+                    // Resolve description placeholders in schemas
+                    properties.forEach((k, v) -> resolveSchemaDescriptionPlaceholder(v));
+                    // Sort properties alphabetically
+                    //c.setProperties(new TreeMap<>(properties));
+                }
+            });
+        };
+    }
+
+    private void resolveSchemaDescriptionPlaceholder(Schema<?> s) {
+        if (s.getDescription() != null && s.getDescription().startsWith("${")) {
+            s.setDescription(environment.resolvePlaceholders(s.getDescription()));
+        }
+
+        if (s.getItems() != null) {
+            resolveSchemaDescriptionPlaceholder(s.getItems());
+        }
+    }
 
     @Bean
-    public ServerSwaggerConfig serverSwaggerConfiguration() {
-        return new ServerSwaggerConfig();
+    public ParameterCustomizer encryptedTaxCodeParameterCustomizer() {
+        return (parameter, methodParameter) -> {
+            if (parameter != null && methodParameter.hasParameterAnnotation(EncryptedTaxCodeParam.class)) {
+                EncryptedTaxCodeParam annotation = methodParameter.getParameterAnnotation(EncryptedTaxCodeParam.class);
+                if (annotation != null && !annotation.required()) {
+                    // Springdoc force required=true, we look at required value of annotation to set it to false if needed
+                    parameter.setRequired(false);
+                }
+            }
+            return parameter;
+        };
     }
 
 }

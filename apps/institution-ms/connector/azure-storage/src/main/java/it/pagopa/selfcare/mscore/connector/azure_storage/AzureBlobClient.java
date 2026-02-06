@@ -29,7 +29,7 @@ import static it.pagopa.selfcare.mscore.constant.GenericError.*;
 @Service
 @PropertySource("classpath:config/azure-storage-config.properties")
 @Profile("AzureStorage")
-class AzureBlobClient implements FileStorageConnector {
+public class AzureBlobClient implements FileStorageConnector {
 
     private final CloudBlobClient blobClient;
     private final AzureStorageConfig azureStorageConfig;
