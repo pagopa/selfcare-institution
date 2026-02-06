@@ -1,14 +1,15 @@
 package it.pagopa.selfcare.mscore.web.controller;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import it.pagopa.selfcare.mscore.core.InstitutionService;
 import it.pagopa.selfcare.mscore.model.institution.Institution;
 import it.pagopa.selfcare.mscore.web.model.institution.BulkInstitutions;
 import it.pagopa.selfcare.mscore.web.model.institution.BulkPartiesSeed;
 import it.pagopa.selfcare.mscore.web.model.mapper.InstitutionMapperCustom;
 import it.pagopa.selfcare.mscore.web.util.CustomExceptionMessage;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +26,7 @@ import static it.pagopa.selfcare.mscore.constant.GenericError.GET_INSTITUTION_BY
 
 @Slf4j
 @RestController
-@Api(tags = "Management")
+@Tag(name = "Management")
 public class ManagementController {
 
     private final InstitutionService institutionService;
@@ -36,10 +36,10 @@ public class ManagementController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "${swagger.mscore.institution}", notes = "${swagger.mscore.institution}")
+    @Operation(summary = "${swagger.mscore.institution}", description = "${swagger.mscore.institution}")
     @PostMapping(value = "/bulk/institutions", produces = MediaType.APPLICATION_JSON_VALUE)
     @Deprecated
-    public ResponseEntity<BulkInstitutions> retrieveInstitutionByIds(@ApiParam("${swagger.mscore.institutions.model.internalIds}")
+    public ResponseEntity<BulkInstitutions> retrieveInstitutionByIds(@Parameter(description = "${swagger.mscore.institutions.model.internalIds}")
                                                                      @RequestBody @Valid BulkPartiesSeed bulkPartiesSeed) {
         CustomExceptionMessage.setCustomMessage(GET_INSTITUTION_BY_ID_ERROR);
         List<String> ids = new ArrayList<>(bulkPartiesSeed.getPartyIdentifiers());

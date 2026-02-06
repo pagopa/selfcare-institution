@@ -1,8 +1,10 @@
 package it.pagopa.selfcare.mscore.web.controller;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.Explode;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import it.pagopa.selfcare.mscore.constant.RelationshipState;
 import it.pagopa.selfcare.mscore.core.ExternalService;
 import it.pagopa.selfcare.mscore.model.institution.GeographicTaxonomies;
@@ -28,7 +30,7 @@ import static it.pagopa.selfcare.mscore.constant.GenericError.*;
 @Slf4j
 @RestController
 @RequestMapping(value = "/external/institutions", produces = MediaType.APPLICATION_JSON_VALUE)
-@Api(tags = "External")
+@Tag(name = "External")
 public class ExternalController {
 
     private final ExternalService externalService;
@@ -50,9 +52,9 @@ public class ExternalController {
      * * Code: 404, Message: Institution not found, DataType: Problem
      */
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value ="${swagger.mscore.external.institution}", notes = "${swagger.mscore.external.institution}")
+    @Operation(summary = "${swagger.mscore.external.institution}", description = "${swagger.mscore.external.institution}")
     @GetMapping(value = "/{externalId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<InstitutionResponse> getByExternalId(@ApiParam("${swagger.mscore.institutions.model.externalId}")
+    public ResponseEntity<InstitutionResponse> getByExternalId(@Parameter(description = "${swagger.mscore.institutions.model.externalId}")
                                                                @PathVariable("externalId") String externalId) {
         CustomExceptionMessage.setCustomMessage(GET_INSTITUTION_BY_EXTERNAL_ID_ERROR);
         Institution institution = externalService.getInstitutionByExternalId(externalId);
@@ -72,12 +74,12 @@ public class ExternalController {
      * * Code: 404, Message: Institution Billing not found, DataType: Problem
      */
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "${swagger.mscore.external.institution.billing}", notes = "${swagger.mscore.external.institution.billing}")
+    @Operation(summary = "${swagger.mscore.external.institution.billing}", description = "${swagger.mscore.external.institution.billing}")
     @GetMapping(value = "/{externalId}/products/{productId}/billing", produces = MediaType.APPLICATION_JSON_VALUE)
     @Deprecated
-    public ResponseEntity<InstitutionBillingResponse> getBillingInstitutionByExternalId(@ApiParam("${swagger.mscore.institutions.model.externalId}")
+    public ResponseEntity<InstitutionBillingResponse> getBillingInstitutionByExternalId(@Parameter(description = "${swagger.mscore.institutions.model.externalId}")
                                                                                         @PathVariable("externalId") String externalId,
-                                                                                        @ApiParam("${swagger.mscore.institutions.model.productId}")
+                                                                                        @Parameter(description = "${swagger.mscore.institutions.model.productId}")
                                                                                         @PathVariable("productId") String productId) {
         CustomExceptionMessage.setCustomMessage(INSTITUTION_BILLING_ERROR);
         Institution institution = externalService.retrieveInstitutionProduct(externalId, productId);
@@ -97,11 +99,12 @@ public class ExternalController {
      * * Code: 404, Message: Institution Billing not found, DataType: Problem
      */
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "${swagger.mscore.external.institution.products}", notes = "${swagger.mscore.external.institution.products}")
+    @Operation(summary = "${swagger.mscore.external.institution.products}", description = "${swagger.mscore.external.institution.products}")
     @GetMapping(value = "/{externalId}/products", produces = MediaType.APPLICATION_JSON_VALUE)
     @Deprecated
-    public ResponseEntity<OnboardedProducts> retrieveInstitutionProductsByExternalId(@ApiParam("${swagger.mscore.institutions.model.externalId}")
+    public ResponseEntity<OnboardedProducts> retrieveInstitutionProductsByExternalId(@Parameter(description = "${swagger.mscore.institutions.model.externalId}")
                                                                                      @PathVariable("externalId") String externalId,
+                                                                                     @Parameter(explode = Explode.TRUE, schema = @Schema(implementation = RelationshipState.class))
                                                                                      @RequestParam(value = "states", required = false) List<RelationshipState> states) {
         CustomExceptionMessage.setCustomMessage(GET_PRODUCTS_ERROR);
         List<Onboarding> page = externalService.retrieveInstitutionProductsByExternalId(externalId, states);
@@ -118,10 +121,10 @@ public class ExternalController {
      * * Code: 404, Message: GeographicTaxonomies or Institution not found, DataType: Problem
      */
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "${swagger.mscore.external.geotaxonomies}", notes = "${swagger.mscore.external.geotaxonomies}")
+    @Operation(summary = "${swagger.mscore.external.geotaxonomies}", description = "${swagger.mscore.external.geotaxonomies}")
     @GetMapping(value = "/{externalId}/geotaxonomies", produces = MediaType.APPLICATION_JSON_VALUE)
     @Deprecated
-    public ResponseEntity<List<GeographicTaxonomies>> retrieveInstitutionGeoTaxonomiesByExternalId(@ApiParam("${swagger.mscore.institutions.model.externalId}")
+    public ResponseEntity<List<GeographicTaxonomies>> retrieveInstitutionGeoTaxonomiesByExternalId(@Parameter(description = "${swagger.mscore.institutions.model.externalId}")
                                                                                                    @PathVariable("externalId") String externalId) {
         CustomExceptionMessage.setCustomMessage(RETRIEVE_GEO_TAXONOMIES_ERROR);
         List<GeographicTaxonomies> list = externalService.retrieveInstitutionGeoTaxonomiesByExternalId(externalId);
@@ -138,10 +141,10 @@ public class ExternalController {
      * * Code: 404, Message: GeographicTaxonomies or Institution not found, DataType: Problem
      */
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "${swagger.mscore.institution}", notes = "${swagger.mscore.institution}")
+    @Operation(summary = "${swagger.mscore.institution}", description = "${swagger.mscore.institution}", operationId = "retrieveInstitutionByIdsUsingGET")
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
     @Deprecated
-    public ResponseEntity<List<InstitutionResponse>> retrieveInstitutionByIds(@ApiParam("${swagger.mscore.institutions.model.internalIds}")
+    public ResponseEntity<List<InstitutionResponse>> retrieveInstitutionByIds(@Parameter(description = "${swagger.mscore.institutions.model.internalIds}")
                                                                                   @RequestParam("ids") List<String> ids) {
         CustomExceptionMessage.setCustomMessage(GET_INSTITUTION_BY_ID_ERROR);
         List<Institution> institutions = externalService.retrieveInstitutionByIds(ids);

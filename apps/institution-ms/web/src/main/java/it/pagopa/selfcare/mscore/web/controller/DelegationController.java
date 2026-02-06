@@ -1,8 +1,7 @@
 package it.pagopa.selfcare.mscore.web.controller;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
 import it.pagopa.selfcare.mscore.constant.DelegationType;
@@ -35,7 +34,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping(value = "/delegations", produces = MediaType.APPLICATION_JSON_VALUE)
 @Validated
-@Api(tags = "Delegation")
+@Tag(name = "Delegation")
 @Slf4j
 public class DelegationController {
 
@@ -59,7 +58,7 @@ public class DelegationController {
      */
     @Tags({@Tag(name = "support"), @Tag(name = "Delegation")})
     @ResponseStatus(HttpStatus.CREATED)
-    @ApiOperation(value = "${swagger.mscore.delegation.create}", notes = "${swagger.mscore.delegation.create}")
+    @Operation(summary = "${swagger.mscore.delegation.create}", description = "${swagger.mscore.delegation.create}")
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DelegationResponse> createDelegation(@RequestBody @Valid DelegationRequest delegation) {
         CustomExceptionMessage.setCustomMessage(GenericError.CREATE_DELEGATION_ERROR);
@@ -78,7 +77,7 @@ public class DelegationController {
      * * Code: 409, Message: Conflict, DataType: Problem
      */
     @ResponseStatus(HttpStatus.CREATED)
-    @ApiOperation(value = "${swagger.mscore.delegation.createFromTaxCode}", notes = "${swagger.mscore.delegation.createFromTaxCode}")
+    @Operation(summary = "${swagger.mscore.delegation.createFromTaxCode}", description = "${swagger.mscore.delegation.createFromTaxCode}")
     @PostMapping(value = "/from-taxcode", produces = MediaType.APPLICATION_JSON_VALUE)
     @Tag(name = "Delegation")
     @Tag(name = "internal-v1")
@@ -100,19 +99,19 @@ public class DelegationController {
      * * Code: 400, Message: Bad Request, DataType: Problem
      */
     @Tags({@Tag(name = "external-v2"), @Tag(name = "support"), @Tag(name = "Delegation")})
-    @ApiOperation(value = "${swagger.mscore.institutions.delegations}", notes = "${swagger.mscore.institutions.delegations}")
+    @Operation(summary = "${swagger.mscore.institutions.delegations}", description = "${swagger.mscore.institutions.delegations}", operationId = "#getDelegationsUsingGET")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<DelegationResponse>> getDelegations(@ApiParam("${swagger.mscore.institutions.model.institutionId}")
+    public ResponseEntity<List<DelegationResponse>> getDelegations(@Parameter(description = "${swagger.mscore.institutions.model.institutionId}")
                                                                    @RequestParam(name = "institutionId", required = false) String institutionId,
-                                                                   @ApiParam("${swagger.mscore.institutions.model.institutionId}")
+                                                                   @Parameter(description = "${swagger.mscore.institutions.model.institutionId}")
                                                                    @RequestParam(name = "brokerId", required = false) String brokerId,
-                                                                   @ApiParam("${swagger.mscore.product.model.id}")
+                                                                   @Parameter(description = "${swagger.mscore.product.model.id}")
                                                                    @RequestParam(name = "productId", required = false) String productId,
-                                                                   @ApiParam("${swagger.mscore.institutions.model.description}")
+                                                                   @Parameter(description = "${swagger.mscore.institutions.model.description}")
                                                                    @RequestParam(name = "search", required = false) String search,
-                                                                   @ApiParam("${swagger.mscore.institutions.model.taxCode}")
+                                                                   @Parameter(description = "${swagger.mscore.institutions.model.taxCode}")
                                                                    @EncryptedTaxCodeParam String taxCode,
-                                                                   @ApiParam("${swagger.mscore.institutions.delegations.order}")
+                                                                   @Parameter(description = "${swagger.mscore.institutions.delegations.order}")
                                                                    @RequestParam(name = "order", required = false) Optional<Order> order,
                                                                    @RequestParam(name = "page", required = false) Optional<Integer> page,
                                                                    @RequestParam(name = "size", required = false) Optional<Integer> size) {
@@ -137,9 +136,9 @@ public class DelegationController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Tag(name = "support")
     @Tag(name = "Delegation")
-    @ApiOperation(value = "${swagger.mscore.delegation.delete}", notes = "${swagger.mscore.delegation.delete}")
+    @Operation(summary = "${swagger.mscore.delegation.delete}", description = "${swagger.mscore.delegation.delete}")
     @DeleteMapping(value = "/{delegationId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> deleteDelegation(@ApiParam("${swagger.mscore.delegation.model.delegationId}")
+    public ResponseEntity<Void> deleteDelegation(@Parameter(description = "${swagger.mscore.delegation.model.delegationId}")
                                                                     @PathVariable("delegationId") String delegationId) {
         CustomExceptionMessage.setCustomMessage(GenericError.CREATE_DELEGATION_ERROR);
         delegationService.deleteDelegationByDelegationId(delegationId);
@@ -157,17 +156,17 @@ public class DelegationController {
      * @return list of the delegators
      */
     @Tags({@Tag(name = "external-v2"), @Tag(name = "Delegation")})
-    @ApiOperation(value = "${swagger.mscore.delegation.delegators}", notes = "${swagger.mscore.delegation.delegators.notes}")
+    @Operation(summary = "${swagger.mscore.delegation.delegators}", description = "${swagger.mscore.delegation.delegators.notes}")
     @GetMapping(value = "/delegators/{institutionId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<DelegationInstitutionResponse>> getDelegatorInstitutions(@ApiParam("${swagger.mscore.institutions.model.institutionId}")
+    public ResponseEntity<List<DelegationInstitutionResponse>> getDelegatorInstitutions(@Parameter(description = "${swagger.mscore.institutions.model.institutionId}")
                                                                                         @PathVariable("institutionId") String institutionId,
-                                                                                        @ApiParam("${swagger.mscore.institutions.model.productId}")
+                                                                                        @Parameter(description = "${swagger.mscore.institutions.model.productId}")
                                                                                         @RequestParam(name = "productId", required = false) String productId,
-                                                                                        @ApiParam("${swagger.mscore.delegation.model.type}")
+                                                                                        @Parameter(description = "${swagger.mscore.delegation.model.type}")
                                                                                         @RequestParam(name = "type", required = false) DelegationType type,
-                                                                                        @ApiParam("${swagger.mscore.page.cursor}")
+                                                                                        @Parameter(description = "${swagger.mscore.page.cursor}")
                                                                                         @RequestParam(name = "cursor", required = false) Long cursor,
-                                                                                        @ApiParam("${swagger.mscore.page.size}")
+                                                                                        @Parameter(description = "${swagger.mscore.page.size}")
                                                                                         @RequestParam(name = "size", required = false, defaultValue = "100") @Min(1) @Max(100) Integer size) {
         return ResponseEntity.status(HttpStatus.OK).body(delegationService.getDelegators(institutionId, productId, type, cursor, size)
                 .stream().map(d -> delegationMapper.toDelegationInstitutionResponse(d, productId)).toList());
@@ -184,17 +183,17 @@ public class DelegationController {
      * @return list of the delegates
      */
     @Tags({@Tag(name = "external-v2"), @Tag(name = "Delegation")})
-    @ApiOperation(value = "${swagger.mscore.delegation.delegates}", notes = "${swagger.mscore.delegation.delegates.notes}")
+    @Operation(summary = "${swagger.mscore.delegation.delegates}", description = "${swagger.mscore.delegation.delegates.notes}")
     @GetMapping(value = "/delegates/{institutionId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<DelegationInstitutionResponse>> getDelegateInstitutions(@ApiParam("${swagger.mscore.institutions.model.institutionId}")
+    public ResponseEntity<List<DelegationInstitutionResponse>> getDelegateInstitutions(@Parameter(description = "${swagger.mscore.institutions.model.institutionId}")
                                                                                        @PathVariable("institutionId") String institutionId,
-                                                                                       @ApiParam("${swagger.mscore.institutions.model.productId}")
+                                                                                       @Parameter(description = "${swagger.mscore.institutions.model.productId}")
                                                                                        @RequestParam(name = "productId", required = false) String productId,
-                                                                                       @ApiParam("${swagger.mscore.delegation.model.type}")
+                                                                                       @Parameter(description = "${swagger.mscore.delegation.model.type}")
                                                                                        @RequestParam(name = "type", required = false) DelegationType type,
-                                                                                       @ApiParam("${swagger.mscore.page.cursor}")
+                                                                                       @Parameter(description = "${swagger.mscore.page.cursor}")
                                                                                        @RequestParam(name = "cursor", required = false) Long cursor,
-                                                                                       @ApiParam("${swagger.mscore.page.size}")
+                                                                                       @Parameter(description = "${swagger.mscore.page.size}")
                                                                                        @RequestParam(name = "size", required = false, defaultValue = "100") @Min(1) @Max(100) Integer size) {
         return ResponseEntity.status(HttpStatus.OK).body(delegationService.getDelegates(institutionId, productId, type, cursor, size)
                 .stream().map(d -> delegationMapper.toDelegationInstitutionResponse(d, productId)).toList());
