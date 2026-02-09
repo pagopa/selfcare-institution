@@ -5,6 +5,7 @@ import it.pagopa.selfcare.mscore.connector.azure_storage.AzureBlobClient;
 import it.pagopa.selfcare.mscore.connector.rest.UserRegistryConnectorImpl;
 import it.pagopa.selfcare.mscore.core.*;
 import it.pagopa.selfcare.mscore.web.util.EncryptedTaxCodeParamResolver;
+import it.pagopa.selfcare.product.service.ProductService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,9 @@ class SwaggerConfigTest {
 
     @MockBean
     AzureBlobClient azureBlobClient;
+
+    @MockBean
+    ProductService productService;
 
     @Autowired
     WebApplicationContext context;
