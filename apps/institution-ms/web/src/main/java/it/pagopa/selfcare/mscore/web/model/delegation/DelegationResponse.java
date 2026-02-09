@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import it.pagopa.selfcare.mscore.constant.DelegationState;
 import it.pagopa.selfcare.mscore.constant.DelegationType;
 import it.pagopa.selfcare.mscore.web.util.DecryptIfUuid;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import jakarta.validation.constraints.NotBlank;
@@ -20,7 +21,7 @@ public class DelegationResponse {
     @NotBlank
     private String institutionName;
     private String institutionRootName;
-    @NotBlank
+    @NotNull
     private DelegationType type;
     @NotBlank
     private String productId;
