@@ -2,7 +2,7 @@ package it.pagopa.selfcare.mscore.web.model.onboarding;
 
 import lombok.Data;
 
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotEmpty;
 
 @Data
 public class ContractRequest {

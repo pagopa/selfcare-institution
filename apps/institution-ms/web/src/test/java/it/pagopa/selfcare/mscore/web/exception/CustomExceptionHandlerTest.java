@@ -1,16 +1,18 @@
 package it.pagopa.selfcare.mscore.web.exception;
 
-import it.pagopa.selfcare.commons.web.model.Problem;
 import it.pagopa.selfcare.mscore.exception.InvalidRequestException;
 import it.pagopa.selfcare.mscore.exception.MsCoreException;
 import it.pagopa.selfcare.mscore.exception.ResourceConflictException;
 import it.pagopa.selfcare.mscore.exception.ResourceNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ValidationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.validation.BindException;
@@ -19,10 +21,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.ValidationException;
 import java.lang.reflect.Constructor;
-import java.util.List;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -45,11 +44,9 @@ class CustomExceptionHandlerTest {
                         new ServletWebRequest(new MockHttpServletRequest()));
         assertTrue(actualHandleMissingServletRequestParameterResult.hasBody());
         assertEquals(1, actualHandleMissingServletRequestParameterResult.getHeaders().size());
+        assertEquals("application/problem+json", actualHandleMissingServletRequestParameterResult.getHeaders().getFirst(HttpHeaders.CONTENT_TYPE));
         assertEquals(HttpStatus.BAD_REQUEST, actualHandleMissingServletRequestParameterResult.getStatusCode());
-        assertEquals(400, ((Problem) Objects.requireNonNull(actualHandleMissingServletRequestParameterResult.getBody())).getStatus());
-        List<String> getResult = httpHeaders.get(HttpHeaders.CONTENT_TYPE);
-        assertEquals(1, Objects.requireNonNull(getResult).size());
-        assertEquals("application/json", getResult.get(0));
+        assertEquals(400, ((ProblemDetail) Objects.requireNonNull(actualHandleMissingServletRequestParameterResult.getBody())).getStatus());
     }
 
     /**
@@ -75,7 +72,7 @@ class CustomExceptionHandlerTest {
         assertTrue(actualHandleMissingServletRequestParameterResult.hasBody());
         assertEquals(1, actualHandleMissingServletRequestParameterResult.getHeaders().size());
         assertEquals(HttpStatus.BAD_REQUEST, actualHandleMissingServletRequestParameterResult.getStatusCode());
-        assertEquals(400, ((Problem) Objects.requireNonNull(actualHandleMissingServletRequestParameterResult.getBody())).getStatus());
+        assertEquals(400, ((ProblemDetail) Objects.requireNonNull(actualHandleMissingServletRequestParameterResult.getBody())).getStatus());
     }
 
     /**
@@ -86,12 +83,12 @@ class CustomExceptionHandlerTest {
         CustomExceptionHandler customExceptionHandler = new CustomExceptionHandler();
         MockHttpServletRequest request = new MockHttpServletRequest();
 
-        ResponseEntity<Problem> actualHandleResourceNotFoundExceptionResult = customExceptionHandler
+        ResponseEntity<ProblemDetail> actualHandleResourceNotFoundExceptionResult = customExceptionHandler
                 .handleResourceNotFoundException(request, new ResourceNotFoundException("An error occurred", "Code"));
         assertTrue(actualHandleResourceNotFoundExceptionResult.hasBody());
         assertEquals(1, actualHandleResourceNotFoundExceptionResult.getHeaders().size());
         assertEquals(HttpStatus.NOT_FOUND, actualHandleResourceNotFoundExceptionResult.getStatusCode());
-        Problem body = actualHandleResourceNotFoundExceptionResult.getBody();
+        ProblemDetail body = actualHandleResourceNotFoundExceptionResult.getBody();
         assertEquals(404, Objects.requireNonNull(body).getStatus());
     }
 
@@ -102,12 +99,12 @@ class CustomExceptionHandlerTest {
     void testHandleResourceConflictException() {
         CustomExceptionHandler customExceptionHandler = new CustomExceptionHandler();
         MockHttpServletRequest request = new MockHttpServletRequest();
-        ResponseEntity<Problem> actualHandleResourceConflictExceptionResult = customExceptionHandler
+        ResponseEntity<ProblemDetail> actualHandleResourceConflictExceptionResult = customExceptionHandler
                 .handleResourceConflictException(request, new ResourceConflictException("An error occurred", "Code"));
         assertTrue(actualHandleResourceConflictExceptionResult.hasBody());
         assertEquals(1, actualHandleResourceConflictExceptionResult.getHeaders().size());
         assertEquals(HttpStatus.CONFLICT, actualHandleResourceConflictExceptionResult.getStatusCode());
-        Problem body = actualHandleResourceConflictExceptionResult.getBody();
+        ProblemDetail body = actualHandleResourceConflictExceptionResult.getBody();
         assertEquals(409, Objects.requireNonNull(body).getStatus());
     }
 
@@ -118,12 +115,12 @@ class CustomExceptionHandlerTest {
     void testHandleInvalidRequestException() {
         CustomExceptionHandler customExceptionHandler = new CustomExceptionHandler();
         MockHttpServletRequest request = new MockHttpServletRequest();
-        ResponseEntity<Problem> actualHandleInvalidRequestExceptionResult = customExceptionHandler
+        ResponseEntity<ProblemDetail> actualHandleInvalidRequestExceptionResult = customExceptionHandler
                 .handleInvalidRequestException(request, new InvalidRequestException("An error occurred", "Code"));
         assertTrue(actualHandleInvalidRequestExceptionResult.hasBody());
         assertEquals(1, actualHandleInvalidRequestExceptionResult.getHeaders().size());
         assertEquals(HttpStatus.BAD_REQUEST, actualHandleInvalidRequestExceptionResult.getStatusCode());
-        Problem body = actualHandleInvalidRequestExceptionResult.getBody();
+        ProblemDetail body = actualHandleInvalidRequestExceptionResult.getBody();
         assertEquals(400, Objects.requireNonNull(body).getStatus());
     }
 
@@ -134,12 +131,11 @@ class CustomExceptionHandlerTest {
     void testHandleException() {
         CustomExceptionHandler customExceptionHandler = new CustomExceptionHandler();
         MockHttpServletRequest request = new MockHttpServletRequest();
-        ResponseEntity<Problem> actualHandleExceptionResult = customExceptionHandler.handleException(request,
+        ResponseEntity<ProblemDetail> actualHandleExceptionResult = customExceptionHandler.handleException(request,
                 new Exception());
         assertTrue(actualHandleExceptionResult.hasBody());
-        assertTrue(actualHandleExceptionResult.getHeaders().isEmpty());
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, actualHandleExceptionResult.getStatusCode());
-        Problem body = actualHandleExceptionResult.getBody();
+        ProblemDetail body = actualHandleExceptionResult.getBody();
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), body.getStatus());
     }
 
@@ -147,7 +143,7 @@ class CustomExceptionHandlerTest {
     void handleMsCoreException() {
         CustomExceptionHandler customExceptionHandler = new CustomExceptionHandler();
         MockHttpServletRequest request = new MockHttpServletRequest();
-        ResponseEntity<Problem> actualHandleInvalidRequestExceptionResult = customExceptionHandler
+        ResponseEntity<ProblemDetail> actualHandleInvalidRequestExceptionResult = customExceptionHandler
                 .handleMsCoreException(request, new MsCoreException("An error occurred", "Code"));
         assertTrue(actualHandleInvalidRequestExceptionResult.hasBody());
         assertEquals(1, actualHandleInvalidRequestExceptionResult.getHeaders().size());
@@ -160,12 +156,12 @@ class CustomExceptionHandlerTest {
     void testHandleValidationException() {
         CustomExceptionHandler customExceptionHandler = new CustomExceptionHandler();
         MockHttpServletRequest request = new MockHttpServletRequest();
-        ResponseEntity<Problem> actualHandleInvalidRequestExceptionResult = customExceptionHandler
+        ResponseEntity<ProblemDetail> actualHandleInvalidRequestExceptionResult = customExceptionHandler
                 .handleValidationException(request, new ValidationException("An error occurred"));
         assertTrue(actualHandleInvalidRequestExceptionResult.hasBody());
         assertEquals(1, actualHandleInvalidRequestExceptionResult.getHeaders().size());
         assertEquals(HttpStatus.BAD_REQUEST, actualHandleInvalidRequestExceptionResult.getStatusCode());
-        Problem body = actualHandleInvalidRequestExceptionResult.getBody();
+        ProblemDetail body = actualHandleInvalidRequestExceptionResult.getBody();
         assertEquals(400, Objects.requireNonNull(body).getStatus());
     }
 

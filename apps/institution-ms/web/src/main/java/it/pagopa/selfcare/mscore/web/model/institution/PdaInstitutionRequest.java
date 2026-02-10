@@ -2,7 +2,7 @@ package it.pagopa.selfcare.mscore.web.model.institution;
 
 import lombok.Data;
 
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotEmpty;
 
 @Data
 public class PdaInstitutionRequest {

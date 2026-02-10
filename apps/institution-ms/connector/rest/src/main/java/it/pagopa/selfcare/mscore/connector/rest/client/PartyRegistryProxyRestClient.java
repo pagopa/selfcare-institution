@@ -1,5 +1,6 @@
 package it.pagopa.selfcare.mscore.connector.rest.client;
 
+import it.pagopa.selfcare.mscore.connector.rest.config.PartyRegistryProxyRestClientConfig;
 import it.pagopa.selfcare.mscore.connector.rest.model.geotaxonomy.GeographicTaxonomiesResponse;
 import it.pagopa.selfcare.mscore.connector.rest.model.registryproxy.*;
 import it.pagopa.selfcare.mscore.model.institution.NationalRegistriesProfessionalAddress;
@@ -9,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-@FeignClient(name = "${rest-client.party-registry-proxy.serviceCode}", url = "${rest-client.party-registry-proxy.base-url}")
+@FeignClient(name = "${rest-client.party-registry-proxy.serviceCode}", url = "${rest-client.party-registry-proxy.base-url}", configuration = PartyRegistryProxyRestClientConfig.class)
 public interface PartyRegistryProxyRestClient extends InsuranceCompaniesApi {
 
     @GetMapping(value = "${rest-client.party-registry-proxy.getInstitutionById.path}", consumes = APPLICATION_JSON_VALUE)

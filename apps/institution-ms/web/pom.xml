@@ -30,10 +30,6 @@
             <artifactId>selc-ms-core-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-boot-starter</artifactId>
-        </dependency>
-        <dependency>
             <groupId>it.pagopa.selfcare</groupId>
             <artifactId>selc-commons-web</artifactId>
         </dependency>

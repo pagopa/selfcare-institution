@@ -1,6 +1,11 @@
 package it.pagopa.selfcare.mscore.web.controller;
 
-import io.swagger.annotations.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.Explode;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
 import it.pagopa.selfcare.commons.base.security.SelfCareUser;
@@ -18,6 +23,8 @@ import it.pagopa.selfcare.mscore.web.model.onboarding.OnboardedProducts;
 import it.pagopa.selfcare.mscore.web.util.CustomExceptionMessage;
 import it.pagopa.selfcare.mscore.web.util.EncryptedTaxCodeParam;
 import it.pagopa.selfcare.onboarding.common.InstitutionType;
+import jakarta.validation.Valid;
+import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.http.HttpStatus;
@@ -27,8 +34,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import javax.validation.ValidationException;
 import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -37,7 +42,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/institutions", produces = MediaType.APPLICATION_JSON_VALUE)
-@Api(tags = "Institution")
+@Tag(name = "Institution")
 @Slf4j
 public class InstitutionController {
 
@@ -75,14 +80,14 @@ public class InstitutionController {
     @Tag(name = "external-v2")
     @Tag(name = "Institution")
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "${swagger.mscore.institutions}", notes = "${swagger.mscore.institutions}")
+    @Operation(summary = "${swagger.mscore.institutions}", description = "${swagger.mscore.institutions}")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<InstitutionsResponse> getInstitutions(@ApiParam("${swagger.mscore.institutions.model.taxCode}")
+    public ResponseEntity<InstitutionsResponse> getInstitutions(@Parameter(description = "${swagger.mscore.institutions.model.taxCode}")
                                                                 @EncryptedTaxCodeParam String taxCode,
-                                                                @ApiParam("${swagger.mscore.institutions.model.subunitCode}")
+                                                                @Parameter(description = "${swagger.mscore.institutions.model.subunitCode}")
                                                                 @RequestParam(value = "subunitCode", required = false) String subunitCode,
                                                                 @RequestParam(value = "origin", required = false) String origin,
-                                                                @ApiParam("${swagger.mscore.institutions.model.originId}")
+                                                                @Parameter(description = "${swagger.mscore.institutions.model.originId}")
                                                                 @EncryptedTaxCodeParam String originId,
                                                                 @RequestParam(value = "productId", required = false) String productId,
                                                                 @RequestParam(value = "enableSubunits", required = false) Boolean enableSubunits) {
@@ -122,7 +127,7 @@ public class InstitutionController {
      * * Code: 409, Message: Institution conflict, DataType: Problem
      */
     @ResponseStatus(HttpStatus.CREATED)
-    @ApiOperation(value = "${swagger.mscore.institution.create.from-ipa}", notes = "${swagger.mscore.institution.create.from-ipa}")
+    @Operation(summary = "${swagger.mscore.institution.create.from-ipa}", description = "${swagger.mscore.institution.create.from-ipa}")
     @PostMapping(value = "/from-ipa", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<InstitutionResponse> createInstitutionFromIpa(@RequestBody @Valid InstitutionFromIpaPost institutionFromIpaPost) {
         CustomExceptionMessage.setCustomMessage(GenericError.CREATE_INSTITUTION_ERROR);
@@ -158,7 +163,7 @@ public class InstitutionController {
      * * Code: 409, Message: Institution conflict, DataType: Problem
      */
     @ResponseStatus(HttpStatus.CREATED)
-    @ApiOperation(value = "${swagger.mscore.institution.create.from-anac}", notes = "${swagger.mscore.institution.create.from-anac}")
+    @Operation(summary = "${swagger.mscore.institution.create.from-anac}", description = "${swagger.mscore.institution.create.from-anac}")
     @PostMapping(value = "/from-anac", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<InstitutionResponse> createInstitutionFromAnac(@RequestBody @Valid InstitutionRequest institution) {
         CustomExceptionMessage.setCustomMessage(GenericError.CREATE_INSTITUTION_ERROR);
@@ -177,7 +182,7 @@ public class InstitutionController {
      * * Code: 409, Message: Institution conflict, DataType: Problem
      */
     @ResponseStatus(HttpStatus.CREATED)
-    @ApiOperation(value = "${swagger.mscore.institution.create.from-ivass}", notes = "${swagger.mscore.institution.create.from-ivass}")
+    @Operation(summary = "${swagger.mscore.institution.create.from-ivass}", description = "${swagger.mscore.institution.create.from-ivass}")
     @PostMapping(value = "/from-ivass", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<InstitutionResponse> createInstitutionFromIvass(@RequestBody @Valid InstitutionRequest institution) {
         CustomExceptionMessage.setCustomMessage(GenericError.CREATE_INSTITUTION_ERROR);
@@ -196,7 +201,7 @@ public class InstitutionController {
      * * Code: 409, Message: Institution conflict, DataType: Problem
      */
     @ResponseStatus(HttpStatus.CREATED)
-    @ApiOperation(value = "${swagger.mscore.institution.create.from-pda}", notes = "${swagger.mscore.institution.create.from-ipa}")
+    @Operation(summary = "${swagger.mscore.institution.create.from-pda}", description = "${swagger.mscore.institution.create.from-ipa}")
     @PostMapping(value = "/from-pda", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<InstitutionResponse> createInstitutionFromPda(@RequestBody @Valid PdaInstitutionRequest institutionRequest) {
         CustomExceptionMessage.setCustomMessage(GenericError.CREATE_INSTITUTION_ERROR);
@@ -216,7 +221,7 @@ public class InstitutionController {
      * * Code: 409, Message: Institution conflict, DataType: Problem
      */
     @ResponseStatus(HttpStatus.CREATED)
-    @ApiOperation(value = "${swagger.mscore.institution.create.from-infocamere}", notes = "${swagger.mscore.institution.create.from-infocamere}")
+    @Operation(summary = "${swagger.mscore.institution.create.from-infocamere}", description = "${swagger.mscore.institution.create.from-infocamere}")
     @PostMapping(value = "/from-infocamere", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<InstitutionResponse> createInstitutionFromInfocamere(@RequestBody @Valid InstitutionRequest institutionRequest) {
         CustomExceptionMessage.setCustomMessage(GenericError.CREATE_INSTITUTION_ERROR);
@@ -237,9 +242,9 @@ public class InstitutionController {
      */
     @Deprecated
     @ResponseStatus(HttpStatus.CREATED)
-    @ApiOperation(value = "${swagger.mscore.institution.PA.create}", notes = "${swagger.mscore.institution.PA.create}")
+    @Operation(summary = "${swagger.mscore.institution.PA.create}", description = "${swagger.mscore.institution.PA.create}")
     @PostMapping(value = "/{externalId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<InstitutionResponse> createInstitutionByExternalId(@ApiParam("${swagger.mscore.institutions.model.externalId}")
+    public ResponseEntity<InstitutionResponse> createInstitutionByExternalId(@Parameter(description = "${swagger.mscore.institutions.model.externalId}")
                                                                              @PathVariable("externalId") String externalId) {
 
         CustomExceptionMessage.setCustomMessage(GenericError.CREATE_INSTITUTION_ERROR);
@@ -257,7 +262,7 @@ public class InstitutionController {
      * * Code: 409, Message: Institution conflict, DataType: Problem
      */
     @ResponseStatus(HttpStatus.CREATED)
-    @ApiOperation(value = "${swagger.mscore.institution.create}", notes = "${swagger.mscore.institution.create}")
+    @Operation(summary = "${swagger.mscore.institution.create}", description = "${swagger.mscore.institution.create}")
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<InstitutionResponse> createInstitution(@RequestBody @Valid InstitutionRequest institution) {
         CustomExceptionMessage.setCustomMessage(GenericError.CREATE_INSTITUTION_ERROR);
@@ -277,9 +282,9 @@ public class InstitutionController {
      */
     @Deprecated
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "${swagger.mscore.institution.create}", notes = "${swagger.mscore.institution.create}")
+    @Operation(summary = "${swagger.mscore.institution.create}", description = "${swagger.mscore.institution.create}")
     @PostMapping(value = "/insert/{externalId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<InstitutionResponse> createInstitutionRaw(@ApiParam("${swagger.mscore.institutions.model.externalId}")
+    public ResponseEntity<InstitutionResponse> createInstitutionRaw(@Parameter(description = "${swagger.mscore.institutions.model.externalId}")
                                                                     @PathVariable("externalId") String externalId,
                                                                     @RequestBody @Valid InstitutionRequest institution) {
         CustomExceptionMessage.setCustomMessage(GenericError.CREATE_INSTITUTION_ERROR);
@@ -298,7 +303,7 @@ public class InstitutionController {
      * * Code: 409, Message: Institution conflict, DataType: Problem
      */
     @ResponseStatus(HttpStatus.CREATED)
-    @ApiOperation(value = "${swagger.mscore.institution.PG.create}", notes = "${swagger.mscore.institution.PG.create}")
+    @Operation(summary = "${swagger.mscore.institution.PG.create}", description = "${swagger.mscore.institution.PG.create}")
     @PostMapping(value = "/pg", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<InstitutionResponse> createPgInstitution(@RequestBody @Valid CreatePgInstitutionRequest request,
                                                                    Authentication authentication) {
@@ -318,11 +323,15 @@ public class InstitutionController {
      * * Code: 404, Message: Products not found, DataType: Problem
      */
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "${swagger.mscore.institution.products}", notes = "${swagger.mscore.institution.products}")
+    @Operation(summary = "${swagger.mscore.institution.products}", description = "${swagger.mscore.institution.products}")
     @GetMapping(value = "/{id}/products", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<OnboardedProducts> retrieveInstitutionProducts(@ApiParam("${swagger.mscore.institutions.model.institutionId}")
+    public ResponseEntity<OnboardedProducts> retrieveInstitutionProducts(@Parameter(description = "${swagger.mscore.institutions.model.institutionId}")
                                                                          @PathVariable("id") String institutionId,
-                                                                         @ApiParam("${swagger.mscore.institutions.model.relationshipState}")
+                                                                         @Parameter(
+                                                                                 description = "${swagger.mscore.institutions.model.relationshipState}",
+                                                                                 schema = @Schema(implementation = RelationshipState.class),
+                                                                                 explode = Explode.TRUE
+                                                                         )
                                                                          @RequestParam(value = "states", required = false) List<RelationshipState> states) {
 
         CustomExceptionMessage.setCustomMessage(GenericError.GET_PRODUCTS_ERROR);
@@ -341,12 +350,12 @@ public class InstitutionController {
      * * Code: 400, Message: bad request, DataType: Problem
      */
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "${swagger.mscore.institution.update}", notes = "${swagger.mscore.institution.update}")
+    @Operation(summary = "${swagger.mscore.institution.update}", description = "${swagger.mscore.institution.update}")
     @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Tag(name = "support")
     @Tag(name = "support-pnpg")
     @Tag(name = "Institution")
-    public ResponseEntity<InstitutionResponse> updateInstitution(@ApiParam("${swagger.mscore.institutions.model.institutionId}")
+    public ResponseEntity<InstitutionResponse> updateInstitution(@Parameter(description = "${swagger.mscore.institutions.model.institutionId}")
                                                                  @PathVariable("id") String institutionId,
                                                                  @Valid @RequestBody InstitutionPut institutionPut,
                                                                  Authentication authentication
@@ -369,13 +378,13 @@ public class InstitutionController {
      * * Code: 400, Message: Invalid request, DataType: Problem
      */
     @ApiResponses(value = {
-    	    @ApiResponse(code = 200, message = "User already exists an onboarding in status ACTIVE or SUSPENDED with that productId"),
-    	    @ApiResponse(code = 201, message = "Created"),
-    	    @ApiResponse(code = 400, message = "Bad Request"),
-    	    @ApiResponse(code = 404, message = "Not Found")
+    	    @ApiResponse(responseCode = "200", description = "User already exists an onboarding in status ACTIVE or SUSPENDED with that productId"),
+    	    @ApiResponse(responseCode = "201", description = "Created"),
+    	    @ApiResponse(responseCode = "400", description = "Bad Request"),
+    	    @ApiResponse(responseCode = "404", description = "Not Found")
     	})
     @ResponseStatus(HttpStatus.CREATED)
-    @ApiOperation(value = "${swagger.mscore.onboarding.users}", notes = "${swagger.mscore.onboarding.users}")
+    @Operation(summary = "${swagger.mscore.onboarding.users}", description = "${swagger.mscore.onboarding.users}")
     @PostMapping(value = "/{id}/onboarding", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<InstitutionResponse> onboardingInstitution(@RequestBody @Valid InstitutionOnboardingRequest request,
                                                                      @PathVariable("id") String id) {
@@ -392,7 +401,7 @@ public class InstitutionController {
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @ApiOperation(value = "${swagger.mscore.onboarding.users.delete}", notes = "${swagger.mscore.onboarding.users.delete}")
+    @Operation(summary = "${swagger.mscore.onboarding.users.delete}", description = "${swagger.mscore.onboarding.users.delete}")
     @DeleteMapping(value = "/{id}/products/{productId}", produces = MediaType.APPLICATION_PROBLEM_JSON_VALUE)
     public void deleteOnboardedInstitution(@PathVariable("productId") String productId,
                                            @PathVariable("id") String institutionId) {
@@ -412,9 +421,9 @@ public class InstitutionController {
      * * Code: 404, Message: GeographicTaxonomies or Institution not found, DataType: Problem
      */
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "${swagger.mscore.institution.geotaxonomies}", notes = "${swagger.mscore.institution.geotaxonomies}")
+    @Operation(summary = "${swagger.mscore.institution.geotaxonomies}", description = "${swagger.mscore.institution.geotaxonomies}")
     @GetMapping(value = "/{id}/geotaxonomies", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<GeographicTaxonomies>> retrieveInstitutionGeoTaxonomies(@ApiParam("${swagger.mscore.institutions.model.institutionId}")
+    public ResponseEntity<List<GeographicTaxonomies>> retrieveInstitutionGeoTaxonomies(@Parameter(description = "${swagger.mscore.institutions.model.institutionId}")
                                                                                        @PathVariable("id") String id) {
 
         CustomExceptionMessage.setCustomMessage(GenericError.RETRIEVE_GEO_TAXONOMIES_ERROR);
@@ -436,9 +445,9 @@ public class InstitutionController {
     @Tag(name = "external-pnpg")
     @Tag(name = "Institution")
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "${swagger.mscore.institution}", notes = "${swagger.mscore.institution}")
+    @Operation(summary = "${swagger.mscore.institution}", description = "${swagger.mscore.institution}")
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<InstitutionResponse> retrieveInstitutionById(@ApiParam("${swagger.mscore.institutions.model.institutionId}")
+    public ResponseEntity<InstitutionResponse> retrieveInstitutionById(@Parameter(description = "${swagger.mscore.institutions.model.institutionId}")
                                                                        @PathVariable("id") String id,
                                                                        @RequestParam(value = "productId", required = false) String productId) {
         CustomExceptionMessage.setCustomMessage(GenericError.GET_INSTITUTION_BY_ID_ERROR);
@@ -460,9 +469,9 @@ public class InstitutionController {
      */
     @Tags({@Tag(name = "external-v2"), @Tag(name = "Institution")})
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "${swagger.mscore.institution.info}", notes = "${swagger.mscore.institution.info}")
+    @Operation(summary = "${swagger.mscore.institution.info}", description = "${swagger.mscore.institution.info}")
     @GetMapping(value = "/{institutionId}/onboardings", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<OnboardingsResponse> getOnboardingsInstitution(@ApiParam("${swagger.mscore.institutions.model.institutionId}")
+    public ResponseEntity<OnboardingsResponse> getOnboardingsInstitution(@Parameter(description = "${swagger.mscore.institutions.model.institutionId}")
                                                                          @PathVariable("institutionId") String institutionId,
                                                                          @RequestParam(value = "productId", required = false) String productId) {
         CustomExceptionMessage.setCustomMessage(GenericError.GETTING_ONBOARDING_INFO_ERROR);
@@ -483,7 +492,7 @@ public class InstitutionController {
      * * Code: 404, Message: GeographicTaxonomies or Institution not found, DataType: Problem
      */
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "${swagger.mscore.institutions.valid}", notes = "${swagger.mscore.institutions.valid}")
+    @Operation(summary = "${swagger.mscore.institutions.valid}", description = "${swagger.mscore.institutions.valid}")
     @PostMapping(value = "/onboarded/{productId}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Deprecated
     public ResponseEntity<List<InstitutionToOnboard>> getValidInstitutionToOnboard(@RequestBody List<InstitutionToOnboard> institutions,
@@ -504,9 +513,9 @@ public class InstitutionController {
     @ResponseStatus(HttpStatus.OK)
     @Tag(name = "internal-v1")
     @Tag(name = "Institution")
-    @ApiOperation(value = "${swagger.mscore.institutions.updateCreatedAt}", notes = "${swagger.mscore.institutions.updateCreatedAt}")
+    @Operation(summary = "${swagger.mscore.institutions.updateCreatedAt}", description = "${swagger.mscore.institutions.updateCreatedAt}")
     @PutMapping(value = "/{institutionId}/created-at", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> updateCreatedAt(@ApiParam("${swagger.mscore.institutions.model.institutionId}")
+    public ResponseEntity<Void> updateCreatedAt(@Parameter(description = "${swagger.mscore.institutions.model.institutionId}")
                                                 @PathVariable("institutionId") String institutionId,
                                                 @Valid @RequestBody CreatedAtRequest createdAtRequest) {
         log.trace("updateCreatedAt start");
@@ -530,13 +539,13 @@ public class InstitutionController {
      * * Code: 404, Message: product not found
      */
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "${swagger.mscore.institutions.findFromProduct}", notes = "${swagger.mscore.institutions.findFromProduct}")
+    @Operation(summary = "${swagger.mscore.institutions.findFromProduct}", description = "${swagger.mscore.institutions.findFromProduct}")
     @GetMapping(value = "/products/{productId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<InstitutionOnboardingListResponse> findFromProduct(@ApiParam("${swagger.mscore.institutions.model.productId}")
+    public ResponseEntity<InstitutionOnboardingListResponse> findFromProduct(@Parameter(description = "${swagger.mscore.institutions.model.productId}")
                                                                              @PathVariable(value = "productId") String productId,
-                                                                             @ApiParam("${swagger.mscore.page.number}")
+                                                                             @Parameter(description = "${swagger.mscore.page.number}")
                                                                              @RequestParam(name = "page", defaultValue = "0") Integer page,
-                                                                             @ApiParam("${swagger.mscore.page.size}")
+                                                                             @Parameter(description = "${swagger.mscore.page.size}")
                                                                              @RequestParam(name = "size", defaultValue = "100") Integer size) {
         log.trace("findFromProduct start");
         log.debug("findFromProduct productId = {}", productId);
@@ -553,11 +562,11 @@ public class InstitutionController {
 
     @GetMapping(value = "/{productId}/brokers/{institutionType}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "${swagger.mscore.institutions.brokers}", notes = "${swagger.mscore.institutions.getInstitutionBrokers}")
-    public Collection<BrokerResponse> getInstitutionBrokers(@ApiParam("${swagger.mscore.institutions.model.productId}")
+    @Operation(summary = "${swagger.mscore.institutions.brokers}", description = "${swagger.mscore.institutions.getInstitutionBrokers}")
+    public Collection<BrokerResponse> getInstitutionBrokers(@Parameter(description = "${swagger.mscore.institutions.model.productId}")
                                                             @PathVariable("productId")
                                                             String productId,
-                                                            @ApiParam("${swagger.mscore.institutions.model.type}")
+                                                            @Parameter(description = "${swagger.mscore.institutions.model.type}")
                                                             @PathVariable("institutionType")
                                                             InstitutionType institutionType) {
         log.trace("getInstitutionBrokers start");

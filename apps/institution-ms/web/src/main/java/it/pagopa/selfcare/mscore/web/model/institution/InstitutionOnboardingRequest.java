@@ -3,7 +3,7 @@ package it.pagopa.selfcare.mscore.web.model.institution;
 import it.pagopa.selfcare.onboarding.common.InstitutionType;
 import lombok.Data;
 
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotEmpty;
 import java.time.OffsetDateTime;
 
 @Data

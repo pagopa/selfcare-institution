@@ -1,8 +1,9 @@
 package it.pagopa.selfcare.mscore.web.controller;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import it.pagopa.selfcare.mscore.constant.GenericError;
 import it.pagopa.selfcare.mscore.core.OnboardingService;
 import it.pagopa.selfcare.mscore.model.onboarding.VerifyOnboardingFilters;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequestMapping(value = "/onboarding")
-@Api(tags = "Onboarding")
+@Tag(name = "Onboarding")
 public class OnboardingController {
 
     private final OnboardingService onboardingService;
@@ -36,12 +37,12 @@ public class OnboardingController {
      * * Code: 404, Message: Not found, DataType: Problem
      */
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @ApiOperation(value = "${swagger.mscore.onboarding.verify}", notes = "${swagger.mscore.onboarding.verify}")
+    @Operation(summary = "${swagger.mscore.onboarding.verify}", description = "${swagger.mscore.onboarding.verify}", operationId = "#verifyOnboardingInfoUsingHEAD_1")
     @RequestMapping(method = {RequestMethod.HEAD}, value = "/institution/{externalId}/products/{productId}")
     @Deprecated
-    public ResponseEntity<Void> verifyOnboardingInfo(@ApiParam("${swagger.mscore.institutions.model.externalId}")
+    public ResponseEntity<Void> verifyOnboardingInfo(@Parameter(description = "${swagger.mscore.institutions.model.externalId}")
                                                      @PathVariable(value = "externalId") String externalId,
-                                                     @ApiParam("${swagger.mscore.institutions.model.productId}")
+                                                     @Parameter(description = "${swagger.mscore.institutions.model.productId}")
                                                      @PathVariable(value = "productId") String productId) {
         CustomExceptionMessage.setCustomMessage(GenericError.ONBOARDING_VERIFICATION_ERROR);
         onboardingService.verifyOnboardingInfo(externalId, productId);
@@ -61,14 +62,14 @@ public class OnboardingController {
      * * Code: 404, Message: Not found, DataType: Problem
      */
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @ApiOperation(value = "${swagger.mscore.onboarding.verify}", notes = "${swagger.mscore.onboarding.verify}")
+    @Operation(summary = "${swagger.mscore.onboarding.verify}", description = "${swagger.mscore.onboarding.verify}")
     @RequestMapping(method = {RequestMethod.HEAD}, value = "")
     @Deprecated
-    public ResponseEntity<Void> verifyOnboardingInfo(@ApiParam(value = "${swagger.mscore.institutions.model.taxCode}", required = true)
+    public ResponseEntity<Void> verifyOnboardingInfo(@Parameter(description = "${swagger.mscore.institutions.model.taxCode}", required = true, in = ParameterIn.QUERY)
                                                      @EncryptedTaxCodeParam(required = true) String taxCode,
-                                                     @ApiParam("${swagger.mscore.institutions.model.subunitCode}")
+                                                     @Parameter(description = "${swagger.mscore.institutions.model.subunitCode}")
                                                      @RequestParam(value = "subunitCode", required = false) String subunitCode,
-                                                     @ApiParam("${swagger.mscore.institutions.model.productId}")
+                                                     @Parameter(description = "${swagger.mscore.institutions.model.productId}")
                                                      @RequestParam(value = "productId") String productId) {
         CustomExceptionMessage.setCustomMessage(GenericError.ONBOARDING_VERIFICATION_ERROR);
         onboardingService.verifyOnboardingInfoSubunit(taxCode, subunitCode, productId);
@@ -76,19 +77,19 @@ public class OnboardingController {
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @ApiOperation(value = "${swagger.mscore.onboarding.verify}", notes = "${swagger.mscore.onboarding.verify}")
+    @Operation(summary = "${swagger.mscore.onboarding.verify}", description = "${swagger.mscore.onboarding.verify}")
     @RequestMapping(method = {RequestMethod.HEAD}, value = "/verify")
-    public ResponseEntity<Void> verifyOnboardingInfoByFilters(@ApiParam("${swagger.mscore.institutions.model.productId}")
+    public ResponseEntity<Void> verifyOnboardingInfoByFilters(@Parameter(description = "${swagger.mscore.institutions.model.productId}")
                                                        @RequestParam(value = "productId") String productId,
-                                                       @ApiParam("${swagger.mscore.institutions.model.externalId}")
+                                                       @Parameter(description = "${swagger.mscore.institutions.model.externalId}", in = ParameterIn.QUERY)
                                                        @EncryptedTaxCodeParam String externalId,
-                                                       @ApiParam("${swagger.mscore.institutions.model.taxCode}")
+                                                       @Parameter(description = "${swagger.mscore.institutions.model.taxCode}", in = ParameterIn.QUERY)
                                                        @EncryptedTaxCodeParam String taxCode,
-                                                       @ApiParam("${swagger.mscore.institutions.model.origin}")
+                                                       @Parameter(description = "${swagger.mscore.institutions.model.origin}")
                                                        @RequestParam(value = "origin", required = false) String origin,
-                                                       @ApiParam("${swagger.mscore.institutions.model.originId}")
+                                                       @Parameter(description = "${swagger.mscore.institutions.model.originId}", in = ParameterIn.QUERY)
                                                        @EncryptedTaxCodeParam String originId,
-                                                       @ApiParam("${swagger.mscore.institutions.model.subunitCode}")
+                                                       @Parameter(description = "${swagger.mscore.institutions.model.subunitCode}")
                                                        @RequestParam(value = "subunitCode", required = false) String subunitCode) {
         CustomExceptionMessage.setCustomMessage(GenericError.ONBOARDING_VERIFICATION_ERROR);
         onboardingService.verifyOnboardingInfoByFilters(new VerifyOnboardingFilters(productId, externalId, taxCode, origin, originId, subunitCode));

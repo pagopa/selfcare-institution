@@ -5,7 +5,7 @@ import it.pagopa.selfcare.mscore.web.model.onboarding.OnboardedProductResponse;
 import it.pagopa.selfcare.mscore.web.util.DecryptIfUuid;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import java.time.OffsetDateTime;
 import java.util.List;
 

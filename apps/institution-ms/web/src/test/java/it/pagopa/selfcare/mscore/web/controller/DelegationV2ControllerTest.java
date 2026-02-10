@@ -15,6 +15,7 @@ import it.pagopa.selfcare.mscore.web.model.delegation.DelegationResponse;
 import it.pagopa.selfcare.mscore.web.model.delegation.DelegationWithPaginationResponse;
 import it.pagopa.selfcare.mscore.web.model.mapper.*;
 import it.pagopa.selfcare.mscore.web.util.EncryptedTaxCodeParamResolver;
+import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -28,14 +29,14 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.util.NestedServletException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ContextConfiguration(classes = {DelegationV2Controller.class})
@@ -70,7 +71,7 @@ class DelegationV2ControllerTest {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/v2/delegations?&productId={productId}", "productId");
 
-        assertThrows(NestedServletException.class, () ->
+        assertThrows(ServletException.class, () ->
             MockMvcBuilders.standaloneSetup(delegationController)
                     .build()
                     .perform(requestBuilder));
@@ -227,7 +228,7 @@ class DelegationV2ControllerTest {
     }
 
     @Test
-    void getDelegations_shouldInvalidRequest_wrongPageSize() {
+    void getDelegations_shouldInvalidRequest_wrongPageSize() throws Exception {
 
         Delegation expectedDelegation = dummyDelegation();
 
@@ -235,15 +236,14 @@ class DelegationV2ControllerTest {
                 .get("/v2/delegations?brokerId={brokerId}&size={size}",
                         expectedDelegation.getTo(), 0);
 
-        assertThrows(NestedServletException.class, () ->
-                MockMvcBuilders.standaloneSetup(delegationController)
-                        .build()
-                        .perform(requestBuilder));
-
+        MockMvcBuilders.standaloneSetup(delegationController)
+                .build()
+                .perform(requestBuilder)
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
     @Test
-    void getDelegations_shouldInvalidRequest_wrongPageNumber() {
+    void getDelegations_shouldInvalidRequest_wrongPageNumber() throws Exception {
 
         Delegation expectedDelegation = dummyDelegation();
 
@@ -251,11 +251,10 @@ class DelegationV2ControllerTest {
                 .get("/v2/delegations?brokerId={brokerId}&page={size}",
                         expectedDelegation.getTo(), -1);
 
-        assertThrows(NestedServletException.class, () ->
-                MockMvcBuilders.standaloneSetup(delegationController)
-                        .build()
-                        .perform(requestBuilder));
-
+        MockMvcBuilders.standaloneSetup(delegationController)
+                .build()
+                .perform(requestBuilder)
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
     @Test

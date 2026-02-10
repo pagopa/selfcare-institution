@@ -5,7 +5,9 @@ import feign.codec.ErrorDecoder;
 import it.pagopa.selfcare.mscore.exception.BadGatewayException;
 import it.pagopa.selfcare.mscore.exception.ResourceNotFoundException;
 import it.pagopa.selfcare.mscore.exception.ServiceUnavailableException;
+import org.springframework.stereotype.Component;
 
+@Component
 public class FeignErrorDecoder extends ErrorDecoder.Default {
 
     @Override
