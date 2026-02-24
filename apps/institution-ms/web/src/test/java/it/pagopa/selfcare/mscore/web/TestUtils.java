@@ -182,6 +182,7 @@ public class TestUtils {
         institutionPut.setRea("AA-00000");
         institutionPut.setShareCapital("9999");
         institutionPut.setBusinessRegisterPlace("registerPlace");
+        institutionPut.setSupportEmail("test@test.test");
         return institutionPut;
     }
 
