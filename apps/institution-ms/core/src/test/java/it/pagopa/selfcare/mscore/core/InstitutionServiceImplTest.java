@@ -939,6 +939,7 @@ class InstitutionServiceImplTest {
         updatedInstitution.setRea("AA-00000");
         updatedInstitution.setShareCapital("9999");
         updatedInstitution.setBusinessRegisterPlace("registerPlace");
+        updatedInstitution.setSupportEmail("test@test.test");
 
         InstitutionUpdate institutionUpdate = new InstitutionUpdate();
         institutionUpdate.setDescription("newDesc");
@@ -950,6 +951,7 @@ class InstitutionServiceImplTest {
         institutionUpdate.setRea("AA-00000");
         institutionUpdate.setShareCapital("9999");
         institutionUpdate.setBusinessRegisterPlace("registerPlace");
+        institutionUpdate.setSupportEmail("test@test.test");
 
         //when
         when(institutionConnector.findById(institutionId)).thenReturn(new Institution());

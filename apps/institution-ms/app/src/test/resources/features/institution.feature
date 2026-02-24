@@ -1291,7 +1291,8 @@ Feature: Institution
         ],
         "rea": "AA-00000",
         "shareCapital": "9999",
-        "businessRegisterPlace": "registerPlace"
+        "businessRegisterPlace": "registerPlace",
+        "supportEmail": "support@test.test"
       }
       """
     When I send a PUT request to "/institutions/{id}"
@@ -1309,6 +1310,7 @@ Feature: Institution
       | rea                                 | AA-00000                         |
       | shareCapital                        | 9999                             |
       | businessRegisterPlace               | registerPlace                    |
+      | supportEmail                        | support@test.test                |
 
   @RemoveMockInstitutionAfterScenario
   Scenario: Successfully update institution description and delegation updatedAt
