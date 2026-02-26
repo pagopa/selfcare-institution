@@ -17,7 +17,6 @@ PROGRESS_UPDATE = 50
 
 class Colors:
     WARNING = '\033[93m'
-    ERROR = '\033[91m'
     INFO = '\033[96m'
     END = '\033[0m'
 
