@@ -30,6 +30,7 @@ jobs:
           java-version: "17"
           distribution: "temurin"
           cache: maven
+          cache-dependency-path: apps/institution-ms/**/*.xml
 
       # Selfcare-onboarding
       - uses: s4u/maven-settings-action@7802f6aec16c9098b4798ad1f1d8ac75198194bd # v3.0.0
@@ -39,7 +40,7 @@ jobs:
       - name: Run Integration Tests
         id: int_tests
         working-directory: apps/institution-ms
-        run:  mvn test -Dtest=it.pagopa.selfcare.mscore.integration_test.CucumberSuite -Dsurefire.failIfNoSpecifiedTests=false
+        run:  mvn test -Dtest=it.pagopa.selfcare.mscore.integration_test.CucumberSuite -Dsurefire.failIfNoSpecifiedTests=false -XX:-UseContainerSupport
         shell: bash
         env:
           APP_SERVER_PORT: 8082
