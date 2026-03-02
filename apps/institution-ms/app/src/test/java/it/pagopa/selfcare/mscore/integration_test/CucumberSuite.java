@@ -49,7 +49,7 @@ public class CucumberSuite {
         composeContainer.start();
         Runtime.getRuntime().addShutdownHook(new Thread(composeContainer::stop));
 
-        log.info("Test containers started successfully!");
+        log.info("Test containers started successfully");
     }
 
     public CucumberSuite(Environment environment) {
