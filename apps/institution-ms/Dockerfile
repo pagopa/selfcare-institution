@@ -29,7 +29,7 @@ ARG REPO_PASSWORD
 
 RUN mvn --global-settings settings.xml --projects :institution-ms -DrepositoryId=${REPO_ONBOARDING} -DrepoLogin=${REPO_USERNAME} -DrepoPwd=${REPO_PASSWORD} --also-make-dependents clean package -DskipTests
 
-FROM eclipse-temurin:17-jre@sha256:7a7b6ad2ab918a29b9b2b87b34158a4b5ad20d23dee33687306359eca2d8063e AS runtime
+FROM eclipse-temurin:17@sha256:d838da85ec7aa8fd72b613e30b5f7629d8f5ac70a4264d45735a8a2ed9af447c AS runtime
 
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en'
 
