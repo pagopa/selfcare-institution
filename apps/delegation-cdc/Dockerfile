@@ -48,4 +48,4 @@ RUN chmod 755 ./applicationinsights-agent.jar
 EXPOSE 8080
 USER 1001
 
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTIONS -jar /app/quarkus-run.jar"]
+ENTRYPOINT ["bash", "-c", "java $JAVA_OPTIONS -jar /app/quarkus-run.jar"]
