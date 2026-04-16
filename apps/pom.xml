@@ -15,6 +15,7 @@
         <module>institution-send-mail-scheduler</module>
         <module>institution-ms</module>
         <module>delegation-cdc</module>
+        <module>institution-cdc</module>
     </modules>
 
     <profiles>
